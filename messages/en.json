@@ -171,6 +171,9 @@
 		},
 		"morningRoute": "Morning Route",
 		"afternoonRoute": "Afternoon Route",
+		"selectRoute": "Select route",
+		"changeRoute": "Change route",
+		"loading": "Loading...",
 		"noSchedule": "No schedule available for this route.",
 		"school": "School",
 		"stop": "Stop",
@@ -183,7 +186,10 @@
 		"totalStops": "Total stops",
 		"firstStop": "First stop",
 		"lastStop": "Last stop",
-		"allStops": "All stops"
+		"allStops": "All stops",
+		"stopDuration": "Duration",
+		"minutes": "min.",
+		"stopsCount": "Stops"
 	},
 	"SearchBar": {
 		"searchPlaceholder": "Search..."

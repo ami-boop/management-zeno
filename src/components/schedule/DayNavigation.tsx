@@ -2,6 +2,7 @@
 import { ChevronLeft, ChevronRight } from 'lucide-react'
 import type { WeekDay } from '@/types/schedule'
 import { useState, useEffect } from 'react'
+import React from 'react'
 
 interface DayNavigationProps {
 	days: WeekDay[]
@@ -9,7 +10,7 @@ interface DayNavigationProps {
 	onChangeDay?: (dayKey: string) => void
 }
 
-export default function DayNavigation({
+export default React.memo(function DayNavigation({
 	days,
 	activeDay,
 	onChangeDay,
@@ -83,4 +84,4 @@ export default function DayNavigation({
 			</button>
 		</div>
 	)
-}
+})

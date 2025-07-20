@@ -171,6 +171,9 @@
 		},
 		"morningRoute": "קו בוקר",
 		"afternoonRoute": "קו ערב",
+		"selectRoute": "בחר מסלול",
+		"changeRoute": "החלף מסלול",
+		"loading": "טוען...",
 		"noSchedule": "אין לוח זמנים למסלול זה.",
 		"school": "בית ספר",
 		"stop": "תחנה",
@@ -183,7 +186,10 @@
 		"totalStops": "סך כל התחנות",
 		"firstStop": "תחנה ראשונה",
 		"lastStop": "תחנה אחרונה",
-		"allStops": "כל התחנות"
+		"allStops": "כל התחנות",
+		"stopDuration": "משך עצירה",
+		"minutes": "דק'",
+		"stopsCount": "תחנות"
 	},
 	"SearchBar": {
 		"searchPlaceholder": "חפש..."

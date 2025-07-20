@@ -1,34 +1,42 @@
 {
 	"Dashboard": {
-		"title": "Fleet Management System",
-		"description": "Real-time monitoring and operational control",
-		"stats": {
-			"activeRoutes": "Active Routes",
-			"busesInService": "Buses in Service",
-			"studentsTransported": "Students Transported"
-		},
-		"busStatus": "Fleet Status Overview",
-		"columns": {
-			"busId": "Vehicle ID",
-			"route": "Route",
-			"driver": "Driver",
-			"status": "Status",
-			"students": "Capacity"
-		},
-		"status": {
-			"inTransit": "In Transit",
-			"atSchool": "At School",
-			"maintenance": "Maintenance"
-		},
-		"filterAll": "All Vehicles",
-		"filterInTransit": "In Transit",
-		"filterAtSchool": "At School",
-		"filterMaintenance": "Maintenance",
-		"searchPlaceholder": "Search vehicles, routes, drivers...",
+		"title": "Student Transportation Dashboard",
+		"description": "Monitor student attendance and manage bus orders",
+		"studentsOnBus": "Students on Bus",
+		"studentsNotMarked": "Students Not Marked",
+		"busesNeeded": "Total Buses Needed",
+		"allRoutes": "All Routes",
+		"pendingOrders": "Pending Orders",
+		"partiallyOrdered": "Partially Ordered",
+		"fullyOrdered": "Fully Ordered",
+		"pendingOrder": "Pending Order",
+		"unknown": "Unknown",
+		"orderAll": "Order All",
+		"allOrdered": "All Ordered",
+		"filterByStatus": "Filter by Status:",
+		"filterByRoute": "Filter by Route:",
+		"searchPlaceholder": "Search routes...",
+		"systemStatus": "System Online",
 		"lastUpdated": "Last Updated",
-		"systemStatus": "System Status: Operational",
-		"noVehiclesFound": "No vehicles found",
-		"tryAdjustingSearch": "Try adjusting your search criteria or filters."
+		"noRoutesFound": "No routes found",
+		"tryAdjustingSearch": "Try adjusting your search or filter criteria",
+		"stats": {
+			"studentsOnBus": "Students on Bus",
+			"studentsNotMarked": "Students Not Marked",
+			"busesNeeded": "Total Buses Needed"
+		},
+		"columns": {
+			"route": "Route",
+			"studentsOnBus": "Students on Bus",
+			"notMarked": "Not Marked",
+			"totalStudents": "Total Students",
+			"busesNeeded": "Buses Needed",
+			"busesOrdered": "Buses Ordered",
+			"status": "Status",
+			"actions": "Actions",
+			"departure": "Departure",
+			"lastUpdated": "Last Updated"
+		}
 	},
 	"Header": {
 		"menu": {

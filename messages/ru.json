@@ -1,34 +1,42 @@
 {
 	"Dashboard": {
-		"title": "Система управления автопарком",
-		"description": "Мониторинг и оперативное управление в реальном времени",
-		"stats": {
-			"activeRoutes": "Активные маршруты",
-			"busesInService": "Автобусов в работе",
-			"studentsTransported": "Перевезено учеников"
-		},
-		"busStatus": "Обзор статуса автопарка",
-		"columns": {
-			"busId": "ID ТС",
-			"route": "Маршрут",
-			"driver": "Водитель",
-			"status": "Статус",
-			"students": "Вместимость"
-		},
-		"status": {
-			"inTransit": "В пути",
-			"atSchool": "В школе",
-			"maintenance": "На обслуживании"
-		},
-		"filterAll": "Все ТС",
-		"filterInTransit": "В пути",
-		"filterAtSchool": "В школе",
-		"filterMaintenance": "На обслуживании",
-		"searchPlaceholder": "Поиск по ТС, маршрутам, водителям...",
+		"title": "Панель управления перевозками учеников",
+		"description": "Контроль посещаемости и управление заказами автобусов",
+		"studentsOnBus": "Учеников в автобусе",
+		"studentsNotMarked": "Не отмечено учеников",
+		"busesNeeded": "Всего автобусов нужно",
+		"allRoutes": "Все маршруты",
+		"pendingOrders": "Ожидают заказа",
+		"partiallyOrdered": "Частично заказано",
+		"fullyOrdered": "Все заказано",
+		"pendingOrder": "Ожидает заказа",
+		"unknown": "Неизвестно",
+		"orderAll": "Заказать все",
+		"allOrdered": "Все заказано",
+		"filterByStatus": "Фильтр по статусу:",
+		"filterByRoute": "Фильтр по маршруту:",
+		"searchPlaceholder": "Поиск по маршрутам...",
+		"systemStatus": "Система онлайн",
 		"lastUpdated": "Последнее обновление",
-		"systemStatus": "Статус системы: работает",
-		"noVehiclesFound": "Транспорт не найден",
-		"tryAdjustingSearch": "Попробуйте изменить параметры поиска или фильтры."
+		"noRoutesFound": "Маршруты не найдены",
+		"tryAdjustingSearch": "Попробуйте изменить параметры поиска или фильтры",
+		"stats": {
+			"studentsOnBus": "Учеников в автобусе",
+			"studentsNotMarked": "Не отмечено учеников",
+			"busesNeeded": "Всего автобусов нужно"
+		},
+		"columns": {
+			"route": "Маршрут",
+			"studentsOnBus": "Учеников в автобусе",
+			"notMarked": "Не отмечено",
+			"totalStudents": "Всего учеников",
+			"busesNeeded": "Нужно автобусов",
+			"busesOrdered": "Заказано автобусов",
+			"status": "Статус",
+			"actions": "Действия",
+			"departure": "Отправление",
+			"lastUpdated": "Последнее обновление"
+		}
 	},
 	"Header": {
 		"menu": {

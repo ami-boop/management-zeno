@@ -1,34 +1,42 @@
 {
 	"Dashboard": {
-		"title": "מערכת ניהול צי רכבים",
-		"description": "ניטור ושליטה תפעולית בזמן אמת",
-		"stats": {
-			"activeRoutes": "מסלולים פעילים",
-			"busesInService": "רכבים בשירות",
-			"studentsTransported": "תלמידים שהוסעו"
-		},
-		"busStatus": "סקירת סטטוס צי הרכבים",
-		"columns": {
-			"busId": "מזהה רכב",
-			"route": "מסלול",
-			"driver": "נהג",
-			"status": "סטטוס",
-			"students": "קיבולת"
-		},
-		"status": {
-			"inTransit": "בדרך",
-			"atSchool": "בבית ספר",
-			"maintenance": "בטיפול"
-		},
-		"filterAll": "כל הרכבים",
-		"filterInTransit": "בדרך",
-		"filterAtSchool": "בבית ספר",
-		"filterMaintenance": "בטיפול",
-		"searchPlaceholder": "חפש רכב, מסלול, נהג...",
+		"title": "לוח בקרה להסעות תלמידים",
+		"description": "ניטור נוכחות תלמידים וניהול הזמנות אוטובוסים",
+		"studentsOnBus": "תלמידים באוטובוס",
+		"studentsNotMarked": "תלמידים לא סומנו",
+		"busesNeeded": "סה\"כ אוטובוסים נדרשים",
+		"allRoutes": "כל המסלולים",
+		"pendingOrders": "הזמנות ממתינות",
+		"partiallyOrdered": "הוזמן חלקית",
+		"fullyOrdered": "הוזמן במלואו",
+		"pendingOrder": "ממתין להזמנה",
+		"unknown": "לא ידוע",
+		"orderAll": "הזמן הכל",
+		"allOrdered": "הכל הוזמן",
+		"filterByStatus": "סנן לפי סטטוס:",
+		"filterByRoute": "סנן לפי מסלול:",
+		"searchPlaceholder": "חפש מסלולים...",
+		"systemStatus": "המערכת פועלת",
 		"lastUpdated": "עודכן לאחרונה",
-		"systemStatus": "סטטוס מערכת: תקינה",
-		"noVehiclesFound": "לא נמצאו רכבים",
-		"tryAdjustingSearch": "נסה לשנות את החיפוש או את המסננים."
+		"noRoutesFound": "לא נמצאו מסלולים",
+		"tryAdjustingSearch": "נסה לשנות את החיפוש או את המסננים",
+		"stats": {
+			"studentsOnBus": "תלמידים באוטובוס",
+			"studentsNotMarked": "תלמידים לא סומנו",
+			"busesNeeded": "סה\"כ אוטובוסים נדרשים"
+		},
+		"columns": {
+			"route": "מסלול",
+			"studentsOnBus": "תלמידים באוטובוס",
+			"notMarked": "לא סומנו",
+			"totalStudents": "סה\"כ תלמידים",
+			"busesNeeded": "אוטובוסים נדרשים",
+			"busesOrdered": "אוטובוסים הוזמנו",
+			"status": "סטטוס",
+			"actions": "פעולות",
+			"departure": "יציאה",
+			"lastUpdated": "עודכן לאחרונה"
+		}
 	},
 	"Header": {
 		"menu": {

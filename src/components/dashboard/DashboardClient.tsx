@@ -1,228 +1,223 @@
 'use client'
-
 import { useState, useMemo } from 'react'
 import { useTranslations } from 'next-intl'
-import BusTable from './BusTable'
-import BusMobileCards from './BusMobileCards'
+import DashboardHeader from './DashboardHeader'
+import DashboardStats from './DashboardStats'
+import DashboardRouteFilters from './DashboardRouteFilters'
+import DashboardRouteTable from './DashboardRouteTable'
+import DashboardRouteMobileCards from './DashboardRouteMobileCards'
 
 interface DashboardStat {
 	label: string
 	value: number
-	change: string
+	change?: string
 }
 
-export interface Bus {
+interface Route {
 	id: string
-	route: string
-	driver: string
-	status: 'inTransit' | 'atSchool' | 'maintenance'
-	students: number
-	capacity: number
+	name: string
+	studentsOnBus: number
+	studentsNotMarked: number
+	totalStudents: number
+	busesNeeded: number
+	busesOrdered: number
+	status: 'pending' | 'partial' | 'completed'
 	lastUpdate: string
+	estimatedTime: string
 }
 
 interface DashboardClientProps {
-	dashboardStats: DashboardStat[]
-	busData: Bus[]
+	routes: Route[]
 }
 
-export default function DashboardClient({
-	dashboardStats,
-	busData,
-}: DashboardClientProps) {
+const DashboardClient = ({ routes }: DashboardClientProps) => {
 	const t = useTranslations('Dashboard')
 	const [selectedFilter, setSelectedFilter] = useState<string>('all')
+	const [selectedRoute, setSelectedRoute] = useState<string>('all')
 	const [searchQuery, setSearchQuery] = useState<string>('')
+	const [localRoutes, setRoutes] = useState<Route[]>(routes)
 
-	const filteredBuses = useMemo(() => {
-		return busData.filter(bus => {
-			const matchesFilter =
-				selectedFilter === 'all' || bus.status === selectedFilter
+	const dashboardStats: DashboardStat[] = useMemo(() => {
+		const totalStudentsOnBus = localRoutes.reduce(
+			(sum: number, route: Route) => sum + route.studentsOnBus,
+			0
+		)
+		const totalStudentsNotMarked = localRoutes.reduce(
+			(sum: number, route: Route) => sum + route.studentsNotMarked,
+			0
+		)
+		const totalBusesNeeded = localRoutes.reduce(
+			(sum: number, route: Route) => sum + route.busesNeeded,
+			0
+		)
+		return [
+			{ label: 'studentsOnBus', value: totalStudentsOnBus },
+			{ label: 'studentsNotMarked', value: totalStudentsNotMarked },
+			{ label: 'busesNeeded', value: totalBusesNeeded },
+		]
+	}, [localRoutes])
+
+	const filteredRoutes = useMemo(() => {
+		return localRoutes.filter((route: Route) => {
+			const matchesStatusFilter =
+				selectedFilter === 'all' || route.status === selectedFilter
+			const matchesRouteFilter =
+				selectedRoute === 'all' || route.id === selectedRoute
 			const matchesSearch =
 				searchQuery === '' ||
-				bus.id.toLowerCase().includes(searchQuery.toLowerCase()) ||
-				bus.route.toLowerCase().includes(searchQuery.toLowerCase()) ||
-				bus.driver.toLowerCase().includes(searchQuery.toLowerCase())
-			return matchesFilter && matchesSearch
+				route.id.toLowerCase().includes(searchQuery.toLowerCase()) ||
+				route.name.toLowerCase().includes(searchQuery.toLowerCase())
+			return matchesStatusFilter && matchesRouteFilter && matchesSearch
 		})
-	}, [busData, selectedFilter, searchQuery])
+	}, [localRoutes, selectedFilter, selectedRoute, searchQuery])
 
-	const filterButtons = [
-		{ key: 'all', label: t('filterAll'), count: busData.length },
-		{
-			key: 'inTransit',
-			label: t('filterInTransit'),
-			count: busData.filter(b => b.status === 'inTransit').length,
-		},
-		{
-			key: 'atSchool',
-			label: t('filterAtSchool'),
-			count: busData.filter(b => b.status === 'atSchool').length,
-		},
-		{
-			key: 'maintenance',
-			label: t('filterMaintenance'),
-			count: busData.filter(b => b.status === 'maintenance').length,
-		},
-	]
+	const filterButtons = useMemo(
+		() => [
+			{ key: 'all', label: t('allRoutes'), count: localRoutes.length },
+			{
+				key: 'pending',
+				label: t('pendingOrders'),
+				count: localRoutes.filter((r: Route) => r.status === 'pending').length,
+			},
+			{
+				key: 'partial',
+				label: t('partiallyOrdered'),
+				count: localRoutes.filter((r: Route) => r.status === 'partial').length,
+			},
+			{
+				key: 'completed',
+				label: t('fullyOrdered'),
+				count: localRoutes.filter((r: Route) => r.status === 'completed')
+					.length,
+			},
+		],
+		[localRoutes, t]
+	)
 
-	const getStatusColor = (status: Bus['status']) => {
+	const routeFilterButtons = useMemo(() => {
+		const uniqueRoutes = [
+			...new Set(localRoutes.map((route: Route) => route.id)),
+		]
+		return [
+			{ key: 'all', label: t('allRoutes'), count: localRoutes.length },
+			...uniqueRoutes.map(routeId => ({
+				key: routeId,
+				label:
+					localRoutes.find((r: Route) => r.id === routeId)?.name || routeId,
+				count: localRoutes.filter((r: Route) => r.id === routeId).length,
+			})),
+		]
+	}, [localRoutes, t])
+
+	const handleOrderBuses = (routeId: string, busesToOrder: number) => {
+		setRoutes((prevRoutes: Route[]) =>
+			prevRoutes.map((route: Route) => {
+				if (route.id === routeId) {
+					const newBusesOrdered = Math.min(
+						route.busesOrdered + busesToOrder,
+						route.busesNeeded
+					)
+					const newStatus =
+						newBusesOrdered === 0
+							? 'pending'
+							: newBusesOrdered === route.busesNeeded
+							? 'completed'
+							: 'partial'
+					return {
+						...route,
+						busesOrdered: newBusesOrdered,
+						status: newStatus,
+						lastUpdate: new Date().toLocaleTimeString('en-GB', {
+							hour: '2-digit',
+							minute: '2-digit',
+						}),
+					}
+				}
+				return route
+			})
+		)
+	}
+
+	const getStatusColor = (status: Route['status']) => {
 		switch (status) {
-			case 'inTransit':
+			case 'completed':
 				return 'bg-emerald-50 text-emerald-900 border-emerald-200'
-			case 'atSchool':
-				return 'bg-blue-50 text-blue-900 border-blue-200'
-			case 'maintenance':
+			case 'partial':
 				return 'bg-amber-50 text-amber-900 border-amber-200'
+			case 'pending':
+				return 'bg-red-50 text-red-900 border-red-200'
 			default:
 				return 'bg-gray-50 text-gray-900 border-gray-200'
 		}
 	}
-
-	const getStatusDot = (status: Bus['status']) => {
+	const getStatusDot = (status: Route['status']) => {
 		switch (status) {
-			case 'inTransit':
+			case 'completed':
 				return 'bg-emerald-500'
-			case 'atSchool':
-				return 'bg-blue-500'
-			case 'maintenance':
+			case 'partial':
 				return 'bg-amber-500'
+			case 'pending':
+				return 'bg-red-500'
 			default:
 				return 'bg-gray-500'
+		}
+	}
+	const getStatusText = (status: Route['status']) => {
+		switch (status) {
+			case 'completed':
+				return t('fullyOrdered')
+			case 'partial':
+				return t('partiallyOrdered')
+			case 'pending':
+				return t('pendingOrder')
+			default:
+				return t('unknown')
 		}
 	}
 
 	return (
 		<div className='min-h-screen bg-gray-50'>
 			<div className='max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8'>
-				{/* Header */}
-				<div className='mb-8'>
-					<div className='flex items-center justify-between'>
-						<div>
-							<h1 className='text-3xl font-bold text-gray-900 mb-2'>
-								{t('title')}
-							</h1>
-							<p className='text-gray-600 text-base'>{t('description')}</p>
-						</div>
-						<div className='flex items-center space-x-4'>
-							<div className='flex items-center text-sm text-gray-600'>
-								<div className='w-2 h-2 bg-green-500 rounded-full mr-2'></div>
-								{t('systemStatus')}
-							</div>
-							<div className='text-sm text-gray-500'>
-								{t('lastUpdated')}: 14:25
-							</div>
-						</div>
-					</div>
-				</div>
-
-				{/* Stats Grid */}
-				<div className='grid grid-cols-1 md:grid-cols-3 gap-6 mb-8'>
-					{dashboardStats.map(stat => (
-						<div
-							key={stat.label}
-							className='bg-white rounded-lg shadow-sm border border-gray-200 p-6 hover:shadow-md transition-shadow duration-200'
-						>
-							<div className='flex items-center justify-between mb-4'>
-								<h3 className='text-sm font-medium text-gray-500 uppercase tracking-wide'>
-									{t(`stats.${stat.label}`)}
-								</h3>
-							</div>
-							<div className='flex items-baseline'>
-								<p className='text-3xl font-bold text-gray-900'>{stat.value}</p>
-							</div>
-							<p className='text-sm text-gray-500 mt-2'>{stat.change}</p>
-						</div>
-					))}
-				</div>
-
-				{/* Fleet Status Section */}
+				<DashboardHeader
+					title={t('title')}
+					description={t('description')}
+					systemStatus={t('systemStatus')}
+				/>
+				<DashboardStats stats={dashboardStats} />
 				<div className='bg-white rounded-lg shadow-sm border border-gray-200'>
 					<div className='px-6 py-4 border-b border-gray-200'>
-						<div className='flex flex-col sm:flex-row sm:items-center justify-between gap-4'>
-							<h2 className='text-xl font-semibold text-gray-900'>
-								{t('busStatus')}
-							</h2>
-
-							{/* Search */}
-							<div className='relative max-w-md'>
-								<div className='absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none'>
-									<svg
-										className='h-4 w-4 text-gray-400'
-										fill='none'
-										stroke='currentColor'
-										viewBox='0 0 24 24'
-									>
-										<path
-											strokeLinecap='round'
-											strokeLinejoin='round'
-											strokeWidth={2}
-											d='M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z'
-										/>
-									</svg>
-								</div>
-								<input
-									type='text'
-									placeholder={t('searchPlaceholder')}
-									value={searchQuery}
-									onChange={e => setSearchQuery(e.target.value)}
-									className='block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md text-sm placeholder-gray-500 focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500'
-								/>
-							</div>
-						</div>
-
-						{/* Filters */}
-						<div className='flex flex-wrap gap-2 mt-4'>
-							{filterButtons.map(filter => (
-								<button
-									key={filter.key}
-									onClick={() => setSelectedFilter(filter.key)}
-									className={`inline-flex items-center px-3 py-1.5 rounded-md text-sm font-medium transition-colors duration-200 ${
-										selectedFilter === filter.key
-											? 'bg-blue-100 text-blue-800 border border-blue-200'
-											: 'bg-white text-gray-700 border border-gray-300 hover:bg-gray-50'
-									}`}
-								>
-									{filter.label}
-									<span
-										className={`ml-2 px-2 py-0.5 rounded-full text-xs ${
-											selectedFilter === filter.key
-												? 'bg-blue-200 text-blue-800'
-												: 'bg-gray-100 text-gray-600'
-										}`}
-									>
-										{filter.count}
-									</span>
-								</button>
-							))}
-						</div>
+						<DashboardRouteFilters
+							filterButtons={filterButtons}
+							selectedFilter={selectedFilter}
+							setSelectedFilter={setSelectedFilter}
+							routeFilterButtons={routeFilterButtons}
+							selectedRoute={selectedRoute}
+							setSelectedRoute={setSelectedRoute}
+							searchQuery={searchQuery}
+							setSearchQuery={setSearchQuery}
+						/>
 					</div>
-
-					{/* Desktop Table */}
-					<div className='hidden lg:block overflow-hidden'>
-						<BusTable buses={filteredBuses} t={t} />
+					<div className='hidden lg:block'>
+						<DashboardRouteTable
+							routes={filteredRoutes}
+							onOrderBuses={handleOrderBuses}
+							getStatusColor={getStatusColor}
+							getStatusDot={getStatusDot}
+							getStatusText={getStatusText}
+						/>
 					</div>
-
-					{/* Mobile Cards */}
-					<BusMobileCards buses={filteredBuses} t={t} />
-
-					{filteredBuses.length === 0 && (
+					<DashboardRouteMobileCards
+						routes={filteredRoutes}
+						onOrderBuses={handleOrderBuses}
+						getStatusColor={getStatusColor}
+						getStatusDot={getStatusDot}
+						getStatusText={getStatusText}
+					/>
+					{filteredRoutes.length === 0 && (
 						<div className='text-center py-12'>
-							<svg
-								className='mx-auto h-12 w-12 text-gray-400'
-								fill='none'
-								stroke='currentColor'
-								viewBox='0 0 24 24'
-							>
-								<path
-									strokeLinecap='round'
-									strokeLinejoin='round'
-									strokeWidth={1}
-									d='M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z'
-								/>
-							</svg>
+							<span className='text-gray-400 text-4xl'>–</span>
 							<h3 className='mt-2 text-sm font-medium text-gray-900'>
-								{t('noVehiclesFound')}
+								{t('noRoutesFound')}
 							</h3>
 							<p className='mt-1 text-sm text-gray-500'>
 								{t('tryAdjustingSearch')}
@@ -234,3 +229,5 @@ export default function DashboardClient({
 		</div>
 	)
 }
+
+export default DashboardClient

@@ -1,75 +1,82 @@
+import { getTranslations } from 'next-intl/server'
 import DashboardClient from '@/components/dashboard/DashboardClient'
 
-interface DashboardStat {
-	label: string
-	value: number
-	change: string
-}
-
-interface Bus {
+interface Route {
 	id: string
-	route: string
-	driver: string
-	status: 'inTransit' | 'atSchool' | 'maintenance'
-	students: number
-	capacity: number
+	name: string
+	studentsOnBus: number
+	studentsNotMarked: number
+	totalStudents: number
+	busesNeeded: number
+	busesOrdered: number
+	status: 'pending' | 'partial' | 'completed'
 	lastUpdate: string
+	estimatedTime: string
 }
 
-export default function DashboardPage() {
-	const dashboardStats: DashboardStat[] = [
-		{ label: 'activeRoutes', value: 15, change: '+2 from yesterday' },
-		{ label: 'busesInService', value: 12, change: '+1 from yesterday' },
-		{ label: 'studentsTransported', value: 350, change: '+25 from yesterday' },
-	]
-
-	const busData: Bus[] = [
+export default async function DashboardPage() {
+	// Здесь можно заменить на загрузку данных с сервера
+	const routes: Route[] = [
 		{
-			id: 'BUS-101',
-			route: 'Route A',
-			driver: 'Ethan Carter',
-			status: 'inTransit',
-			students: 25,
-			capacity: 30,
+			id: 'ROUTE-A',
+			name: 'Route A',
+			studentsOnBus: 85,
+			studentsNotMarked: 25,
+			totalStudents: 110,
+			busesNeeded: 4,
+			busesOrdered: 2,
+			status: 'partial',
 			lastUpdate: '14:23',
+			estimatedTime: '12:00',
 		},
 		{
-			id: 'BUS-102',
-			route: 'Route B',
-			driver: 'Olivia Harper',
-			status: 'atSchool',
-			students: 0,
-			capacity: 28,
+			id: 'ROUTE-B',
+			name: 'Route B',
+			studentsOnBus: 60,
+			studentsNotMarked: 15,
+			totalStudents: 75,
+			busesNeeded: 3,
+			busesOrdered: 3,
+			status: 'completed',
 			lastUpdate: '14:18',
+			estimatedTime: '12:00',
 		},
 		{
-			id: 'BUS-103',
-			route: 'Route C',
-			driver: 'Liam Foster',
-			status: 'inTransit',
-			students: 30,
-			capacity: 32,
+			id: 'ROUTE-C',
+			name: 'Route C',
+			studentsOnBus: 95,
+			studentsNotMarked: 35,
+			totalStudents: 130,
+			busesNeeded: 5,
+			busesOrdered: 0,
+			status: 'pending',
 			lastUpdate: '14:24',
+			estimatedTime: '12:00',
 		},
 		{
-			id: 'BUS-104',
-			route: 'Route A',
-			driver: 'Ava Bennett',
-			status: 'maintenance',
-			students: 0,
-			capacity: 30,
-			lastUpdate: '13:15',
-		},
-		{
-			id: 'BUS-105',
-			route: 'Route B',
-			driver: 'Noah Hayes',
-			status: 'inTransit',
-			students: 20,
-			capacity: 25,
+			id: 'ROUTE-D',
+			name: 'Route D',
+			studentsOnBus: 45,
+			studentsNotMarked: 10,
+			totalStudents: 55,
+			busesNeeded: 2,
+			busesOrdered: 1,
+			status: 'partial',
 			lastUpdate: '14:22',
+			estimatedTime: '12:00',
+		},
+		{
+			id: 'ROUTE-E',
+			name: 'Route E',
+			studentsOnBus: 70,
+			studentsNotMarked: 20,
+			totalStudents: 90,
+			busesNeeded: 3,
+			busesOrdered: 3,
+			status: 'completed',
+			lastUpdate: '14:20',
+			estimatedTime: '12:00',
 		},
 	]
-
-	return <DashboardClient dashboardStats={dashboardStats} busData={busData} />
+	return <DashboardClient routes={routes} />
 }

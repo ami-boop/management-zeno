@@ -7,56 +7,55 @@ import ManagementReportSuccess from './ManagementReportSuccess'
 import ManagementReportNotice from './ManagementReportNotice'
 import { Loader2 } from 'lucide-react'
 
-const grades = [
-	{ key: 'alef', hebrew: 'א׳' },
-	{ key: 'bet', hebrew: 'ב׳' },
-	{ key: 'gimel', hebrew: 'ג׳' },
-	{ key: 'dalet', hebrew: 'ד׳' },
-	{ key: 'he', hebrew: 'ה׳' },
-	{ key: 'vav', hebrew: 'ו׳' },
-	{ key: 'zayin', hebrew: 'ז׳' },
-	{ key: 'het', hebrew: 'ח׳' },
-	{ key: 'tet', hebrew: 'ט׳' },
-	{ key: 'yud', hebrew: 'י׳' },
-	{ key: 'yud_alef', hebrew: 'יא׳' },
-	{ key: 'yud_bet', hebrew: 'יב׳' },
-]
-
-const profiles = [
-	{ key: 'physics_computers', label: 'פיזיקה-מחשבים' },
-	{ key: 'chemistry_biology', label: 'כימיה-ביולוגיה' },
-	{ key: 'theatron', label: 'תיאטרון' },
-	{ key: 'art_design', label: 'יצוב אמנות' },
-]
-
 const needsProfile = (grade: string) =>
 	['tet', 'yud', 'yud_alef', 'yud_bet'].includes(grade)
 
-function generateClassNumbers() {
-	return Array.from({ length: 11 }, (_, i) => i + 1)
+interface ManagementReportFormProps {
+	grades: { key: string; hebrew: string }[]
+	profiles: { key: string; label: string }[]
+	timeOptions: string[]
+	classNumbers: number[]
 }
 
-export default function ManagementReportForm() {
+export default function ManagementReportForm({
+	grades,
+	profiles,
+	timeOptions,
+	classNumbers,
+}: ManagementReportFormProps) {
 	const t = useTranslations('managementReport')
 	const [isSubmitting, setIsSubmitting] = useState(false)
 	const [isSubmitted, setIsSubmitted] = useState(false)
-	const [selectedGrade, setSelectedGrade] = useState('')
-	const [selectedClass, setSelectedClass] = useState('')
-	const [selectedProfile, setSelectedProfile] = useState('')
+	const [selectedGrade, setSelectedGrade] = useState<string | null>(null)
+	const [selectedClass, setSelectedClass] = useState<string | null>(null)
+	const [selectedProfile, setSelectedProfile] = useState<string | null>(null)
+	const [selectedTime, setSelectedTime] = useState<string | null>(null)
 	const [selectedParallel, setSelectedParallel] = useState('')
 
-	const handleSubmit = async () => {
+	const handleSubmit = async (e: React.FormEvent) => {
+		e.preventDefault()
 		setIsSubmitting(true)
 		await new Promise(resolve => setTimeout(resolve, 1500))
 		setIsSubmitting(false)
 		setIsSubmitted(true)
+		const reportData = {
+			...(selectedParallel
+				? { parallel: selectedParallel }
+				: { class: `${selectedGrade}_${selectedClass}` }),
+			profile: selectedProfile, //=== 'all' && profiles.map(p => p.key),
+			time: selectedTime,
+		}
+
+		console.log(reportData)
+		// TODO: Add actual report generation logic
 	}
 
 	const handleReset = () => {
 		setIsSubmitted(false)
-		setSelectedGrade('')
-		setSelectedClass('')
-		setSelectedProfile('')
+		setSelectedGrade(null)
+		setSelectedClass(null)
+		setSelectedProfile(null)
+		setSelectedTime(null)
 		setSelectedParallel('')
 	}
 
@@ -68,8 +67,11 @@ export default function ManagementReportForm() {
 		<>
 			<ManagementReportStatus />
 			{/* Parallel Selection */}
-			<div className='bg-amber-50 border border-amber-200 rounded-lg p-4'>
-				<label className='block text-sm font-medium text-amber-800 mb-3'>
+			<div className='relative mb-6'>
+				<label
+					htmlFor='parallel-select'
+					className='block text-sm font-medium text-gray-700 mb-2'
+				>
 					{t('parallelLabel')}
 				</label>
 				<select
@@ -77,9 +79,10 @@ export default function ManagementReportForm() {
 					onChange={e => {
 						setSelectedParallel(e.target.value)
 						if (e.target.value) {
-							setSelectedGrade('')
-							setSelectedClass('')
-							setSelectedProfile('')
+							setSelectedGrade(null)
+							setSelectedClass(null)
+							setSelectedProfile(null)
+							setSelectedTime(null)
 						}
 					}}
 					className='w-full px-3 py-2 border border-amber-300 rounded-md text-sm focus:outline-none focus:ring-1 focus:ring-amber-500 focus:border-amber-500'
@@ -96,7 +99,7 @@ export default function ManagementReportForm() {
 			{!selectedParallel && (
 				<>
 					{/* Grade Selection */}
-					<div>
+					<div className='mb-6'>
 						<label className='block text-sm font-medium text-gray-700 mb-3'>
 							{t('gradeLabel')}
 						</label>
@@ -107,8 +110,9 @@ export default function ManagementReportForm() {
 									type='button'
 									onClick={() => {
 										setSelectedGrade(grade.key)
-										setSelectedClass('')
-										setSelectedProfile('')
+										setSelectedClass(null)
+										setSelectedProfile(null)
+										setSelectedTime(null)
 									}}
 									className={`p-3 text-lg font-medium rounded-md border transition-colors duration-200 ${
 										selectedGrade === grade.key
@@ -123,12 +127,12 @@ export default function ManagementReportForm() {
 					</div>
 					{/* Class Number Selection */}
 					{selectedGrade && (
-						<div>
+						<div className='mb-6'>
 							<label className='block text-sm font-medium text-gray-700 mb-3'>
 								{t('classLabel')}
 							</label>
 							<div className='grid grid-cols-6 gap-2'>
-								{generateClassNumbers().map(number => (
+								{classNumbers.map(number => (
 									<button
 										key={number}
 										type='button'
@@ -148,11 +152,22 @@ export default function ManagementReportForm() {
 					)}
 					{/* Profile Selection */}
 					{selectedGrade && selectedClass && needsProfile(selectedGrade) && (
-						<div>
+						<div className='mb-6'>
 							<label className='block text-sm font-medium text-gray-700 mb-3'>
 								{t('profileLabel')}
 							</label>
 							<div className='grid grid-cols-1 gap-2'>
+								<button
+									type='button'
+									onClick={() => setSelectedProfile('all')}
+									className={`p-3 text-sm font-medium rounded-md border transition-colors duration-200 text-right ${
+										selectedProfile === 'all'
+											? 'bg-blue-50 text-blue-700 border-blue-200'
+											: 'bg-white text-gray-700 border-gray-300 hover:bg-gray-50'
+									}`}
+								>
+									{t('selectAllProfiles')}
+								</button>
 								{profiles.map(profile => (
 									<button
 										key={profile.key}
@@ -170,6 +185,31 @@ export default function ManagementReportForm() {
 							</div>
 						</div>
 					)}
+					{/* Time Selection */}
+					{selectedClass &&
+						(!needsProfile(selectedGrade!) || selectedProfile) && (
+							<div className='mb-6'>
+								<label className='block text-sm font-medium text-gray-700 mb-3'>
+									{t('timeLabel')}
+								</label>
+								<div className='grid grid-cols-3 gap-2'>
+									{timeOptions.map(time => (
+										<button
+											key={time}
+											type='button'
+											onClick={() => setSelectedTime(time)}
+											className={`p-3 text-sm font-medium rounded-md border transition-colors duration-200 text-center ${
+												selectedTime === time
+													? 'bg-blue-50 text-blue-700 border-blue-200'
+													: 'bg-white text-gray-700 border-gray-300 hover:bg-gray-50'
+											}`}
+										>
+											{time}
+										</button>
+									))}
+								</div>
+							</div>
+						)}
 				</>
 			)}
 			{/* Submit Button */}
@@ -180,14 +220,16 @@ export default function ManagementReportForm() {
 					(!selectedParallel &&
 						(!selectedGrade ||
 							!selectedClass ||
-							(needsProfile(selectedGrade) && !selectedProfile)))
+							(needsProfile(selectedGrade) && !selectedProfile) ||
+							!selectedTime))
 				}
 				className={`w-full py-3 px-4 rounded-md text-sm font-medium transition-colors duration-200 ${
 					isSubmitting ||
 					(!selectedParallel &&
 						(!selectedGrade ||
 							!selectedClass ||
-							(needsProfile(selectedGrade) && !selectedProfile)))
+							(needsProfile(selectedGrade) && !selectedProfile) ||
+							!selectedTime))
 						? 'bg-gray-400 text-white cursor-not-allowed'
 						: 'bg-blue-600 text-white hover:bg-blue-700'
 				}`}

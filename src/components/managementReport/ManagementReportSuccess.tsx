@@ -16,11 +16,6 @@ export default function ManagementReportSuccess({
 				{t('successTitle')}
 			</h2>
 			<p className='text-gray-600 mb-6'>{t('successMessage')}</p>
-			<div className='bg-blue-50 rounded-lg p-4 mb-6'>
-				<p className='text-blue-800 font-medium text-sm'>
-					{t('estimatedArrival')}
-				</p>
-			</div>
 			<button
 				onClick={onReset}
 				className='w-full bg-gray-100 text-gray-700 py-2 px-4 rounded-md text-sm font-medium hover:bg-gray-200 transition-colors duration-200'

@@ -2,7 +2,7 @@ export interface Route {
 	id: number
 	name: string
 	stops: number
-	bus: string
+	students: number
 	status: 'active' | 'inactive' | 'maintenance'
 }
 

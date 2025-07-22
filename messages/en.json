@@ -130,9 +130,8 @@
 		"headers": {
 			"routeName": "Route Name",
 			"stops": "Stops",
-			"bus": "Assigned Vehicle",
-			"status": "Status",
-			"actions": "Actions"
+			"students": "Students",
+			"status": "Status"
 		},
 		"status": {
 			"active": "Active",
@@ -259,7 +258,7 @@
 		"successMessage": "Classes have been notified.",
 		"estimatedArrival": "Estimated arrival: 15-20 minutes",
 		"backButton": "Report Another Cancellation",
-		"noticeMessage": "Additional buses will be organized automatically if needed. All affected students will be notified.",
+		"noticeMessage": "All affected students will be notified.",
 		"submitting": "Submitting..."
 	},
 	"managementLessons": {
@@ -271,7 +270,7 @@
 		"backToSelection": "Back to Selection",
 		"scheduleFor": "Schedule for",
 		"lessonsForDay": "Lessons for",
-		"infoNotice": "Schedule shows lessons from 1-9. The 0 lesson slot is reserved for special activities.",
+		"infoNotice": "Schedule shows lessons from 1-9.",
 		"freePeriod": "Free Period",
 		"noLessonScheduled": "No lesson scheduled",
 		"days": {

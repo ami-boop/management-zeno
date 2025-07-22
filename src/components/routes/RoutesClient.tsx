@@ -29,10 +29,6 @@ export default function RoutesClient({ routes }: RoutesClientProps) {
 						<ListChecks className='w-6 h-6 text-blue-600' />
 						{t('title')}
 					</h1>
-					<button className='inline-flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-md shadow-sm text-sm font-medium hover:bg-blue-700'>
-						<Plus className='w-4 h-4' />
-						{t('addRoute')}
-					</button>
 				</div>
 
 				<div className='mb-6'>

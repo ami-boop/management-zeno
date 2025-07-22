@@ -128,11 +128,10 @@
 		"addRoute": "הוסף מסלול",
 		"searchPlaceholder": "חפש מסלולים...",
 		"headers": {
-			"routeName": "שם המסלול",
+			"routeName": "שם קו",
 			"stops": "תחנות",
-			"bus": "רכב משויך",
-			"status": "סטטוס",
-			"actions": "פעולות"
+			"students": "תלמידים",
+			"status": "סטטוס"
 		},
 		"status": {
 			"active": "פעיל",
@@ -259,7 +258,7 @@
 		"successMessage": "הכיתות עודכנו.",
 		"estimatedArrival": "הגעה משוערת: 15-20 דקות",
 		"backButton": "דווח על ביטול נוסף",
-		"noticeMessage": "האוטובוסים נוספים יאורגנו אוטומטית במידת הצורך. כל התלמידים הרלוונטיים יעודכנו.",
+		"noticeMessage": "כל התלמידים הרלוונטיים יעודכנו.",
 		"submitting": "שולח..."
 	},
 	"managementLessons": {
@@ -271,7 +270,7 @@
 		"backToSelection": "חזרה לבחירה",
 		"scheduleFor": "מערכת עבור",
 		"lessonsForDay": "שיעורים ליום",
-		"infoNotice": "המערכת מציגה שיעורים 1-9. שיעור 0 שמור לפעילויות מיוחדות.",
+		"infoNotice": "המערכת מציגה שיעורים 1-9.",
 		"freePeriod": "שיעור חופשי",
 		"noLessonScheduled": "אין שיעור מתוכנן",
 		"days": {

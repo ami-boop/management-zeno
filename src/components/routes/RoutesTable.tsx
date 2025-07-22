@@ -1,7 +1,7 @@
 'use client'
 
 import type { Route } from '@/types/routes'
-import { Bus, CheckCircle, Ban, Wrench } from 'lucide-react'
+import { Users, CheckCircle, Ban, Wrench } from 'lucide-react'
 
 interface RoutesTableProps {
 	routes: Route[]
@@ -27,13 +27,10 @@ export default function RoutesTable({ routes, t }: RoutesTableProps) {
 							{t('headers.stops')}
 						</th>
 						<th className='px-4 py-3 text-left text-sm font-medium'>
-							{t('headers.bus')}
+							{t('headers.students')}
 						</th>
 						<th className='px-4 py-3 text-left text-sm font-medium'>
 							{t('headers.status')}
-						</th>
-						<th className='px-4 py-3 text-left text-sm font-medium'>
-							{t('headers.actions')}
 						</th>
 					</tr>
 				</thead>
@@ -46,8 +43,8 @@ export default function RoutesTable({ routes, t }: RoutesTableProps) {
 									{route.stops}
 								</td>
 								<td className='px-4 py-3 text-sm text-[#617989] flex items-center gap-2'>
-									<Bus className='w-4 h-4' />
-									{route.bus}
+									<Users className='w-4 h-4' />
+									{route.students}
 								</td>
 								<td className='px-4 py-3 text-sm'>
 									<span className='inline-flex items-center gap-1'>
@@ -55,15 +52,12 @@ export default function RoutesTable({ routes, t }: RoutesTableProps) {
 										{t(`status.${route.status}`)}
 									</span>
 								</td>
-								<td className='px-4 py-3 text-sm font-bold text-[#617989] hover:text-blue-600 cursor-pointer'>
-									{t('view')}
-								</td>
 							</tr>
 						))
 					) : (
 						<tr>
 							<td
-								colSpan={5}
+								colSpan={4}
 								className='px-4 py-8 text-center text-[#617989] text-sm'
 							>
 								{t('noRoutes')}

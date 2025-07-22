@@ -2,7 +2,7 @@
 
 import { useState, useMemo } from 'react'
 import { useTranslations } from 'next-intl'
-import type { Student } from '@/app/[locale]/management/students/page'
+import type { Student } from '@/app/[locale]/(group)/students/page'
 import StudentTable from './StudentTable'
 import StudentMobileCards from './StudentMobileCards'
 
@@ -24,13 +24,13 @@ export default function StudentsClient({
 		const query = searchQuery.toLowerCase()
 		return students.filter(student => {
 			const matchesFilter =
-				selectedFilter === 'all' || student.status === selectedFilter
+				selectedFilter === 'all' || student.route === selectedFilter
 			const matchesSearch =
 				query === '' ||
 				student.name.toLowerCase().includes(query) ||
 				student.grade.toLowerCase().includes(query) ||
 				student.route.toLowerCase().includes(query) ||
-				student.bus.toLowerCase().includes(query) ||
+				student.stop.toLowerCase().includes(query) ||
 				student.guardian.toLowerCase().includes(query)
 			return matchesFilter && matchesSearch
 		})
@@ -40,76 +40,26 @@ export default function StudentsClient({
 		{
 			label: 'totalStudents',
 			value: students.length,
-			change: '+2 this week',
 		},
 		{
-			label: 'activeToday',
-			value: students.filter(s => s.status !== 'absent').length,
-			change: `${Math.round(
-				(students.filter(s => s.status !== 'absent').length / students.length) *
-					100
-			)}% attendance`,
+			label: 'activeRoutes',
+			value: new Set(students.map(s => s.route)).size,
 		},
 		{
-			label: 'pendingPickup',
-			value: students.filter(s => s.status === 'boarding').length,
-			change: 'Next pickup: 8:05',
+			label: 'totalStops',
+			value: new Set(students.map(s => s.stop)).size,
 		},
 	]
 
+	// Create filter buttons based on routes
 	const filterButtons = [
 		{ key: 'all', label: t('filterAll'), count: students.length },
-		{
-			key: 'onboard',
-			label: t('filterOnboard'),
-			count: students.filter(s => s.status === 'onboard').length,
-		},
-		{
-			key: 'boarding',
-			label: t('filterBoarding'),
-			count: students.filter(s => s.status === 'boarding').length,
-		},
-		{
-			key: 'absent',
-			label: t('filterAbsent'),
-			count: students.filter(s => s.status === 'absent').length,
-		},
-		{
-			key: 'dropped',
-			label: t('filterDropped'),
-			count: students.filter(s => s.status === 'dropped').length,
-		},
+		...Array.from(new Set(students.map(s => s.route))).map(route => ({
+			key: route,
+			label: route,
+			count: students.filter(s => s.route === route).length,
+		})),
 	]
-
-	const getStatusColor = (status: Student['status']) => {
-		switch (status) {
-			case 'onboard':
-				return 'bg-green-50 text-green-800 border-green-200'
-			case 'boarding':
-				return 'bg-blue-50 text-blue-800 border-blue-200'
-			case 'absent':
-				return 'bg-red-50 text-red-800 border-red-200'
-			case 'dropped':
-				return 'bg-gray-50 text-gray-800 border-gray-200'
-			default:
-				return 'bg-gray-50 text-gray-800 border-gray-200'
-		}
-	}
-
-	const getStatusDot = (status: Student['status']) => {
-		switch (status) {
-			case 'onboard':
-				return 'bg-green-500'
-			case 'boarding':
-				return 'bg-blue-500'
-			case 'absent':
-				return 'bg-red-500'
-			case 'dropped':
-				return 'bg-gray-500'
-			default:
-				return 'bg-gray-500'
-		}
-	}
 
 	const handleSelectStudent = (studentId: number) => {
 		setSelectedStudents(prev =>
@@ -140,12 +90,10 @@ export default function StudentsClient({
 							<p className='text-gray-600'>{t('description')}</p>
 						</div>
 						<div className='flex items-center space-x-3'>
-							<button className='inline-flex items-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 transition-colors duration-200'>
-								{/* export icon */}
-								{t('exportData')}
+							<button className='inline-flex items-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50'>
+								{t('export')}
 							</button>
-							<button className='inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 transition-colors duration-200'>
-								{/* add icon */}
+							<button className='inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700'>
 								{t('addStudent')}
 							</button>
 						</div>
@@ -153,10 +101,10 @@ export default function StudentsClient({
 
 					{/* Stats */}
 					<div className='grid grid-cols-1 md:grid-cols-3 gap-6 mb-8'>
-						{stats.map(stat => (
+						{stats.map((stat, index) => (
 							<div
-								key={stat.label}
-								className='bg-white rounded-lg shadow-sm border border-gray-200 p-6'
+								key={index}
+								className='bg-white rounded-lg border border-gray-200 p-6'
 							>
 								<div className='flex items-center justify-between mb-2'>
 									<h3 className='text-sm font-medium text-gray-500 uppercase tracking-wide'>
@@ -168,7 +116,6 @@ export default function StudentsClient({
 										{stat.value}
 									</p>
 								</div>
-								<p className='text-sm text-gray-500 mt-1'>{stat.change}</p>
 							</div>
 						))}
 					</div>

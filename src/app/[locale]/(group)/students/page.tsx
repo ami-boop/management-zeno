@@ -5,8 +5,7 @@ export interface Student {
 	name: string
 	grade: string
 	route: string
-	bus: string
-	status: 'onboard' | 'boarding' | 'absent' | 'dropped'
+	stop: string
 	pickupTime: string
 	dropoffTime: string
 	guardian: string
@@ -20,8 +19,7 @@ export default function StudentsPage() {
 			name: 'Owen Bennett',
 			grade: '5th Grade',
 			route: 'Route A',
-			bus: 'BUS-101',
-			status: 'onboard',
+			stop: 'Main Street & Oak Ave',
 			pickupTime: '07:30',
 			dropoffTime: '15:45',
 			guardian: 'Sarah Bennett',
@@ -32,8 +30,7 @@ export default function StudentsPage() {
 			name: 'Sophia Hughes',
 			grade: '3rd Grade',
 			route: 'Route B',
-			bus: 'BUS-102',
-			status: 'dropped',
+			stop: 'School District Office',
 			pickupTime: '07:45',
 			dropoffTime: '15:30',
 			guardian: 'Michael Hughes',
@@ -44,8 +41,7 @@ export default function StudentsPage() {
 			name: 'Lucas Hayes',
 			grade: '6th Grade',
 			route: 'Route A',
-			bus: 'BUS-101',
-			status: 'boarding',
+			stop: 'Pine Street Station',
 			pickupTime: '07:35',
 			dropoffTime: '15:50',
 			guardian: 'Jennifer Hayes',
@@ -56,8 +52,7 @@ export default function StudentsPage() {
 			name: 'Isabella Reed',
 			grade: '4th Grade',
 			route: 'Route C',
-			bus: 'BUS-103',
-			status: 'absent',
+			stop: 'Community Center',
 			pickupTime: '08:00',
 			dropoffTime: '16:00',
 			guardian: 'David Reed',
@@ -68,8 +63,7 @@ export default function StudentsPage() {
 			name: 'Caleb Foster',
 			grade: '2nd Grade',
 			route: 'Route B',
-			bus: 'BUS-102',
-			status: 'onboard',
+			stop: 'Library Corner',
 			pickupTime: '07:50',
 			dropoffTime: '15:35',
 			guardian: 'Lisa Foster',
@@ -80,8 +74,7 @@ export default function StudentsPage() {
 			name: 'Emma Watson',
 			grade: '1st Grade',
 			route: 'Route C',
-			bus: 'BUS-103',
-			status: 'boarding',
+			stop: 'Park & Ride Lot',
 			pickupTime: '08:05',
 			dropoffTime: '16:05',
 			guardian: 'James Watson',

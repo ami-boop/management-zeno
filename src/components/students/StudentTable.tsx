@@ -1,5 +1,5 @@
 'use client'
-import type { Student } from '@/app/[locale]/management/students/page'
+import type { Student } from '@/app/[locale]/(group)/students/page'
 
 interface StudentTableProps {
 	students: Student[]
@@ -38,19 +38,13 @@ export default function StudentTable({
 						{t('grade')}
 					</th>
 					<th className='px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider'>
-						{t('studentStatus')}
+						{t('stop')}
 					</th>
 					<th className='px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider'>
-						{t('route')} / {t('bus')}
-					</th>
-					<th className='px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider'>
-						{t('schedule')}
+						{t('route')}
 					</th>
 					<th className='px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider'>
 						{t('guardian')}
-					</th>
-					<th className='px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider'>
-						{t('actions')}
 					</th>
 				</tr>
 			</thead>
@@ -72,86 +66,23 @@ export default function StudentTable({
 							<div className='text-sm font-medium text-gray-900'>
 								{student.name}
 							</div>
-							<div className='text-sm text-gray-500'>ID: {student.id}</div>
 						</td>
 						<td className='px-6 py-4 whitespace-nowrap text-sm text-gray-700'>
 							{student.grade}
 						</td>
-						<td className='px-6 py-4 whitespace-nowrap'>
-							<div
-								className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium border ${getStatusColor(
-									student.status
-								)}`}
-							>
-								<div
-									className={`w-1.5 h-1.5 rounded-full mr-1.5 ${getStatusDot(
-										student.status
-									)}`}
-								></div>
-								{t(`status.${student.status}`)}
-							</div>
+						<td className='px-6 py-4 whitespace-nowrap text-sm text-gray-700'>
+							{student.stop}
 						</td>
 						<td className='px-6 py-4 whitespace-nowrap text-sm text-gray-700'>
-							<div>{student.route}</div>
-							<div className='text-xs text-gray-500'>{student.bus}</div>
-						</td>
-						<td className='px-6 py-4 whitespace-nowrap text-sm text-gray-700'>
-							<div className='text-xs'>
-								<div>
-									{t('pickup')}: {student.pickupTime}
-								</div>
-								<div>
-									{t('dropoff')}: {student.dropoffTime}
-								</div>
-							</div>
+							{student.route}
 						</td>
 						<td className='px-6 py-4 whitespace-nowrap text-sm text-gray-700'>
 							<div>{student.guardian}</div>
 							<div className='text-xs text-gray-500'>{student.phone}</div>
-						</td>
-						<td className='px-6 py-4 whitespace-nowrap text-sm font-medium'>
-							<div className='flex space-x-2'>
-								<button className='text-blue-600 hover:text-blue-900'>
-									{t('edit')}
-								</button>
-								<button className='text-green-600 hover:text-green-900'>
-									{t('contact')}
-								</button>
-							</div>
 						</td>
 					</tr>
 				))}
 			</tbody>
 		</table>
 	)
-}
-
-function getStatusColor(status: Student['status']) {
-	switch (status) {
-		case 'onboard':
-			return 'bg-green-50 text-green-800 border-green-200'
-		case 'boarding':
-			return 'bg-blue-50 text-blue-800 border-blue-200'
-		case 'absent':
-			return 'bg-red-50 text-red-800 border-red-200'
-		case 'dropped':
-			return 'bg-gray-50 text-gray-800 border-gray-200'
-		default:
-			return 'bg-gray-50 text-gray-800 border-gray-200'
-	}
-}
-
-function getStatusDot(status: Student['status']) {
-	switch (status) {
-		case 'onboard':
-			return 'bg-green-500'
-		case 'boarding':
-			return 'bg-blue-500'
-		case 'absent':
-			return 'bg-red-500'
-		case 'dropped':
-			return 'bg-gray-500'
-		default:
-			return 'bg-gray-500'
-	}
 }

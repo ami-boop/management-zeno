@@ -1,20 +1,15 @@
 import { useTranslations } from 'next-intl'
+import dayjs from 'dayjs'
+import timezone from 'dayjs/plugin/timezone'
+import utc from 'dayjs/plugin/utc'
+
+dayjs.extend(utc)
+dayjs.extend(timezone)
 
 export default function ManagementReportStatus() {
 	const t = useTranslations('managementReport')
-	const currentTime = new Date().toLocaleTimeString('en-US', {
-		hour12: false,
-		hour: '2-digit',
-		minute: '2-digit',
-	})
-	const busArrivalTime = new Date(Date.now() + 18 * 60000).toLocaleTimeString(
-		'en-US',
-		{
-			hour12: false,
-			hour: '2-digit',
-			minute: '2-digit',
-		}
-	)
+	const currentTime = dayjs().tz('Asia/Jerusalem').format('HH:mm')
+	const reportingAs = 'Administrator'
 	return (
 		<div className='bg-gray-50 rounded-lg p-4 mb-6 space-y-3'>
 			<div className='flex justify-between items-center'>
@@ -22,14 +17,8 @@ export default function ManagementReportStatus() {
 				<span className='text-sm font-medium text-gray-900'>{currentTime}</span>
 			</div>
 			<div className='flex justify-between items-center'>
-				<span className='text-sm text-gray-600'>{t('busArrival')}</span>
-				<span className='text-sm font-medium text-blue-600'>
-					{busArrivalTime}
-				</span>
-			</div>
-			<div className='flex justify-between items-center'>
 				<span className='text-sm text-gray-600'>{t('reportingAs')}</span>
-				<span className='text-sm font-medium text-gray-900'>Administrator</span>
+				<span className='text-sm font-medium text-gray-900'>{reportingAs}</span>
 			</div>
 		</div>
 	)

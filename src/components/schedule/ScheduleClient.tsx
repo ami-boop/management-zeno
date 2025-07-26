@@ -3,6 +3,13 @@ import { useState } from 'react'
 import { useTranslations } from 'next-intl'
 import DayScheduleClient from './DayScheduleClient'
 import type { WeekDay, Stop } from '@/types/schedule'
+import { getSchedule } from '@/app/actions/getSchedule'
+import dayjs from 'dayjs'
+import utc from 'dayjs/plugin/utc'
+import timezone from 'dayjs/plugin/timezone'
+
+dayjs.extend(utc)
+dayjs.extend(timezone)
 
 interface RouteOption {
 	id: string
@@ -18,10 +25,10 @@ export default function ScheduleClient({ days, routes }: ScheduleClientProps) {
 	const t = useTranslations('Schedule')
 	const [isModalOpen, setIsModalOpen] = useState(true)
 	const [selectedRoute, setSelectedRoute] = useState<RouteOption | null>(null)
-	const [scheduleData, setScheduleData] = useState<{
-		morning: Stop[]
-		afternoon: Stop[]
-	} | null>(null)
+	const [scheduleData, setScheduleData] = useState<Record<
+		string,
+		{ morning: Stop[]; afternoon: Stop[] }
+	> | null>(null)
 	const [loading, setLoading] = useState(false)
 	const [error, setError] = useState<string | null>(null)
 
@@ -31,15 +38,15 @@ export default function ScheduleClient({ days, routes }: ScheduleClientProps) {
 		setLoading(true)
 		setError(null)
 		try {
-			const res = await fetch('/api/schedule', {
-				method: 'POST',
-				headers: { 'Content-Type': 'application/json' },
-				body: JSON.stringify({ routeId: route.id }),
-			})
+			const routeId = route.name.split(' ')[1]
+			const res = await getSchedule(routeId)
+			console.log(res)
+			console.log(routeId)
+			console.log(route.id)
 			if (!res.ok) throw new Error('Failed to fetch schedule')
-			const data = await res.json()
-			setScheduleData(data.schedule)
-		} catch (e: any) {
+			console.log(res.schedule)
+			setScheduleData(res.schedule)
+		} catch (_e: any) {
 			setError(t('noSchedule'))
 			setScheduleData(null)
 		} finally {
@@ -101,11 +108,8 @@ export default function ScheduleClient({ days, routes }: ScheduleClientProps) {
 					<DayScheduleClient
 						days={days}
 						defaultDay={days[0].key}
-						scheduleData={{ [days[0].key]: scheduleData }} // wrap in a record
-						currentTime={new Date().toLocaleTimeString('en-GB', {
-							hour: '2-digit',
-							minute: '2-digit',
-						})}
+						scheduleData={scheduleData}
+						currentTime={dayjs().tz('Asia/Jerusalem').format('HH:mm')}
 					/>
 				)}
 			</div>

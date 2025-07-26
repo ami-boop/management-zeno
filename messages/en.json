@@ -283,5 +283,27 @@
 		},
 		"notFound": "Schedule not found",
 		"loading": "Loading..."
+	},
+	"Login": {
+		"title": "Management Access",
+		"subtitle": "Sign in to Zeno management system",
+		"emailLabel": "Username",
+		"passwordLabel": "Password",
+		"signInButton": "Sign In",
+		"signingIn": "Signing in...",
+		"emailPlaceholder": "Enter your email",
+		"passwordPlaceholder": "Enter your password",
+		"securityNotice": "All actions are logged and monitored.",
+		"errors": {
+			"invalidEmail": "Invalid email address",
+			"shortPassword": "Password must be at least 6 characters long",
+			"userNotFound": "User not found",
+			"wrongPassword": "Incorrect password",
+			"invalidCredential": "Invalid email or password",
+			"tooManyRequests": "Too many requests. Please try again later",
+			"userDisabled": "User account is disabled",
+			"genericError": "An error occurred. Please try again",
+			"accessDenied": "Access denied."
+		}
 	}
 }

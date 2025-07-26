@@ -284,5 +284,27 @@
 		},
 		"notFound": "Расписание не найдено",
 		"loading": "Загрузка..."
+	},
+	"Login": {
+		"title": "Доступ к управлению",
+		"subtitle": "Вход в систему управления Zeno",
+		"emailLabel": "Имя пользователя",
+		"passwordLabel": "Пароль",
+		"signInButton": "Войти",
+		"signingIn": "Вход...",
+		"emailPlaceholder": "Введите почту",
+		"passwordPlaceholder": "Введите пароль",
+		"securityNotice": "Все действия регистрируются и контролируются.",
+		"errors": {
+			"invalidEmail": "Неверный адрес электронной почты",
+			"shortPassword": "Пароль должен содержать не менее 6 символов",
+			"userNotFound": "Пользователь не найден",
+			"wrongPassword": "Неверный пароль",
+			"invalidCredential": "Неверный email или пароль",
+			"tooManyRequests": "Слишком много запросов. Попробуйте позже",
+			"userDisabled": "Учетная запись пользователя отключена",
+			"genericError": "Произошла ошибка. Попробуйте еще раз",
+			"accessDenied": "Доступ запрещен."
+		}
 	}
 }

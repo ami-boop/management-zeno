@@ -283,5 +283,27 @@
 		},
 		"notFound": "לא נמצאה מערכת",
 		"loading": "טוען..."
+	},
+	"Login": {
+		"title": "גישה לניהול",
+		"subtitle": "התחברות למערכת ניהול זנו",
+		"emailLabel": "שם משתמש",
+		"passwordLabel": "סיסמה",
+		"signInButton": "התחבר",
+		"signingIn": "מתחבר...",
+		"emailPlaceholder": "הכנס שם משתמש",
+		"passwordPlaceholder": "הכנס סיסמה",
+		"securityNotice": "כל הפעולות נרשמות ומנוטרות."
+	},
+	"errors": {
+		"invalidEmail": "כתובת אימייל לא תקינה",
+		"shortPassword": "הסיסמה חייבת להכיל לפחות 6 תווים",
+		"userNotFound": "משתמש לא נמצא",
+		"wrongPassword": "סיסמה שגויה",
+		"invalidCredential": "אימייל או סיסמה לא תקינים",
+		"tooManyRequests": "יותר מדי בקשות. אנא נסה שוב מאוחר יותר",
+		"userDisabled": "חשבון המשתמש מושבת",
+		"genericError": "אירעה שגיאה. אנא נסה שוב",
+		"accessDenied": "הגישה נדחתה."
 	}
 }

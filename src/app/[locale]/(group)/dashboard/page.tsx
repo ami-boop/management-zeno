@@ -1,4 +1,3 @@
-import { getTranslations } from 'next-intl/server'
 import DashboardClient from '@/components/dashboard/DashboardClient'
 
 interface Route {

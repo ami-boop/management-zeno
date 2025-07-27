@@ -1,4 +1,4 @@
-import ScheduleViewerClient from '@/components/managementLessons/ScheduleViewerClient'
+import ScheduleViewerClient from '@/components/lessons/ScheduleViewerClient'
 
 const grades = [
 	{ key: 'alef', label: 'א׳', hebrew: 'א׳' },

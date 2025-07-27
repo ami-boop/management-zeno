@@ -27,7 +27,7 @@ export default async function SchedulePage() {
 		},
 	]
 
-	// Пример маршрутов (можно заменить на fetch с сервера)
+	// Examples
 	const routes = [
 		{ id: 'ROUTE-A', name: 'Route A' },
 		{ id: 'ROUTE-B', name: 'Route B' },

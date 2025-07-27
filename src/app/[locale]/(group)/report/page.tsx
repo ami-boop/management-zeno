@@ -1,6 +1,6 @@
 import { getTranslations } from 'next-intl/server'
 import { Info } from 'lucide-react'
-import ManagementReportForm from '@/components/managementReport/ManagementReportForm'
+import ManagementReportForm from '@/components/report/ManagementReportForm'
 
 export default async function ManagementReportPage() {
 	const grades = [
@@ -16,18 +16,18 @@ export default async function ManagementReportPage() {
 		{ key: 'yud', hebrew: 'י׳' },
 		{ key: 'yud_alef', hebrew: 'יא׳' },
 		{ key: 'yud_bet', hebrew: 'יב׳' },
-	];
+	]
 
 	const profiles = [
 		{ key: 'physics_computers', label: 'פיזיקה-מחשבים' },
 		{ key: 'chemistry_biology', label: 'כימיה-ביולוגיה' },
 		{ key: 'theatron', label: 'תיאטרון' },
 		{ key: 'art_design', label: 'יצוב אמנות' },
-	];
+	]
 
-	const timeOptions = ['12:00', '12:45', '13:30', '14:40', '15:30'];
+	const timeOptions = ['12:00', '12:45', '13:30', '14:40', '15:30']
 
-	const classNumbers = Array.from({ length: 11 }, (_, i) => i + 1);
+	const classNumbers = Array.from({ length: 11 }, (_, i) => i + 1)
 
 	const t = await getTranslations('managementReport')
 	return (

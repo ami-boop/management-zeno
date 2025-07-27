@@ -6,13 +6,19 @@ import ClassSelector from './ClassSelector'
 import DayNavigation from './DayNavigation'
 import ScheduleGrid from './ScheduleGrid'
 import { Book, Info } from 'lucide-react'
+import { getLessonsSchedule } from '@/app/actions/getLessons'
 
 interface ScheduleViewerClientProps {
 	grades: { key: string; label: string; hebrew: string }[]
 	days: { key: string; label: string; hebrew: string }[]
+	times: Record<number, string>
 }
 
-const ScheduleViewerClient = ({ grades, days }: ScheduleViewerClientProps) => {
+const ScheduleViewerClient = ({
+	grades,
+	days,
+	times,
+}: ScheduleViewerClientProps) => {
 	const t = useTranslations('managementLessons')
 	const [selectedGrade, setSelectedGrade] = useState('')
 	const [selectedClass, setSelectedClass] = useState('')
@@ -31,12 +37,9 @@ const ScheduleViewerClient = ({ grades, days }: ScheduleViewerClientProps) => {
 			setError(null)
 			setScheduleData(null)
 			try {
-				const res = await fetch(
-					`/api/management/lessons/schedule?key=${scheduleKey}`
-				)
+				const res = await getLessonsSchedule(scheduleKey)
 				if (!res.ok) throw new Error('Not found')
-				const data = await res.json()
-				setScheduleData(data)
+				setScheduleData(res)
 				setShowSchedule(true)
 			} catch (e) {
 				setError(t('notFound'))
@@ -55,17 +58,6 @@ const ScheduleViewerClient = ({ grades, days }: ScheduleViewerClientProps) => {
 	}
 
 	const getLessonTime = (lessonNumber: number): string => {
-		const times: Record<number, string> = {
-			1: '08:30 - 09:10',
-			2: '09:10 - 09:50',
-			3: '10:10 - 10:20',
-			4: '10:20 - 11:05',
-			5: '11:10 - 11:50',
-			6: '12:00 - 12:40',
-			7: '12:45 - 13:30',
-			8: '14:00 - 14:45',
-			9: '14:50 - 15:35',
-		}
 		return times[lessonNumber] || ''
 	}
 

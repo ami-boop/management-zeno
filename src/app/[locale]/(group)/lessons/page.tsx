@@ -24,6 +24,18 @@ const days = [
 	{ key: 'friday', label: 'Friday', hebrew: 'ו׳' },
 ]
 
+const times: Record<number, string> = {
+	1: '08:30 - 09:10',
+	2: '09:10 - 09:50',
+	3: '10:10 - 10:20',
+	4: '10:20 - 11:05',
+	5: '11:10 - 11:50',
+	6: '12:00 - 12:40',
+	7: '12:45 - 13:30',
+	8: '14:00 - 14:45',
+	9: '14:50 - 15:35',
+}
+
 export default function ManagementLessonsPage() {
-	return <ScheduleViewerClient grades={grades} days={days} />
+	return <ScheduleViewerClient grades={grades} days={days} times={times} />
 }

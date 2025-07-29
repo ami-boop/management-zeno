@@ -41,14 +41,6 @@ export default function StudentsClient({
 			label: 'totalStudents',
 			value: students.length,
 		},
-		{
-			label: 'activeRoutes',
-			value: new Set(students.map(s => s.route)).size,
-		},
-		{
-			label: 'totalStops',
-			value: new Set(students.map(s => s.stop)).size,
-		},
 	]
 
 	// Create filter buttons based on routes

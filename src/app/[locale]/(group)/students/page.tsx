@@ -8,6 +8,7 @@ export interface Student {
 	route: string
 	stop: string
 	guardian: string
+	submited: boolean
 	phone: string
 }
 
@@ -69,6 +70,7 @@ export default async function StudentsPage() {
 	// 	},
 	// ]
 
+	//TODO: create pagination, debounce
 	const sessionCookie = await getSessionToken()
 
 	const students: Student[] = await fetch(

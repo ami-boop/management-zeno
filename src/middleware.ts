@@ -73,7 +73,7 @@ export default async function middleware(request: NextRequest) {
 		const response = NextResponse.redirect(loginUrl)
 
 		// clear invalid session cookie
-		response.cookies.delete('managementSessionCookie')
+		//response.cookies.delete('managementSessionCookie')
 		return response
 	}
 

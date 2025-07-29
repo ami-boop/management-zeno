@@ -1,5 +1,6 @@
 'use client'
 import type { Student } from '@/app/[locale]/(group)/students/page'
+import { CircleCheck, CircleX } from 'lucide-react'
 
 interface StudentTableProps {
 	students: Student[]
@@ -44,6 +45,9 @@ export default function StudentTable({
 						{t('route')}
 					</th>
 					<th className='px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider'>
+						{t('submited')}
+					</th>
+					<th className='px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider'>
 						{t('guardian')}
 					</th>
 				</tr>
@@ -76,6 +80,13 @@ export default function StudentTable({
 						<td className='px-6 py-4 whitespace-nowrap text-sm text-gray-700'>
 							{student.route}
 						</td>
+						<th className='px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider'>
+							{student.submited ? (
+								<CircleCheck color='green' />
+							) : (
+								<CircleX color='red' />
+							)}
+						</th>
 						<td className='px-6 py-4 whitespace-nowrap text-sm text-gray-700'>
 							<div>{student.guardian}</div>
 							<div className='text-xs text-gray-500'>{student.phone}</div>

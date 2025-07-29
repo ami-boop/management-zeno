@@ -1,5 +1,6 @@
 'use client'
 import type { Student } from '@/app/[locale]/(group)/students/page'
+import { CircleCheck, CircleX } from 'lucide-react'
 
 interface StudentMobileCardsProps {
 	students: Student[]
@@ -48,13 +49,46 @@ export default function StudentMobileCards({
 						</div>
 					</div>
 
-					<div className='grid grid-cols-1 gap-4'>
-						<div>
-							<dt className='text-sm font-medium text-gray-500'>
+					<div className='grid grid-cols-2 gap-4'>
+						<div className='flex items-center space-x-3 p-2'>
+							<div>
+								<dt className='text-xs font-medium text-gray-500'>
+									{t('submited')}
+								</dt>
+							</div>
+							<div className='flex-shrink-0'>
+								{student.submited ? (
+									<CircleCheck className='text-green-500' size={24} />
+								) : (
+									<CircleX className='text-red-500' size={24} />
+								)}
+							</div>
+						</div>
+
+						<div className='p-2'>
+							<dt className='text-xs font-medium text-gray-500'>
 								{t('guardian')}
 							</dt>
-							<dd className='text-sm text-gray-900'>{student.guardian}</dd>
-							<dd className='text-xs text-gray-500'>{student.phone}</dd>
+							<dd className='text-sm font-medium text-gray-900'>
+								{student.guardian}
+							</dd>
+							<dd className='mt-1 text-xs text-gray-500 flex items-center'>
+								<svg
+									className='w-3 h-3 mr-1'
+									fill='none'
+									stroke='currentColor'
+									viewBox='0 0 24 24'
+									xmlns='http://www.w3.org/2000/svg'
+								>
+									<path
+										strokeLinecap='round'
+										strokeLinejoin='round'
+										strokeWidth={2}
+										d='M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z'
+									/>
+								</svg>
+								{student.phone}
+							</dd>
 						</div>
 					</div>
 				</div>

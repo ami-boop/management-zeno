@@ -6,6 +6,7 @@ import ManagementReportStatus from './ManagementReportStatus'
 import ManagementReportSuccess from './ManagementReportSuccess'
 import ManagementReportNotice from './ManagementReportNotice'
 import { Loader2 } from 'lucide-react'
+import setStudentReturnStatus from '@/app/actions/setStudentsReturnStatus'
 
 const needsProfile = (grade: string) =>
 	['tet', 'yud', 'yud_alef', 'yud_bet'].includes(grade)
@@ -15,6 +16,13 @@ interface ManagementReportFormProps {
 	profiles: { key: string; label: string }[]
 	timeOptions: string[]
 	classNumbers: number[]
+}
+
+export interface reportData {
+	parallel: string | null
+	className: string | null
+	megama: string | null
+	time: string | null
 }
 
 export default function ManagementReportForm({
@@ -38,16 +46,16 @@ export default function ManagementReportForm({
 		await new Promise(resolve => setTimeout(resolve, 1500))
 		setIsSubmitting(false)
 		setIsSubmitted(true)
-		const reportData = {
-			...(selectedParallel
-				? { parallel: selectedParallel }
-				: { class: `${selectedGrade}_${selectedClass}` }),
-			profile: selectedProfile, //=== 'all' && profiles.map(p => p.key),
+		const reportData: reportData = {
+			parallel: selectedParallel ? selectedParallel : null,
+			className: `${selectedGrade}_${selectedClass}`,
+			megama: selectedProfile,
 			time: selectedTime,
 		}
 
 		console.log(reportData)
-		// TODO: Add actual report generation logic
+		const res = await setStudentReturnStatus(reportData)
+		console.log(res)
 	}
 
 	const handleReset = () => {
@@ -185,43 +193,49 @@ export default function ManagementReportForm({
 							</div>
 						</div>
 					)}
-					{/* Time Selection */}
-					{selectedClass &&
-						(!needsProfile(selectedGrade!) || selectedProfile) && (
-							<div className='mb-6'>
-								<label className='block text-sm font-medium text-gray-700 mb-3'>
-									{t('timeLabel')}
-								</label>
-								<div className='grid grid-cols-3 gap-2'>
-									{timeOptions.map(time => (
-										<button
-											key={time}
-											type='button'
-											onClick={() => setSelectedTime(time)}
-											className={`p-3 text-sm font-medium rounded-md border transition-colors duration-200 text-center ${
-												selectedTime === time
-													? 'bg-blue-50 text-blue-700 border-blue-200'
-													: 'bg-white text-gray-700 border-gray-300 hover:bg-gray-50'
-											}`}
-										>
-											{time}
-										</button>
-									))}
-								</div>
-							</div>
-						)}
 				</>
 			)}
+			{/* Time Selection */}
+			{(selectedClass || selectedParallel) &&
+				(selectedParallel ||
+					!selectedGrade ||
+					!needsProfile(selectedGrade) ||
+					selectedProfile) && (
+					<div className='mb-6'>
+						<label className='block text-sm font-medium text-gray-700 mb-3'>
+							{t('timeLabel')}
+						</label>
+						<div className='grid grid-cols-3 gap-2'>
+							{timeOptions.map(time => (
+								<button
+									key={time}
+									type='button'
+									onClick={() => setSelectedTime(time)}
+									className={`p-3 text-sm font-medium rounded-md border transition-colors duration-200 text-center ${
+										selectedTime === time
+											? 'bg-blue-50 text-blue-700 border-blue-200'
+											: 'bg-white text-gray-700 border-gray-300 hover:bg-gray-50'
+									}`}
+								>
+									{time}
+								</button>
+							))}
+						</div>
+					</div>
+				)}
 			{/* Submit Button */}
 			<button
 				onClick={handleSubmit}
 				disabled={
 					isSubmitting ||
-					(!selectedParallel &&
-						(!selectedGrade ||
-							!selectedClass ||
-							(needsProfile(selectedGrade) && !selectedProfile) ||
-							!selectedTime))
+					(selectedParallel === ''
+						? !!(
+								!selectedGrade ||
+								!selectedClass ||
+								(needsProfile(selectedGrade) && !selectedProfile) ||
+								!selectedTime
+						  )
+						: !selectedTime)
 				}
 				className={`w-full py-3 px-4 rounded-md text-sm font-medium transition-colors duration-200 ${
 					isSubmitting ||
@@ -229,7 +243,8 @@ export default function ManagementReportForm({
 						(!selectedGrade ||
 							!selectedClass ||
 							(needsProfile(selectedGrade) && !selectedProfile) ||
-							!selectedTime))
+							!selectedTime)) ||
+					(selectedParallel && !selectedTime)
 						? 'bg-gray-400 text-white cursor-not-allowed'
 						: 'bg-blue-600 text-white hover:bg-blue-700'
 				}`}

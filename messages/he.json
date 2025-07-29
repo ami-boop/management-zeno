@@ -237,7 +237,8 @@
 		"delete": "מחק",
 		"selected": "תלמידים נבחרו",
 		"schedule": "לוח זמנים",
-		"actions": "פעולות"
+		"actions": "פעולות",
+		"submited": "שולח"
 	},
 	"managementReport": {
 		"title": "דיווח על ביטול שיעור (ניהול)",

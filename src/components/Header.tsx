@@ -16,7 +16,7 @@ import {
 	DropdownMenuItem,
 	DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
-import { setLocaleCookie } from '@/lib/setlocale'
+import { setLocaleCookie } from '@/utils/setlocale'
 
 export default function Header() {
 	const locale = useLocale()

@@ -3,6 +3,7 @@ import { notFound } from 'next/navigation'
 import { routing } from '@/i18n/routing'
 import { Metadata } from 'next'
 import { Poppins } from 'next/font/google'
+import { Toaster } from 'sonner'
 import '@/styles/globals.css'
 
 const poppins = Poppins({
@@ -33,6 +34,7 @@ export default async function LocaleLayout({
 		<html lang={locale} dir={locale === 'he' ? 'rtl' : 'ltr'}>
 			<body className={poppins.className}>
 				<NextIntlClientProvider>{children}</NextIntlClientProvider>
+				<Toaster richColors position='top-right' />
 			</body>
 		</html>
 	)

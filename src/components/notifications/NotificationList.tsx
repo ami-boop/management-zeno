@@ -5,14 +5,13 @@ import {
 	getNotificationIcon,
 	getNotificationStyle,
 	getPriorityBadge,
-	formatTime,
 } from '@/lib/notificationUtils'
 
 interface NotificationListProps {
 	notifications: Notification[]
 	t: (key: string) => string
-	markAsRead: (id: number) => void
-	removeNotification: (id: number) => void
+	markAsRead: (id: string) => void
+	removeNotification: (id: string) => void
 }
 
 export default function NotificationList({
@@ -57,8 +56,8 @@ function NotificationCard({
 }: {
 	notification: Notification
 	t: (key: string) => string
-	markAsRead: (id: number) => void
-	removeNotification: (id: number) => void
+	markAsRead: (id: string) => void
+	removeNotification: (id: string) => void
 }) {
 	return (
 		<div
@@ -83,7 +82,7 @@ function NotificationCard({
 								</div>
 								<div className='flex items-center text-xs text-gray-500 space-x-1'>
 									<Clock className='w-3 h-3' />
-									<span>{formatTime(notification.time, t)}</span>
+									<span>{notification.time}</span>
 								</div>
 							</div>
 							<p
@@ -93,7 +92,7 @@ function NotificationCard({
 										: 'text-gray-900 font-medium'
 								}`}
 							>
-								{t(notification.message)}
+								{notification.message}
 							</p>
 						</div>
 					</div>

@@ -1,4 +1,4 @@
-import { Bell, Clock, AlertCircle, CheckCircle } from 'lucide-react'
+import { Bell, AlertCircle, CheckCircle } from 'lucide-react'
 import { ReactNode } from 'react'
 import type { Notification } from '@/app/[locale]/(group)/notifications/page'
 
@@ -65,15 +65,4 @@ export const getPriorityBadge = (
 		default:
 			return null
 	}
-}
-
-export const formatTime = (timeString: string, t: (key: string) => string) => {
-	const date = new Date(timeString)
-	const now = new Date()
-	const diffInMinutes = Math.floor((+now - +date) / (1000 * 60))
-	if (diffInMinutes < 1) return t('timeAgo.justNow')
-	if (diffInMinutes < 60) return `${diffInMinutes} ${t('timeAgo.minutesAgo')}`
-	if (diffInMinutes < 1440)
-		return `${Math.floor(diffInMinutes / 60)} ${t('timeAgo.hoursAgo')}`
-	return `${Math.floor(diffInMinutes / 1440)} ${t('timeAgo.daysAgo')}`
 }

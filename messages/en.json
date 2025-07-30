@@ -55,14 +55,6 @@
 	"Notifications": {
 		"title": "Notifications",
 		"description": "Stay updated with fleet operations and alerts",
-		"messages": {
-			"late": "Bus 101 is running 15 minutes behind schedule on Route A",
-			"modifiedSchedule": "Route B schedule has been modified for tomorrow",
-			"onTime": "Bus 103 arrived on time at Lincoln Elementary",
-			"maintenance": "Bus 104 requires scheduled maintenance check",
-			"newDriver": "New driver Sarah Johnson assigned to Route C",
-			"weatherAlert": "Weather advisory: Snow expected, adjust departure times"
-		},
 		"clearAll": "Clear All",
 		"markAsRead": "Mark as Read",
 		"markAllRead": "Mark All as Read",

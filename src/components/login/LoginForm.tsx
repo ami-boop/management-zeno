@@ -10,6 +10,9 @@ import { validateEmail, validatePassword } from '@/lib/validation'
 import { useTranslations } from 'use-intl'
 import { loginAction } from '@/app/actions/auth'
 import { useRouter } from 'next/navigation'
+import inputValidation from '@/app/actions/inputValidation'
+import { signInWithEmailAndPassword } from 'firebase/auth'
+import { auth } from '@/lib/firebase'
 
 export default function LoginForm() {
 	const t = useTranslations('Login')
@@ -35,14 +38,24 @@ export default function LoginForm() {
 		setIsSubmitting(true)
 
 		try {
-			const formData = new FormData()
-			formData.append('email', email)
-			formData.append('password', password)
+			const { sanitizedEmail, sanitizedPassword } = await inputValidation(
+				email,
+				password
+			)
 
-			const result = await loginAction({}, formData)
+			const userCredential = await signInWithEmailAndPassword(
+				auth,
+				sanitizedEmail!,
+				sanitizedPassword!
+			)
+
+			const result = await loginAction(
+				await userCredential.user.getIdToken(true)
+			)
 
 			if (result.error) {
 				setError(t(`errors.${result.error}`) || result.error)
+				auth.signOut()
 			}
 			if (result.success) {
 				router.push('/dashboard')

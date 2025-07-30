@@ -2,16 +2,10 @@
 
 import { useState, useMemo } from 'react'
 import { useTranslations } from 'next-intl'
-import { X, Bell, Clock, Archive, CheckCircle } from 'lucide-react'
+import { Archive, CheckCircle } from 'lucide-react'
 import type { Notification } from '@/app/[locale]/(group)/notifications/page'
 import NotificationList from './NotificationList'
-import {
-	getNotificationIcon,
-	getNotificationStyle,
-	getPriorityBadge,
-	formatTime,
-} from '@/lib/notificationUtils'
-
+import setNotificationsAction from '@/app/actions/setNotificationsAction'
 interface NotificationsClientProps {
 	initialNotifications: Notification[]
 }
@@ -24,22 +18,26 @@ export default function NotificationsClient({
 	const [notifications, setNotifications] =
 		useState<Notification[]>(initialNotifications)
 
-	const removeNotification = (id: number) => {
+	const removeNotification = async (id: string) => {
 		setNotifications(notifications.filter(n => n.id !== id))
+		await setNotificationsAction({ clearNotificationId: id })
 	}
 
-	const markAsRead = (id: number) => {
+	const markAsRead = async (id: string) => {
 		setNotifications(
 			notifications.map(n => (n.id === id ? { ...n, isRead: true } : n))
 		)
+		await setNotificationsAction({ markAsReadId: id })
 	}
 
-	const markAllAsRead = () => {
+	const markAllAsRead = async () => {
 		setNotifications(notifications.map(n => ({ ...n, isRead: true })))
+		await setNotificationsAction({ markAllAsRead: true })
 	}
 
-	const clearAll = () => {
+	const clearAll = async () => {
 		setNotifications([])
+		await setNotificationsAction({ clearAll: true })
 	}
 
 	const filteredNotifications = useMemo(() => {

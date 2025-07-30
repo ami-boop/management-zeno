@@ -55,14 +55,6 @@
 	"Notifications": {
 		"title": "התראות",
 		"description": "הישאר מעודכן בפעילות והתראות הצי",
-		"messages": {
-			"late": "אוטובוס 101 מאחר ב-15 דקות במסלול A",
-			"modifiedSchedule": "לוח הזמנים של מסלול B שונה למחר",
-			"onTime": "אוטובוס 103 הגיע בזמן ל-Lincoln Elementary",
-			"maintenance": "אוטובוס 104 דורש בדיקת תחזוקה מתוכננת",
-			"newDriver": "נהגת חדשה שרה ג'ונסון שובצה למסלול C",
-			"weatherAlert": "אזהרת מזג אוויר: צפוי שלג, עדכן זמני יציאה"
-		},
 		"clearAll": "נקה הכל",
 		"markAsRead": "סמן כנקרא",
 		"markAllRead": "סמן הכל כנקרא",

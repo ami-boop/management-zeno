@@ -71,13 +71,8 @@ export default async function NotificationsPage() {
 				'Content-Type': 'application/json',
 				Cookie: `managementSessionCookie=${sessionCookie}`,
 			},
-			next: {
-				revalidate: 0,
-			},
 		}
 	).then(res => res.json())
-
-	console.log(notifications)
 
 	return <NotificationsClient initialNotifications={notifications} />
 }

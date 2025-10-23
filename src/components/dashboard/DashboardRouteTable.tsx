@@ -1,11 +1,5 @@
 import { FC } from 'react'
-import {
-	Bus,
-	Users,
-	AlertTriangle,
-	CheckCircle,
-	MinusCircle,
-} from 'lucide-react'
+import { Bus, Users, AlertTriangle, CheckCircle } from 'lucide-react'
 import { useTranslations } from 'next-intl'
 
 interface Route {
@@ -17,7 +11,7 @@ interface Route {
 	busesNeeded: number
 	busesOrdered: number
 	status: 'pending' | 'partial' | 'completed'
-	lastUpdate: string
+	lastUpdate: Record<string, number>
 	estimatedTime: string
 }
 

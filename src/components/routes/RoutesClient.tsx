@@ -2,7 +2,7 @@
 
 import { useState, useMemo } from 'react'
 import { useTranslations } from 'next-intl'
-import { Plus, Search, ListChecks } from 'lucide-react'
+import { Search, ListChecks } from 'lucide-react'
 import type { Route } from '@/types/routes'
 import RoutesTable from './RoutesTable'
 import RoutesMobileCards from './RoutesMobileCards'

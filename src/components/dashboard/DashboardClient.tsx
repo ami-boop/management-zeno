@@ -1,4 +1,5 @@
 'use client'
+
 import { useState, useMemo } from 'react'
 import { useTranslations } from 'next-intl'
 import DashboardHeader from './DashboardHeader'
@@ -6,6 +7,8 @@ import DashboardStats from './DashboardStats'
 import DashboardRouteFilters from './DashboardRouteFilters'
 import DashboardRouteTable from './DashboardRouteTable'
 import DashboardRouteMobileCards from './DashboardRouteMobileCards'
+import dayjs from 'dayjs'
+import addBus from '@/app/actions/addBus'
 
 interface DashboardStat {
 	label: string
@@ -22,7 +25,7 @@ interface Route {
 	busesNeeded: number
 	busesOrdered: number
 	status: 'pending' | 'partial' | 'completed'
-	lastUpdate: string
+	lastUpdate: Record<string, number>
 	estimatedTime: string
 }
 
@@ -109,7 +112,7 @@ const DashboardClient = ({ routes }: DashboardClientProps) => {
 		]
 	}, [localRoutes, t])
 
-	const handleOrderBuses = (routeId: string, busesToOrder: number) => {
+	const handleOrderBuses = async (routeId: string, busesToOrder: number) => {
 		setRoutes((prevRoutes: Route[]) =>
 			prevRoutes.map((route: Route) => {
 				if (route.id === routeId) {
@@ -127,15 +130,16 @@ const DashboardClient = ({ routes }: DashboardClientProps) => {
 						...route,
 						busesOrdered: newBusesOrdered,
 						status: newStatus,
-						lastUpdate: new Date().toLocaleTimeString('en-GB', {
-							hour: '2-digit',
-							minute: '2-digit',
-						}),
+						lastUpdate: {
+							_seconds: dayjs().unix(),
+							_nanoseconds: 0,
+						},
 					}
 				}
 				return route
 			})
 		)
+		const res = await addBus(routeId, busesToOrder)
 	}
 
 	const getStatusColor = (status: Route['status']) => {

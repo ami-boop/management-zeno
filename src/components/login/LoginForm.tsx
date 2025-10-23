@@ -2,7 +2,6 @@
 
 import { useState } from 'react'
 import LoginHeader from './LoginHeader'
-import SecurityNotice from './SecurityNotice'
 import UsernameField from './UsernameField'
 import PasswordField from './PasswordField'
 import SubmitButton from './SubmitButton'
@@ -13,6 +12,7 @@ import { useRouter } from 'next/navigation'
 import inputValidation from '@/app/actions/inputValidation'
 import { signInWithEmailAndPassword } from 'firebase/auth'
 import { auth } from '@/lib/firebase'
+import { AlertCircle } from 'lucide-react'
 
 export default function LoginForm() {
 	const t = useTranslations('Login')
@@ -54,7 +54,7 @@ export default function LoginForm() {
 			)
 
 			if (result.error) {
-				setError(t(`errors.${result.error}`) || result.error)
+				setError(t(`errors.${result.error || 'genericError'}`))
 				auth.signOut()
 			}
 			if (result.success) {
@@ -96,7 +96,12 @@ export default function LoginForm() {
 							/>
 						</form>
 
-						<SecurityNotice />
+						<div className='mt-6 p-3 bg-red-50 border border-red-200 rounded-md'>
+							<div className='flex'>
+								<AlertCircle className='w-5 h-5 text-red-400 mr-2 flex-shrink-0 mt-0.5' />
+								<p className='text-sm text-red-800'>{t('securityNotice')}</p>
+							</div>
+						</div>
 					</div>
 				</div>
 			</div>

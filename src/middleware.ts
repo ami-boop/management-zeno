@@ -33,7 +33,6 @@ async function validateSessionCookie(sessionCookie: string): Promise<boolean> {
 				},
 			}
 		)
-
 		return response.ok
 	} catch (_e) {
 		return false

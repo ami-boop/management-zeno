@@ -6,15 +6,15 @@ export async function getLessonsSchedule(classId: string) {
 	const sessionCookie = await getSessionToken()
 
 	const res = await fetch(
-		'https://getlessonsschedule-ag7er5qhga-ew.a.run.app',
+		`https://getlessonsschedule-ag7er5qhga-ew.a.run.app?classId=${encodeURIComponent(
+			classId
+		)}`,
 		{
-			method: 'POST',
 			headers: {
 				'Content-Type': 'application/json',
 				Cookie: `managementSessionCookie=${sessionCookie}`,
 			},
 			cache: 'force-cache',
-			body: JSON.stringify({ classId }),
 		}
 	)
 	if (!res.ok) throw new Error('Failed to fetch schedule')

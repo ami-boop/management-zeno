@@ -19,5 +19,8 @@ export default async function setNotificationsAction(data: data) {
 			Cookie: `managementSessionCookie=${sessionCookie}`,
 		},
 		body: JSON.stringify(data),
-	}).then(async res => console.log(await res.json()))
+	}).then(async res => {
+		console.log(res)
+		return res.json()
+	})
 }

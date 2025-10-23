@@ -1,6 +1,6 @@
 'use client'
 
-import { Bell, MenuIcon, MessageCircleQuestion } from 'lucide-react'
+import { Bell, MenuIcon } from 'lucide-react'
 import { Link } from '@/i18n/navigation'
 import { useLocale, useTranslations } from 'next-intl'
 import {
@@ -20,7 +20,7 @@ import { setLocaleCookie } from '@/utils/setlocale'
 
 export default function Header() {
 	const locale = useLocale()
-	const locales = ['en', 'ru', 'he']
+	const locales = ['en', 'ru', 'he', 'ar']
 	const t = useTranslations('Header')
 
 	const localeLabel = (locale: string) => {
@@ -51,9 +51,6 @@ export default function Header() {
 			</Link>
 			<Link className='text-sm font-medium text-[#111518]' href='/students'>
 				{t('menu.students')}
-			</Link>
-			<Link className='text-sm font-medium text-[#111518]' href='/busses'>
-				{t('menu.busses')}
 			</Link>
 			<Link className='text-sm font-medium text-[#111518]' href='/report'>
 				{t('menu.report')}

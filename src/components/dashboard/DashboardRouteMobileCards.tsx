@@ -1,6 +1,7 @@
 import { FC } from 'react'
-import { Bus, Users, AlertTriangle, CheckCircle } from 'lucide-react'
+import { Bus, Users, AlertTriangle } from 'lucide-react'
 import { useTranslations } from 'next-intl'
+import dayjs from 'dayjs'
 
 interface Route {
 	id: string
@@ -11,7 +12,7 @@ interface Route {
 	busesNeeded: number
 	busesOrdered: number
 	status: 'pending' | 'partial' | 'completed'
-	lastUpdate: string
+	lastUpdate: Record<string, number>
 	estimatedTime: string
 }
 
@@ -162,7 +163,11 @@ const DashboardRouteMobileCards: FC<DashboardRouteMobileCardsProps> = ({
 					)}
 
 					<div className='text-sm text-gray-500'>
-						{t('columns.lastUpdated')}: {route.lastUpdate}
+						{t('columns.lastUpdated')}:{' '}
+						{dayjs(
+							route.lastUpdate._seconds * 1000 +
+								Math.floor(route.lastUpdate._nanoseconds / 1e6)
+						).format('HH:MM')}
 					</div>
 				</div>
 			))}

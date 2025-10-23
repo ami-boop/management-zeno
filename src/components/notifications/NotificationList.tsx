@@ -5,7 +5,7 @@ import {
 	getNotificationIcon,
 	getNotificationStyle,
 	getPriorityBadge,
-} from '@/lib/notificationUtils'
+} from '@/utils/notificationUtils'
 
 interface NotificationListProps {
 	notifications: Notification[]

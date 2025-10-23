@@ -24,7 +24,7 @@ const ScheduleViewerClient = ({
 	const [selectedClass, setSelectedClass] = useState('')
 	const [selectedDay, setSelectedDay] = useState('sunday')
 	const [showSchedule, setShowSchedule] = useState(false)
-	const [selectedSchedule, setSelectedSchedule] = useState('')
+	const [_selectedSchedule, setSelectedSchedule] = useState('')
 	const [scheduleData, setScheduleData] = useState<any>(null)
 	const [loading, setLoading] = useState(false)
 	const [error, setError] = useState<string | null>(null)
@@ -41,7 +41,7 @@ const ScheduleViewerClient = ({
 				if (!res.ok) throw new Error('Not found')
 				setScheduleData(res)
 				setShowSchedule(true)
-			} catch (e) {
+			} catch (_e) {
 				setError(t('notFound'))
 			} finally {
 				setLoading(false)

@@ -1,4 +1,5 @@
 import '@testing-library/jest-dom'
+import { signInWithEmailAndPassword } from 'firebase/auth/web-extension'
 
 // MSW временно отключен
 // import { server } from './src/mocks/server'
@@ -25,6 +26,10 @@ jest.mock('next-intl', () => ({
   useLocale: jest.fn(() => 'en'),
 }))
 
+jest.mock('use-intl', () => ({
+  useTranslations: jest.fn(() => key => key)
+}))
+
 // Mock next/image
 jest.mock('next/image', () => ({
   __esModule: true,
@@ -38,6 +43,7 @@ jest.mock('next/image', () => ({
 jest.mock('firebase/auth', () => ({
   signOut: jest.fn(() => Promise.resolve()),
   getAuth: jest.fn(),
+  signInWithEmailAndPassword: jest.fn()
 }))
 
 jest.mock('@/lib/firebase', () => ({

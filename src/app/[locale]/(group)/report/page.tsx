@@ -1,6 +1,6 @@
 import { getTranslations } from 'next-intl/server'
 import { Info } from 'lucide-react'
-import ReportForm from '@/components/report/ReportForm'
+import Form from '@/components/report/Form'
 
 export default async function ReportPage() {
   const grades = [
@@ -45,7 +45,7 @@ export default async function ReportPage() {
               </h1>
               <p className='text-gray-600 text-sm'>{t('description')}</p>
             </div>
-            <ReportForm
+            <Form
               grades={grades}
               profiles={profiles}
               timeOptions={timeOptions}

@@ -25,7 +25,7 @@ export interface reportData {
   time: string | null
 }
 
-export default function ReportForm({
+export default function Form({
   grades,
   profiles,
   timeOptions,
@@ -51,10 +51,7 @@ export default function ReportForm({
       megama: selectedProfile,
       time: selectedTime,
     }
-
-    console.log(reportData)
     const res = await setStudentReturnStatus(reportData)
-    console.log(res)
   }
 
   const handleReset = () => {

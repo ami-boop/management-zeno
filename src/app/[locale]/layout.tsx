@@ -7,35 +7,35 @@ import { Toaster } from 'sonner'
 import '@/styles/globals.css'
 
 const poppins = Poppins({
-	subsets: ['latin'],
-	weight: ['400', '500', '700'],
-	display: 'swap',
+  subsets: ['latin'],
+  weight: ['400', '500', '700'],
+  display: 'swap',
 })
 
 export const metadata: Metadata = {
-	title: 'Zeno',
-	description: 'Zeno',
+  title: 'Zeno',
+  description: 'Zeno',
 }
 
 export default async function LocaleLayout({
-	children,
-	params,
+  children,
+  params,
 }: {
-	children: React.ReactNode
-	params: Promise<{ locale: string }>
+  children: React.ReactNode
+  params: Promise<{ locale: string }>
 }) {
-	// Ensure that the incoming `locale` is valid
-	const { locale } = await params
-	if (!hasLocale(routing.locales, locale)) {
-		notFound()
-	}
+  // Ensure that the incoming `locale` is valid
+  const { locale } = await params
+  if (!hasLocale(routing.locales, locale)) {
+    notFound()
+  }
 
-	return (
-		<html lang={locale} dir={locale === 'he' ? 'rtl' : 'ltr'}>
-			<body className={poppins.className}>
-				<NextIntlClientProvider>{children}</NextIntlClientProvider>
-				<Toaster richColors position='top-right' />
-			</body>
-		</html>
-	)
+  return (
+    <html lang={locale} dir={locale === 'he' ? 'rtl' : 'ltr'} suppressHydrationWarning>
+      <body className={poppins.className}>
+        <NextIntlClientProvider>{children}</NextIntlClientProvider>
+        <Toaster richColors position='top-right' />
+      </body>
+    </html>
+  )
 }

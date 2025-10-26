@@ -1,5 +1,4 @@
 import '@testing-library/jest-dom'
-import { signInWithEmailAndPassword } from 'firebase/auth/web-extension'
 
 // MSW временно отключен
 // import { server } from './src/mocks/server'

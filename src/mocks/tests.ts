@@ -18,3 +18,40 @@ export const notifications: Notification[] = [
     priority: 'medium',
   },
 ]
+
+export const lessons = [
+  {
+    color: '#ffffff',
+    name: 'Math',
+    teacher: 'Misha'
+  },
+  {
+    color: '#00bcd4',
+    name: 'English',
+    teacher: 'Anna'
+  },
+  {
+    color: '#ff9800',
+    name: 'History',
+    teacher: 'David'
+  },
+  {
+    color: '#8bc34a',
+    name: 'Physics',
+    teacher: 'Lior'
+  }
+]
+
+export const grades = [
+  { key: 'alef', label: 'א׳', hebrew: 'א׳' },
+  { key: 'bet', label: 'ב׳', hebrew: 'ב׳' },
+]
+export const days = [
+  { key: 'sunday', label: 'Sunday', hebrew: 'א׳' },
+  { key: 'monday', label: 'Monday', hebrew: 'ב׳' },
+]
+
+export const times: Record<number, string> = {
+  1: '08:30 - 09:10',
+  2: '09:10 - 09:50',
+}

@@ -1,15 +1,15 @@
 import { screen, render, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
-import ReportForm from '../ReportForm'
+import Form from '../Form'
 import setStudentReturnStatus from '@/app/actions/setStudentsReturnStatus'
 
 jest.mock('@/app/actions/setStudentsReturnStatus', () => ({
   __esModule: true,
   default: jest.fn(),
 }))
-jest.mock('../ManagementReportStatus', () => () => <div>ManagementReportStatus</div>)
-jest.mock('../ManagementReportNotice', () => () => <div>ManagementReportNotice</div>)
-jest.mock('../ManagementReportSuccess', () => ({ onReset }: any) => (
+jest.mock('../Status', () => () => <div>ManagementReportStatus</div>)
+jest.mock('../Notice', () => () => <div>ManagementReportNotice</div>)
+jest.mock('../Success', () => ({ onReset }: any) => (
   <button onClick={onReset}>ManagementReportSuccess</button>
 ));
 
@@ -25,7 +25,7 @@ describe('ManagementReportForm', () => {
 
   const renderComponent = () => {
     return render(
-      <ReportForm
+      <Form
         grades={grades}
         profiles={profiles}
         timeOptions={timeOptions}

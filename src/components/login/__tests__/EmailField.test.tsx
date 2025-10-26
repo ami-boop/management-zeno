@@ -1,5 +1,5 @@
 import { screen, render } from '@testing-library/react'
-import UsernameField from '../UsernameField'
+import EmailField from '../EmailField'
 import userEvent from '@testing-library/user-event'
 
 const onChange = jest.fn()
@@ -8,7 +8,7 @@ describe('UsernameField', () => {
 
   beforeEach(() => {
     jest.clearAllMocks()
-    render(<UsernameField value='test' onChange={onChange} />)
+    render(<EmailField value='test' onChange={onChange} />)
   })
 
   it('renders correctly', () => {

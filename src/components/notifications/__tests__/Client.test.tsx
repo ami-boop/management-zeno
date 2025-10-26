@@ -11,7 +11,7 @@ jest.mock('@/app/actions/setNotificationsAction', () => ({
 }));
 
 // Mock NotificationList with props to verify correct data is passed
-jest.mock('../NotificationList', () => ({
+jest.mock('../List', () => ({
   __esModule: true,
   default: ({ notifications, markAsRead, removeNotification }: any) => (
     <div>

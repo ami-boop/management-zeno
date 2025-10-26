@@ -6,7 +6,7 @@ import utc from 'dayjs/plugin/utc'
 dayjs.extend(utc)
 dayjs.extend(timezone)
 
-export default function ReportStatus() {
+export default function Status() {
   const t = useTranslations('managementReport')
   const currentTime = dayjs().tz('Asia/Jerusalem').format('HH:mm')
   const reportingAs = 'Administrator'

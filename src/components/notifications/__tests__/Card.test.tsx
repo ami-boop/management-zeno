@@ -1,5 +1,5 @@
 import { screen, render } from '@testing-library/react'
-import NotificationCard from '../NotificationCard'
+import Card from '../Card'
 import type { Notification } from '@/types/notification'
 import { notifications } from '@/mocks/tests';
 import userEvent from '@testing-library/user-event';
@@ -20,7 +20,7 @@ describe('NotificationCard', () => {
   })
 
   it('renders correctly when unread', () => {
-    render(<NotificationCard notification={notification} markAsRead={markAsRead} removeNotification={removeNotification} />)
+    render(<Card notification={notification} markAsRead={markAsRead} removeNotification={removeNotification} />)
 
     expect(screen.getByTestId('notification-icon')).toBeInTheDocument()
     expect(screen.getByTestId('priority-badge')).toBeInTheDocument()
@@ -36,7 +36,7 @@ describe('NotificationCard', () => {
 
   it('renders correctly when read', () => {
     render(
-      <NotificationCard
+      <Card
         notification={{ ...notification, isRead: true }}
         markAsRead={markAsRead}
         removeNotification={removeNotification}
@@ -49,7 +49,7 @@ describe('NotificationCard', () => {
   it('isRead, removeNotification buttons works correcrtly', async () => {
     const user = userEvent.setup()
     const { rerender } = render(
-      <NotificationCard
+      <Card
         notification={notification}
         markAsRead={markAsRead}
         removeNotification={removeNotification}
@@ -64,7 +64,7 @@ describe('NotificationCard', () => {
     expect(markAsRead).toHaveBeenCalledWith('1')
 
     rerender(
-      <NotificationCard
+      <Card
         notification={{ ...notification, isRead: true }}
         markAsRead={markAsRead}
         removeNotification={removeNotification}

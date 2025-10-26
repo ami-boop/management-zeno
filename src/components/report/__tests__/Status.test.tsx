@@ -1,5 +1,5 @@
 import { screen, render } from '@testing-library/react'
-import ReportStatus from '../ReportStatus'
+import ReportStatus from '../Status'
 
 describe('ManagementReportStatus', () => {
   it('renders correctly', () => {

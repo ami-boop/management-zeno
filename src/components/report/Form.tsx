@@ -2,9 +2,9 @@
 
 import { useState } from 'react'
 import { useTranslations } from 'next-intl'
-import ReportStatus from './ReportStatus'
-import ReportSuccess from './ReportSuccess'
-import ReportNotice from './ReportNotice'
+import Status from './Status'
+import Success from './Success'
+import Notice from './Notice'
 import { Loader2 } from 'lucide-react'
 import setStudentReturnStatus from '@/app/actions/setStudentsReturnStatus'
 
@@ -67,12 +67,12 @@ export default function ReportForm({
   }
 
   if (isSubmitted) {
-    return <ReportSuccess onReset={handleReset} />
+    return <Success onReset={handleReset} />
   }
 
   return (
     <>
-      <ReportStatus />
+      <Status />
       {/* Parallel Selection */}
       <div className='relative mb-6'>
         <label
@@ -254,7 +254,7 @@ export default function ReportForm({
           t('reportButton')
         )}
       </button>
-      <ReportNotice />
+      <Notice />
     </>
   )
 }

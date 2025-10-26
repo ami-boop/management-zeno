@@ -11,7 +11,7 @@ interface RoutesClientProps {
   routes: Route[]
 }
 
-export default function RoutesClient({ routes }: RoutesClientProps) {
+export default function Client({ routes }: RoutesClientProps) {
   const t = useTranslations('Routes')
   const [searchQuery, setSearchQuery] = useState('')
 

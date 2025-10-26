@@ -1,7 +1,7 @@
 import { useTranslations } from 'next-intl'
 import { Check } from 'lucide-react'
 
-export default function ReportSuccess({
+export default function Success({
   onReset,
 }: {
   onReset: () => void

@@ -2,7 +2,7 @@ import { screen, render } from '@testing-library/react'
 import List from '../List'
 import { notifications } from '@/mocks/tests'
 
-jest.mock('../NotificationCard', () => () => <div>NotificationCard</div>)
+jest.mock('../Card', () => () => <div>NotificationCard</div>)
 
 describe('NotificationList', () => {
   const markAsRead = jest.fn()

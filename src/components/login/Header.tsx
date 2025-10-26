@@ -2,7 +2,7 @@
 
 import { useTranslations } from 'next-intl'
 
-export default function LoginHeader() {
+export default function Header() {
   const t = useTranslations('Login')
 
   return (

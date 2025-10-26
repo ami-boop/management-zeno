@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import LoginHeader from './LoginHeader'
+import Header from './Header'
 import EmailField from './EmailField'
 import PasswordField from './PasswordField'
 import SubmitButton from './SubmitButton'
@@ -14,7 +14,7 @@ import { signInWithEmailAndPassword } from 'firebase/auth'
 import { auth } from '@/lib/firebase'
 import { AlertCircle } from 'lucide-react'
 
-export default function LoginForm() {
+export default function Form() {
   const t = useTranslations('Login')
   const router = useRouter()
   const [isSubmitting, setIsSubmitting] = useState(false)
@@ -73,7 +73,7 @@ export default function LoginForm() {
       <div className='flex justify-center items-center h-screen'>
         <div className='max-w-md w-full'>
           <div className='bg-white rounded-lg shadow-sm border border-gray-200 p-8'>
-            <LoginHeader />
+            <Header />
 
             {error && (
               <div className='mb-4 p-3 bg-red-50 border border-red-200 rounded-md'>

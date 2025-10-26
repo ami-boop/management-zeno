@@ -7,7 +7,7 @@ import {
 import { CheckCircle, X, Clock } from "lucide-react"
 import { type Notification } from "@/types/notification"
 
-export default function NotificationCard({
+export default function Card({
   notification,
   markAsRead,
   removeNotification,

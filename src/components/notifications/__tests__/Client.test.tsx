@@ -1,5 +1,5 @@
 import { render, screen, waitFor } from '@testing-library/react';
-import NotificationsClient from '../NotificationsClient';
+import Client from '../Client';
 import setNotificationsAction from '@/app/actions/setNotificationsAction';
 import { notifications } from '@/mocks/tests';
 import userEvent from '@testing-library/user-event';
@@ -37,7 +37,7 @@ describe('NotificationsClient', () => {
 
   describe('Initial Render', () => {
     it('should render the component with initial notifications', () => {
-      render(<NotificationsClient initialNotifications={notifications} />);
+      render(<Client initialNotifications={notifications} />);
 
       expect(screen.getByText('title')).toBeInTheDocument();
       expect(screen.getByText('description')).toBeInTheDocument();
@@ -46,20 +46,20 @@ describe('NotificationsClient', () => {
 
     it('should display unread count badge when there are unread notifications', () => {
       const unreadCount = notifications.filter(n => !n.isRead).length;
-      render(<NotificationsClient initialNotifications={notifications} />);
+      render(<Client initialNotifications={notifications} />);
 
       expect(screen.getByText(`${unreadCount} unread`)).toBeInTheDocument();
     });
 
     it('should not display unread badge when all notifications are read', () => {
       const readNotifications = notifications.map(n => ({ ...n, isRead: true }));
-      render(<NotificationsClient initialNotifications={readNotifications} />);
+      render(<Client initialNotifications={readNotifications} />);
 
       expect(screen.queryByText(/unread/)).not.toBeInTheDocument();
     });
 
     it('should render all filter buttons with correct counts', () => {
-      render(<NotificationsClient initialNotifications={notifications} />);
+      render(<Client initialNotifications={notifications} />);
 
       const allCount = notifications.length;
       const unreadCount = notifications.filter(n => !n.isRead).length;
@@ -76,7 +76,7 @@ describe('NotificationsClient', () => {
   describe('Filter Functionality', () => {
     it('should filter notifications by unread status', async () => {
       const user = userEvent.setup();
-      render(<NotificationsClient initialNotifications={notifications} />);
+      render(<Client initialNotifications={notifications} />);
 
       const unreadButton = screen.getByRole('button', { name: /filterUnread/i });
       await user.click(unreadButton);
@@ -87,7 +87,7 @@ describe('NotificationsClient', () => {
 
     it('should filter notifications by alerts', async () => {
       const user = userEvent.setup();
-      render(<NotificationsClient initialNotifications={notifications} />);
+      render(<Client initialNotifications={notifications} />);
 
       const alertsButton = screen.getByRole('button', { name: /filterAlerts/i });
       await user.click(alertsButton);
@@ -97,7 +97,7 @@ describe('NotificationsClient', () => {
 
     it('should filter notifications by info', async () => {
       const user = userEvent.setup();
-      render(<NotificationsClient initialNotifications={notifications} />);
+      render(<Client initialNotifications={notifications} />);
 
       const infoButton = screen.getByRole('button', { name: /filterInfo/i });
       await user.click(infoButton);
@@ -107,7 +107,7 @@ describe('NotificationsClient', () => {
 
     it('should show all notifications when "all" filter is selected', async () => {
       const user = userEvent.setup();
-      render(<NotificationsClient initialNotifications={notifications} />);
+      render(<Client initialNotifications={notifications} />);
 
       // First click another filter
       const unreadButton = screen.getByRole('button', { name: /filterUnread/i });
@@ -127,7 +127,7 @@ describe('NotificationsClient', () => {
   describe('Mark All as Read', () => {
     it('should mark all notifications as read when button is clicked', async () => {
       const user = userEvent.setup();
-      render(<NotificationsClient initialNotifications={notifications} />);
+      render(<Client initialNotifications={notifications} />);
 
       const markAllButton = screen.getByRole('button', { name: /markAllRead/i });
       await user.click(markAllButton);
@@ -149,7 +149,7 @@ describe('NotificationsClient', () => {
 
     it('should not show "mark all as read" button when there are no unread notifications', () => {
       const readNotifications = notifications.map(n => ({ ...n, isRead: true }));
-      render(<NotificationsClient initialNotifications={readNotifications} />);
+      render(<Client initialNotifications={readNotifications} />);
 
       expect(screen.queryByRole('button', { name: /markAllRead/i })).not.toBeInTheDocument();
     });
@@ -158,7 +158,7 @@ describe('NotificationsClient', () => {
   describe('Clear All Functionality', () => {
     it('should clear all notifications when "clear all" button is clicked', async () => {
       const user = userEvent.setup();
-      render(<NotificationsClient initialNotifications={notifications} />);
+      render(<Client initialNotifications={notifications} />);
 
       const clearAllButton = screen.getByRole('button', { name: /clearAll/i });
       await user.click(clearAllButton);
@@ -174,7 +174,7 @@ describe('NotificationsClient', () => {
     });
 
     it('should not show "clear all" button when there are no notifications', () => {
-      render(<NotificationsClient initialNotifications={[]} />);
+      render(<Client initialNotifications={[]} />);
 
       expect(screen.queryByRole('button', { name: /clearAll/i })).not.toBeInTheDocument();
     });
@@ -183,7 +183,7 @@ describe('NotificationsClient', () => {
   describe('Individual Notification Actions', () => {
     it('should call markAsRead with correct id', async () => {
       const user = userEvent.setup();
-      render(<NotificationsClient initialNotifications={notifications} />);
+      render(<Client initialNotifications={notifications} />);
 
       // Use the exposed test button from mocked NotificationList
       const testButton = screen.getByText('Test Mark Read');
@@ -196,7 +196,7 @@ describe('NotificationsClient', () => {
 
     it('should call removeNotification with correct id', async () => {
       const user = userEvent.setup();
-      render(<NotificationsClient initialNotifications={notifications} />);
+      render(<Client initialNotifications={notifications} />);
 
       // Use the exposed test button from mocked NotificationList
       const testButton = screen.getByText('Test Remove');

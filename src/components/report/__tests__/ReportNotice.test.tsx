@@ -1,9 +1,9 @@
 import { screen, render } from '@testing-library/react'
-import ManagementReportNotice from '../ManagementReportNotice'
+import ReportNotice from '../ReportNotice'
 
 describe('ManagementReportNotice', () => {
   it('renders correctly', () => {
-    render(<ManagementReportNotice />)
+    render(<ReportNotice />)
 
     expect(screen.getByTestId('alert-triangle-icon')).toBeInTheDocument()
     expect(screen.getByText('noticeMessage')).toBeInTheDocument()

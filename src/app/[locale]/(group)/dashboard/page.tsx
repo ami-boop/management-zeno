@@ -1,4 +1,4 @@
-import DashboardClient from '@/components/dashboard/DashboardClient'
+import Client from '@/components/dashboard/Client'
 import { getSessionToken } from '@/utils/getSessionToken'
 
 interface DashboardRoute {
@@ -30,5 +30,5 @@ export default async function DashboardPage() {
 
   console.log(routes)
 
-  return <DashboardClient routes={routes} />
+  return <Client routes={routes} />
 }

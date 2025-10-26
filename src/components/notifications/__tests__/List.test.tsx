@@ -1,5 +1,5 @@
 import { screen, render } from '@testing-library/react'
-import NotificationList from '../NotificationList'
+import List from '../List'
 import { notifications } from '@/mocks/tests'
 
 jest.mock('../NotificationCard', () => () => <div>NotificationCard</div>)
@@ -9,12 +9,12 @@ describe('NotificationList', () => {
   const removeNotification = jest.fn()
 
   it('renders correctly', () => {
-    render(<NotificationList notifications={notifications} markAsRead={markAsRead} removeNotification={removeNotification} />)
+    render(<List notifications={notifications} markAsRead={markAsRead} removeNotification={removeNotification} />)
 
     expect(screen.getAllByText('NotificationCard')).toHaveLength(notifications.length)
   })
   it('renders correctly when have no notifications', () => {
-    render(<NotificationList notifications={[]} markAsRead={markAsRead} removeNotification={removeNotification} />)
+    render(<List notifications={[]} markAsRead={markAsRead} removeNotification={removeNotification} />)
 
     expect(screen.getByTestId('bell-icon')).toBeInTheDocument()
     expect(screen.getByRole('heading')).toHaveTextContent('noNotifications')

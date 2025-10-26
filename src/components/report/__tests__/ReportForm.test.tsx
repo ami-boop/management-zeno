@@ -1,6 +1,6 @@
 import { screen, render, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
-import ManagementReportForm from '../ManagementReportForm'
+import ReportForm from '../ReportForm'
 import setStudentReturnStatus from '@/app/actions/setStudentsReturnStatus'
 
 jest.mock('@/app/actions/setStudentsReturnStatus', () => ({
@@ -25,7 +25,7 @@ describe('ManagementReportForm', () => {
 
   const renderComponent = () => {
     return render(
-      <ManagementReportForm
+      <ReportForm
         grades={grades}
         profiles={profiles}
         timeOptions={timeOptions}

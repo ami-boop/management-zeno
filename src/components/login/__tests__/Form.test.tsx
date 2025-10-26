@@ -1,6 +1,6 @@
 import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import LoginForm from '../LoginForm';
+import Form from '../Form';
 import { loginAction } from '@/app/actions/auth';
 import inputValidation from '@/app/actions/inputValidation';
 import { validateEmail, validatePassword } from '@/lib/validation';
@@ -36,7 +36,7 @@ jest.mock('firebase/auth', () => ({
 }));
 
 // Mock Child Components
-jest.mock('../LoginHeader', () => ({ __esModule: true, default: () => <div>MockedLoginHeader</div> }));
+jest.mock('../Header', () => ({ __esModule: true, default: () => <div>MockedLoginHeader</div> }));
 jest.mock('../EmailField', () => ({ __esModule: true, default: ({ value, onChange }: any) => <input value={value} onChange={onChange} placeholder="MockedUsernameField" /> }));
 jest.mock('../PasswordField', () => ({ __esModule: true, default: ({ value, onChange }: any) => <input type="password" value={value} onChange={onChange} placeholder="MockedPasswordField" /> }));
 jest.mock('../SubmitButton', () => ({ __esModule: true, default: ({ isSubmitting, isDisabled }: any) => <button type="submit" disabled={isSubmitting || isDisabled}>{isSubmitting ? 'Submitting...' : 'Mocked Submit'}</button> }));
@@ -49,7 +49,7 @@ describe('LoginForm', () => {
   });
 
   it('should render all mocked child components', () => {
-    render(<LoginForm />);
+    render(<Form />);
 
     expect(screen.queryByTestId('error')).not.toBeInTheDocument()
     expect(screen.getByText('MockedLoginHeader')).toBeInTheDocument();
@@ -72,7 +72,7 @@ describe('LoginForm', () => {
     });
     (loginAction as jest.Mock).mockResolvedValue({ success: true });
 
-    render(<LoginForm />);
+    render(<Form />);
 
     // --- Act: Simulate user input and form submission ---
     const emailInput = screen.getByPlaceholderText('MockedUsernameField');
@@ -97,7 +97,7 @@ describe('LoginForm', () => {
   it('handles error correctly', async () => {
     (inputValidation as jest.Mock).mockResolvedValue(new Error('Error for test'));
     const user = userEvent.setup();
-    render(<LoginForm />);
+    render(<Form />);
     const submitButton = screen.getByRole('button', { name: 'Mocked Submit' });
 
     await user.click(submitButton)

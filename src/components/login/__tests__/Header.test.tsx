@@ -1,9 +1,9 @@
 import { screen, render } from '@testing-library/react'
-import LoginHeader from '../LoginHeader'
+import Header from '../Header'
 
 describe('LoginHeader', () => {
   it('renders correctly', () => {
-    render(<LoginHeader />)
+    render(<Header />)
     expect(screen.getByRole('heading')).toHaveTextContent('title')
     expect(screen.getByTestId('svg-icon')).toBeInTheDocument()
   })

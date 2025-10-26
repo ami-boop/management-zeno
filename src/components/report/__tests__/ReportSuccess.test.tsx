@@ -1,12 +1,12 @@
 import { screen, render } from '@testing-library/react'
-import ManagementReportSuccess from '../ManagementReportSuccess'
+import ReportSuccess from '../ReportSuccess'
 import userEvent from '@testing-library/user-event'
 
 describe('ManagementReportSuccess', () => {
   const onReset = jest.fn()
 
   beforeEach(() => {
-    render(<ManagementReportSuccess onReset={onReset} />)
+    render(<ReportSuccess onReset={onReset} />)
   })
 
   it('renders correctly', () => {

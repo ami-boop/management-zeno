@@ -3,7 +3,7 @@
 import { Bell } from 'lucide-react'
 import type { Notification } from '@/types/notification'
 import { useTranslations } from 'next-intl'
-import NotificationCard from './NotificationCard'
+import Card from './Card'
 
 interface NotificationListProps {
   notifications: Notification[]
@@ -11,7 +11,7 @@ interface NotificationListProps {
   removeNotification: (id: string) => void
 }
 
-export default function NotificationList({
+export default function List({
   notifications,
   markAsRead,
   removeNotification,
@@ -34,7 +34,7 @@ export default function NotificationList({
   return (
     <div className='space-y-2'>
       {notifications.map(notification => (
-        <NotificationCard
+        <Card
           key={notification.id}
           notification={notification}
           markAsRead={markAsRead}

@@ -4,13 +4,13 @@ import { useState, useMemo } from 'react'
 import { useTranslations } from 'next-intl'
 import { Archive, CheckCircle } from 'lucide-react'
 import type { Notification } from '@/types/notification'
-import NotificationList from './NotificationList'
+import List from './List'
 import setNotificationsAction from '@/app/actions/setNotificationsAction'
 interface NotificationsClientProps {
   initialNotifications: Notification[]
 }
 
-export default function NotificationsClient({
+export default function Client({
   initialNotifications,
 }: NotificationsClientProps) {
   const t = useTranslations('Notifications')
@@ -147,7 +147,7 @@ export default function NotificationsClient({
         </div>
 
         {/* Notifications List */}
-        <NotificationList
+        <List
           notifications={filteredNotifications}
           markAsRead={markAsRead}
           removeNotification={removeNotification}

@@ -1,7 +1,7 @@
 import { useTranslations } from 'next-intl'
 import { AlertTriangle } from 'lucide-react'
 
-export default function ManagementReportNotice() {
+export default function ReportNotice() {
   const t = useTranslations('managementReport')
   return (
     <div className='mt-6 p-3 bg-amber-50 border border-amber-200 rounded-md'>

@@ -1,18 +1,6 @@
 import Client from '@/components/dashboard/Client'
 import { getSessionToken } from '@/utils/getSessionToken'
-
-interface DashboardRoute {
-  id: string
-  name: string
-  studentsOnBus: number
-  studentsNotMarked: number
-  totalStudents: number
-  busesNeeded: number
-  busesOrdered: number
-  status: 'pending' | 'partial' | 'completed'
-  lastUpdate: Record<string, number>
-  estimatedTime: string
-}
+import { DashboardRoute } from '@/types/dashboard'
 
 export default async function DashboardPage() {
   const sessionCookie = await getSessionToken()

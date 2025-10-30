@@ -1,3 +1,4 @@
+import { DashboardRoute } from "@/types/dashboard"
 import type { Notification } from "@/types/notification"
 
 export const notifications: Notification[] = [
@@ -55,3 +56,30 @@ export const times: Record<number, string> = {
   1: '08:30 - 09:10',
   2: '09:10 - 09:50',
 }
+
+export const routes: DashboardRoute[] = [
+  {
+    id: 'A_12:00',
+    name: 'Route A',
+    studentsOnBus: 85,
+    studentsNotMarked: 25,
+    lastUpdate: { _seconds: 1753969795, _nanoseconds: 391000000 },
+    estimatedTime: '12:00',
+    totalStudents: 110,
+    busesNeeded: 4,
+    status: 'completed',
+    busesOrdered: 2,
+  },
+  {
+    id: 'B_12:00',
+    name: 'Route B',
+    studentsOnBus: 60,
+    studentsNotMarked: 15,
+    lastUpdate: { _seconds: 1753969000, _nanoseconds: 0 },
+    estimatedTime: '13:30',
+    totalStudents: 75,
+    busesNeeded: 3,
+    busesOrdered: 1,
+    status: 'pending',
+  },
+]

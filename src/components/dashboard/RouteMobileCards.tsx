@@ -1,41 +1,28 @@
-import { FC } from 'react'
 import { Bus, Users, AlertTriangle } from 'lucide-react'
 import { useTranslations } from 'next-intl'
+import { DashboardRoute } from '@/types/dashboard'
 import dayjs from 'dayjs'
 
-interface Route {
-  id: string
-  name: string
-  studentsOnBus: number
-  studentsNotMarked: number
-  totalStudents: number
-  busesNeeded: number
-  busesOrdered: number
-  status: 'pending' | 'partial' | 'completed'
-  lastUpdate: Record<string, number>
-  estimatedTime: string
-}
-
 interface DashboardRouteMobileCardsProps {
-  routes: Route[]
+  routes: DashboardRoute[]
   onOrderBuses: (routeId: string, count: number) => void
-  getStatusColor: (status: Route['status']) => string
-  getStatusDot: (status: Route['status']) => string
-  getStatusText: (status: Route['status']) => string
+  getStatusColor: (status: DashboardRoute['status']) => string
+  getStatusDot: (status: DashboardRoute['status']) => string
+  getStatusText: (status: DashboardRoute['status']) => string
 }
 
-const RouteMobileCards: FC<DashboardRouteMobileCardsProps> = ({
+const RouteMobileCards = ({
   routes,
   onOrderBuses,
   getStatusColor,
   getStatusDot,
   getStatusText,
-}) => {
+}: DashboardRouteMobileCardsProps) => {
   const t = useTranslations('Dashboard')
   return (
     <div className='lg:hidden divide-y divide-gray-200'>
       {routes.map(route => (
-        <div key={route.id} className='p-6'>
+        <div key={route.id} className='p-6' data-testid='route-container'>
           <div className='flex items-center justify-between mb-4'>
             <div>
               <h3 className='text-lg font-medium text-gray-900'>
@@ -76,8 +63,8 @@ const RouteMobileCards: FC<DashboardRouteMobileCardsProps> = ({
               </dt>
               <dd
                 className={`text-lg font-semibold ${route.studentsNotMarked > 0
-                    ? 'text-amber-600'
-                    : 'text-gray-500'
+                  ? 'text-amber-600'
+                  : 'text-gray-500'
                   }`}
               >
                 {route.studentsNotMarked}

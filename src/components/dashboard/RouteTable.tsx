@@ -1,35 +1,22 @@
-import { FC } from 'react'
+import { DashboardRoute } from '@/types/dashboard'
 import { Bus, Users, AlertTriangle, CheckCircle } from 'lucide-react'
 import { useTranslations } from 'next-intl'
 
-interface Route {
-  id: string
-  name: string
-  studentsOnBus: number
-  studentsNotMarked: number
-  totalStudents: number
-  busesNeeded: number
-  busesOrdered: number
-  status: 'pending' | 'partial' | 'completed'
-  lastUpdate: Record<string, number>
-  estimatedTime: string
-}
-
 interface DashboardRouteTableProps {
-  routes: Route[]
+  routes: DashboardRoute[]
   onOrderBuses: (routeId: string, count: number) => void
-  getStatusColor: (status: Route['status']) => string
-  getStatusDot: (status: Route['status']) => string
-  getStatusText: (status: Route['status']) => string
+  getStatusColor: (status: DashboardRoute['status']) => string
+  getStatusDot: (status: DashboardRoute['status']) => string
+  getStatusText: (status: DashboardRoute['status']) => string
 }
 
-const RouteTable: FC<DashboardRouteTableProps> = ({
+const RouteTable = ({
   routes,
   onOrderBuses,
   getStatusColor,
   getStatusDot,
   getStatusText,
-}) => {
+}: DashboardRouteTableProps) => {
   const t = useTranslations('Dashboard')
   return (
     <div className='overflow-x-auto'>
@@ -104,8 +91,8 @@ const RouteTable: FC<DashboardRouteTableProps> = ({
               <td className='px-6 py-4 whitespace-nowrap'>
                 <span
                   className={`text-sm font-medium ${route.studentsNotMarked > 0
-                      ? 'text-amber-600'
-                      : 'text-gray-500'
+                    ? 'text-amber-600'
+                    : 'text-gray-500'
                     }`}
                 >
                   {route.studentsNotMarked}

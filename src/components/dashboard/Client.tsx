@@ -9,6 +9,8 @@ import RouteTable from './RouteTable'
 import RouteMobileCards from './RouteMobileCards'
 import dayjs from 'dayjs'
 import addBus from '@/app/actions/addBus'
+import { DashboardRoute } from '@/types/dashboard'
+
 
 interface DashboardStat {
   label: string
@@ -16,41 +18,26 @@ interface DashboardStat {
   change?: string
 }
 
-interface Route {
-  id: string
-  name: string
-  studentsOnBus: number
-  studentsNotMarked: number
-  totalStudents: number
-  busesNeeded: number
-  busesOrdered: number
-  status: 'pending' | 'partial' | 'completed'
-  lastUpdate: Record<string, number>
-  estimatedTime: string
-}
-
-interface DashboardClientProps {
-  routes: Route[]
-}
-
-const Client = ({ routes }: DashboardClientProps) => {
+const Client = ({ routes }: { routes: DashboardRoute[] }) => {
   const t = useTranslations('Dashboard')
   const [selectedFilter, setSelectedFilter] = useState<string>('all')
   const [selectedRoute, setSelectedRoute] = useState<string>('all')
   const [searchQuery, setSearchQuery] = useState<string>('')
-  const [localRoutes, setRoutes] = useState<Route[]>(routes)
+  const [localRoutes, setRoutes] = useState<DashboardRoute[]>(routes)
 
+
+  // TODO: Maybe stats should be coming from Backend with "change" option
   const dashboardStats: DashboardStat[] = useMemo(() => {
     const totalStudentsOnBus = localRoutes.reduce(
-      (sum: number, route: Route) => sum + route.studentsOnBus,
+      (sum: number, route: DashboardRoute) => sum + route.studentsOnBus,
       0
     )
     const totalStudentsNotMarked = localRoutes.reduce(
-      (sum: number, route: Route) => sum + route.studentsNotMarked,
+      (sum: number, route: DashboardRoute) => sum + route.studentsNotMarked,
       0
     )
     const totalBusesNeeded = localRoutes.reduce(
-      (sum: number, route: Route) => sum + route.busesNeeded,
+      (sum: number, route: DashboardRoute) => sum + route.busesNeeded,
       0
     )
     return [
@@ -61,7 +48,7 @@ const Client = ({ routes }: DashboardClientProps) => {
   }, [localRoutes])
 
   const filteredRoutes = useMemo(() => {
-    return localRoutes.filter((route: Route) => {
+    return localRoutes.filter((route: DashboardRoute) => {
       const matchesStatusFilter =
         selectedFilter === 'all' || route.status === selectedFilter
       const matchesRouteFilter =
@@ -80,17 +67,17 @@ const Client = ({ routes }: DashboardClientProps) => {
       {
         key: 'pending',
         label: t('pendingOrders'),
-        count: localRoutes.filter((r: Route) => r.status === 'pending').length,
+        count: localRoutes.filter((r: DashboardRoute) => r.status === 'pending').length,
       },
       {
         key: 'partial',
         label: t('partiallyOrdered'),
-        count: localRoutes.filter((r: Route) => r.status === 'partial').length,
+        count: localRoutes.filter((r: DashboardRoute) => r.status === 'partial').length,
       },
       {
         key: 'completed',
         label: t('fullyOrdered'),
-        count: localRoutes.filter((r: Route) => r.status === 'completed')
+        count: localRoutes.filter((r: DashboardRoute) => r.status === 'completed')
           .length,
       },
     ],
@@ -99,22 +86,22 @@ const Client = ({ routes }: DashboardClientProps) => {
 
   const routeFilterButtons = useMemo(() => {
     const uniqueRoutes = [
-      ...new Set(localRoutes.map((route: Route) => route.id)),
+      ...new Set(localRoutes.map((route: DashboardRoute) => route.id)),
     ]
     return [
       { key: 'all', label: t('allRoutes'), count: localRoutes.length },
       ...uniqueRoutes.map(routeId => ({
         key: routeId,
         label:
-          localRoutes.find((r: Route) => r.id === routeId)?.name || routeId,
-        count: localRoutes.filter((r: Route) => r.id === routeId).length,
+          localRoutes.find((r: DashboardRoute) => r.id === routeId)?.name || routeId,
+        count: localRoutes.filter((r: DashboardRoute) => r.id === routeId).length,
       })),
     ]
   }, [localRoutes, t])
 
   const handleOrderBuses = async (routeId: string, busesToOrder: number) => {
-    setRoutes((prevRoutes: Route[]) =>
-      prevRoutes.map((route: Route) => {
+    setRoutes((prevRoutes: DashboardRoute[]) =>
+      prevRoutes.map((route: DashboardRoute) => {
         if (route.id === routeId) {
           const newBusesOrdered = Math.min(
             route.busesOrdered + busesToOrder,
@@ -142,7 +129,7 @@ const Client = ({ routes }: DashboardClientProps) => {
     await addBus(routeId, busesToOrder)
   }
 
-  const getStatusColor = (status: Route['status']) => {
+  const getStatusColor = (status: DashboardRoute['status']) => {
     switch (status) {
       case 'completed':
         return 'bg-emerald-50 text-emerald-900 border-emerald-200'
@@ -154,7 +141,7 @@ const Client = ({ routes }: DashboardClientProps) => {
         return 'bg-gray-50 text-gray-900 border-gray-200'
     }
   }
-  const getStatusDot = (status: Route['status']) => {
+  const getStatusDot = (status: DashboardRoute['status']) => {
     switch (status) {
       case 'completed':
         return 'bg-emerald-500'
@@ -166,7 +153,7 @@ const Client = ({ routes }: DashboardClientProps) => {
         return 'bg-gray-500'
     }
   }
-  const getStatusText = (status: Route['status']) => {
+  const getStatusText = (status: DashboardRoute['status']) => {
     switch (status) {
       case 'completed':
         return t('fullyOrdered')
@@ -179,13 +166,35 @@ const Client = ({ routes }: DashboardClientProps) => {
     }
   }
 
+  function getLatestUpdate(
+    routes: DashboardRoute[],
+    noUpdatesText: string
+  ): string {
+    if (!routes || routes.length === 0) {
+      return noUpdatesText
+    }
+
+    const latestRoute = routes.reduce((latest, current) => {
+      const latestTime = dayjs.unix(latest.lastUpdate._seconds).add(latest.lastUpdate._nanoseconds / 1e9, 'second')
+      const currentTime = dayjs.unix(current.lastUpdate._seconds).add(current.lastUpdate._nanoseconds / 1e9, 'second')
+      return currentTime.isAfter(latestTime) ? current : latest
+    })
+
+    if (!latestRoute) {
+      return noUpdatesText
+    }
+
+    return dayjs
+      .unix(latestRoute.lastUpdate._seconds)
+      .add(latestRoute.lastUpdate._nanoseconds / 1e9, 'second')
+      .format('YYYY-MM-DD HH:mm:ss')
+  }
+
   return (
     <div className='min-h-screen bg-gray-50'>
       <div className='max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8'>
         <Header
-          title={t('title')}
-          description={t('description')}
-          systemStatus={t('systemStatus')}
+          lastUpdated={getLatestUpdate(routes, t('noUpdatesYet'))}
         />
         <Stats stats={dashboardStats} />
         <div className='bg-white rounded-lg shadow-sm border border-gray-200'>

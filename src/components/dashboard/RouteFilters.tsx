@@ -1,4 +1,3 @@
-import { FC } from 'react'
 import { Search } from 'lucide-react'
 import { useTranslations } from 'next-intl'
 
@@ -19,7 +18,7 @@ interface DashboardRouteFiltersProps {
   setSearchQuery: (q: string) => void
 }
 
-const RouteFilters: FC<DashboardRouteFiltersProps> = ({
+const RouteFilters = ({
   filterButtons,
   selectedFilter,
   setSelectedFilter,
@@ -28,7 +27,7 @@ const RouteFilters: FC<DashboardRouteFiltersProps> = ({
   setSelectedRoute,
   searchQuery,
   setSearchQuery,
-}) => {
+}: DashboardRouteFiltersProps) => {
   const t = useTranslations('Dashboard')
   return (
     <>
@@ -58,15 +57,16 @@ const RouteFilters: FC<DashboardRouteFiltersProps> = ({
               key={filter.key}
               onClick={() => setSelectedFilter(filter.key)}
               className={`inline-flex items-center px-3 py-1.5 rounded-md text-sm font-medium transition-colors duration-200 ${selectedFilter === filter.key
-                  ? 'bg-blue-100 text-blue-800 border border-blue-200'
-                  : 'bg-white text-gray-700 border border-gray-300 hover:bg-gray-50'
+                ? 'bg-blue-100 text-blue-800 border border-blue-200'
+                : 'bg-white text-gray-700 border border-gray-300 hover:bg-gray-50'
                 }`}
+              data-testid={`filter-selector-${filter.key}`}
             >
               {filter.label}
               <span
                 className={`ml-2 px-2 py-0.5 rounded-full text-xs ${selectedFilter === filter.key
-                    ? 'bg-blue-200 text-blue-800'
-                    : 'bg-gray-100 text-gray-600'
+                  ? 'bg-blue-200 text-blue-800'
+                  : 'bg-gray-100 text-gray-600'
                   }`}
               >
                 {filter.count}
@@ -88,15 +88,16 @@ const RouteFilters: FC<DashboardRouteFiltersProps> = ({
               key={filter.key}
               onClick={() => setSelectedRoute(filter.key)}
               className={`inline-flex items-center px-3 py-1.5 rounded-md text-sm font-medium transition-colors duration-200 ${selectedRoute === filter.key
-                  ? 'bg-emerald-100 text-emerald-800 border border-emerald-200'
-                  : 'bg-white text-gray-700 border border-gray-300 hover:bg-gray-50'
+                ? 'bg-emerald-100 text-emerald-800 border border-emerald-200'
+                : 'bg-white text-gray-700 border border-gray-300 hover:bg-gray-50'
                 }`}
+              data-testid={`route-filter-button-${filter.key}`}
             >
               {filter.label}
               <span
                 className={`ml-2 px-2 py-0.5 rounded-full text-xs ${selectedRoute === filter.key
-                    ? 'bg-emerald-200 text-emerald-800'
-                    : 'bg-gray-100 text-gray-600'
+                  ? 'bg-emerald-200 text-emerald-800'
+                  : 'bg-gray-100 text-gray-600'
                   }`}
               >
                 {filter.count}

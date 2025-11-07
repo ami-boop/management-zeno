@@ -126,7 +126,7 @@ const Client = ({ routes }: { routes: DashboardRoute[] }) => {
         return route
       })
     )
-    await addBus(routeId, busesToOrder)
+    await addBus(routeId as string, busesToOrder as number)
   }
 
   const getStatusColor = (status: DashboardRoute['status']) => {
@@ -141,7 +141,7 @@ const Client = ({ routes }: { routes: DashboardRoute[] }) => {
         return 'bg-gray-50 text-gray-900 border-gray-200'
     }
   }
-  const getStatusDot = (status: DashboardRoute['status']) => {
+  const getStatusDot = (status: DashboardRoute['status']): string => {
     switch (status) {
       case 'completed':
         return 'bg-emerald-500'
@@ -153,7 +153,7 @@ const Client = ({ routes }: { routes: DashboardRoute[] }) => {
         return 'bg-gray-500'
     }
   }
-  const getStatusText = (status: DashboardRoute['status']) => {
+  const getStatusText = (status: DashboardRoute['status']): string => {
     switch (status) {
       case 'completed':
         return t('fullyOrdered')

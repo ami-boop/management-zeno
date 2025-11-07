@@ -10,7 +10,7 @@ export default async function NotificationsPage() {
     {
       headers: {
         'Content-Type': 'application/json',
-        Cookie: `managementSessionCookie=${sessionCookie}`,
+        Cookie: `managementSessionCookie=${sessionCookie as string}`,
       },
     }
   ).then(res => res.json())

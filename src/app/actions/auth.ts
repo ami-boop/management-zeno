@@ -46,7 +46,7 @@ export async function loginAction(idToken: string): Promise<LoginFormState> {
       return { error: 'Failed to create session' }
     }
 
-    const tokenResult = await setTokenRes.json()
+    const tokenResult: { sessionCookie: string, expiresIn: number } = await setTokenRes.json()
 
     const cookieStore = await cookies()
     if (tokenResult.sessionCookie) {

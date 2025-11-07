@@ -22,8 +22,8 @@ const ScheduleViewerClient = ({
   const t = useTranslations('managementLessons')
   const [selectedGrade, setSelectedGrade] = useState('')
   const [selectedClass, setSelectedClass] = useState('')
-  const [selectedDay, setSelectedDay] = useState('sunday')
-  const [showSchedule, setShowSchedule] = useState(false)
+  const [selectedDay, setSelectedDay] = useState<string>('sunday')
+  const [showSchedule, setShowSchedule] = useState<boolean>(false)
   const [_selectedSchedule, setSelectedSchedule] = useState('')
   const [scheduleData, setScheduleData] = useState<any>(null)
   const [loading, setLoading] = useState(false)
@@ -31,7 +31,7 @@ const ScheduleViewerClient = ({
 
   const handleViewSchedule = async () => {
     if (selectedGrade && selectedClass) {
-      const scheduleKey = `${selectedGrade}_${selectedClass}`
+      const scheduleKey: string = `${selectedGrade}_${selectedClass}`
       setSelectedSchedule(scheduleKey)
       setLoading(true)
       setError(null)

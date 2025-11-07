@@ -23,7 +23,7 @@ export default function Header() {
   const locale = useLocale()
   const t = useTranslations('Header')
 
-  const localeLabel = (locale: string) => {
+  const localeLabel = (locale: string): string => {
     switch (locale) {
       case 'en':
         return 'English'

@@ -51,7 +51,7 @@ export default function Form({
       megama: selectedProfile,
       time: selectedTime,
     }
-    const res = await setStudentReturnStatus(reportData)
+    await setStudentReturnStatus(reportData)
   }
 
   const handleReset = () => {

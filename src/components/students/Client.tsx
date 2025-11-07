@@ -18,7 +18,7 @@ export default function StudentsClient({
   const [selectedFilter, setSelectedFilter] = useState('all')
   const [selectedStudents, setSelectedStudents] = useState<number[]>([])
 
-  const students = initialStudents
+  const students: Student[] = initialStudents
 
   const filteredStudents = useMemo(() => {
     const query = searchQuery.toLowerCase()
@@ -136,15 +136,15 @@ export default function StudentsClient({
                   key={filter.key}
                   onClick={() => setSelectedFilter(filter.key)}
                   className={`inline-flex items-center px-3 py-1.5 rounded-md text-sm font-medium transition-colors duration-200 ${selectedFilter === filter.key
-                      ? 'bg-blue-100 text-blue-800 border border-blue-200'
-                      : 'bg-white text-gray-700 border border-gray-300 hover:bg-gray-50'
+                    ? 'bg-blue-100 text-blue-800 border border-blue-200'
+                    : 'bg-white text-gray-700 border border-gray-300 hover:bg-gray-50'
                     }`}
                 >
                   {filter.label}
                   <span
                     className={`ml-2 px-2 py-0.5 rounded-full text-xs ${selectedFilter === filter.key
-                        ? 'bg-blue-200 text-blue-800'
-                        : 'bg-gray-100 text-gray-600'
+                      ? 'bg-blue-200 text-blue-800'
+                      : 'bg-gray-100 text-gray-600'
                       }`}
                   >
                     {filter.count}

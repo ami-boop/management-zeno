@@ -2,6 +2,7 @@
 
 import { getSessionToken } from '@/utils/getSessionToken'
 import type { reportData } from '@/components/report/Form'
+import { API_URL } from '@/constants'
 
 interface IBody {
   parallel?: string | null,
@@ -21,7 +22,7 @@ export default async function setStudentReturnStatus(reportData: reportData) {
   }
 
   const res = await fetch(
-    'https://setstudentsreturnstatus-ag7er5qhga-ew.a.run.app',
+    `${API_URL}/return-status`,
     {
       method: 'POST',
       headers: {

@@ -1,6 +1,8 @@
 import { getTranslations } from 'next-intl/server'
 import { Info } from 'lucide-react'
 import Form from '@/components/report/Form'
+import { API_URL } from '@/constants'
+import { getSessionToken } from '@/utils/getSessionToken'
 
 export default async function ReportPage() {
   const grades = [
@@ -25,11 +27,30 @@ export default async function ReportPage() {
     { key: 'art_design', label: 'יצוב אמנות' },
   ]
 
-  const timeOptions = ['12:00', '12:45', '13:30', '14:40', '15:30']
+  const sessionToken = await getSessionToken()
+
+  let timeOptions: string[] = []
+
+  try {
+    const res = await fetch(`${API_URL}/report-time/management`, {
+      headers: {
+        'Content-Type': 'application/json',
+        Cookie: `managementSessionCookie=${sessionToken}`,
+      },
+      cache: 'force-cache',
+    })
+
+    const data = await res.json()
+    
+    timeOptions = data.times || []
+  } catch (error) {
+    console.error('Failed to fetch time options:', error)
+  }
 
   const classNumbers = Array.from({ length: 11 }, (_, i) => i + 1)
 
   const t = await getTranslations('managementReport')
+
   return (
     <div className='min-h-screen bg-gray-50'>
       <div className='flex justify-center py-12 px-4'>

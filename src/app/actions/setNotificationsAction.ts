@@ -1,5 +1,6 @@
 'use server'
 
+import { API_URL } from '@/constants'
 import { getSessionToken } from '@/utils/getSessionToken'
 
 type data = {
@@ -14,7 +15,7 @@ export default async function setNotificationsAction(data: data) {
 
   const method: string = data.clearAll || data.clearNotificationId ? 'DELETE' : 'POST'
 
-  await fetch('https://setnotifications-ag7er5qhga-ew.a.run.app', {
+  await fetch(`${API_URL}/notifications`, {
     method,
     headers: {
       'Content-Type': 'application/json',

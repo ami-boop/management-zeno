@@ -1,4 +1,5 @@
 import Client from '@/components/students/Client'
+import { API_URL } from '@/constants'
 import { getSessionToken } from '@/utils/getSessionToken'
 
 export interface Student {
@@ -74,7 +75,7 @@ export default async function StudentsPage() {
   const sessionCookie = await getSessionToken()
 
   const students: Student[] = await fetch(
-    'https://getallstudents-ag7er5qhga-ew.a.run.app',
+    `${API_URL}/students/management`,
     {
       headers: {
         'Content-Type': 'application/json',

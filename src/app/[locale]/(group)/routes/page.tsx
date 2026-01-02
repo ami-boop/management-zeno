@@ -4,6 +4,8 @@ import Client from '@/components/routes/Client'
 export default async function RoutesPage() {
 
   const routes: Route[] = await (new Promise((resolve) => {
+
+    // TODO: ADD API REQUEST
     setTimeout(() => {
       resolve([
         { id: 1, name: 'Route A', stops: 10, students: 25, status: 'active' },

@@ -1,14 +1,13 @@
 'use server'
 
+import { API_URL } from '@/constants'
 import { getSessionToken } from '@/utils/getSessionToken'
 
 export async function getLessons(classId: string) {
   const sessionCookie = await getSessionToken()
 
   const res = await fetch(
-    `https://getlessonsschedule-ag7er5qhga-ew.a.run.app?classId=${encodeURIComponent(
-      classId
-    )}`,
+    `${API_URL}/lessons?classId=${encodeURIComponent(classId)}`,
     {
       headers: {
         'Content-Type': 'application/json',

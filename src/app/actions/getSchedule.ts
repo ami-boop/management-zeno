@@ -1,12 +1,13 @@
 'use server'
 
+import { API_URL } from '@/constants'
 import { getSessionToken } from '@/utils/getSessionToken'
 
 export async function getSchedule(routeId: string) {
 	const sessionCookie = await getSessionToken()
 
 	const res = await fetch(
-		`https://getmanagementschedule-ag7er5qhga-ew.a.run.app?routeId=${encodeURIComponent(
+		`${API_URL}/schedule/management?routeId=${encodeURIComponent(
 			routeId
 		)}`,
 		{

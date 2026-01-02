@@ -200,20 +200,26 @@ export default function Form({
               {t('timeLabel')}
             </label>
             <div className='grid grid-cols-3 gap-2'>
-              {timeOptions.map(time => (
-                <button
-                  key={time}
-                  type='button'
-                  onClick={() => setSelectedTime(time)}
-                  className={`p-3 text-sm font-medium rounded-md border transition-colors duration-200 text-center ${selectedTime === time
-                    ? 'bg-blue-50 text-blue-700 border-blue-200'
-                    : 'bg-white text-gray-700 border-gray-300 hover:bg-gray-50'
-                    }`}
-                  data-testid='select-time'
-                >
-                  {time}
-                </button>
-              ))}
+              {timeOptions?.length > 0 ? (
+                timeOptions.map(time => (
+                  <button
+                    key={time}
+                    type='button'
+                    onClick={() => setSelectedTime(time)}
+                    className={`p-3 text-sm font-medium rounded-md border transition-colors duration-200 text-center ${selectedTime === time
+                      ? 'bg-blue-50 text-blue-700 border-blue-200'
+                      : 'bg-white text-gray-700 border-gray-300 hover:bg-gray-50'
+                      }`}
+                    data-testid='select-time'
+                  >
+                    {time}
+                  </button>
+                ))
+              ) : (
+                <p className='col-span-3 text-sm text-gray-500 text-center py-2'>
+                  {t('noTimeOptions')}
+                </p>
+              )}
             </div>
           </div>
         )}

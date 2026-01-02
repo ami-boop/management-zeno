@@ -53,13 +53,11 @@ export default function Form() {
         await userCredential.user.getIdToken(true)
       )
 
-      if (result.error) {
-        setError(t(`errors.${result.error || 'genericError'}`))
-        auth.signOut()
-      }
-      if (result.success) {
-        router.push('/dashboard')
-      }
+      if (result?.error) {
+				setError(t(`errors.${result.error}`) || result.error)
+				auth.signOut()
+			}
+			// Если success, то redirect уже произошел на сервере
     } catch (_e: any) {
       console.log(_e.message)
       setError(t('errors.genericError'))

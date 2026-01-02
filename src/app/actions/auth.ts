@@ -1,7 +1,9 @@
 // auth.ts
 'use server'
 
+import { API_URL } from '@/constants'
 import { cookies } from 'next/headers'
+import { redirect } from 'next/navigation'
 
 export interface LoginFormState {
   error?: string
@@ -32,7 +34,7 @@ export async function loginAction(idToken: string): Promise<LoginFormState> {
     }
 
     const setTokenRes = await fetch(
-      'https://settoken-ag7er5qhga-ew.a.run.app',
+      `${API_URL}/auth/session`,
       {
         method: 'POST',
         headers: {
@@ -57,7 +59,7 @@ export async function loginAction(idToken: string): Promise<LoginFormState> {
         maxAge: Math.floor(tokenResult.expiresIn / 1000),
         path: '/',
       })
-      return { success: true }
+      redirect('/dashboard')
     }
 
     throw new Error()

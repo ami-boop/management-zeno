@@ -83,14 +83,13 @@ describe('LoginForm', () => {
     await user.type(passwordInput, 'password123');
     await user.click(submitButton);
 
-    // --- Assert: Check if functions were called and redirection happened ---
+    // --- Assert: Check if functions were called (redirect happens on server) ---
     await waitFor(() => {
       expect(validateEmail).toHaveBeenCalledWith('test@example.com');
       expect(validatePassword).toHaveBeenCalledWith('password123');
       expect(inputValidation).toHaveBeenCalledWith('test@example.com', 'password123');
       expect(signInWithEmailAndPassword).toHaveBeenCalled();
       expect(loginAction).toHaveBeenCalledWith('test-token');
-      expect(mockRouterPush).toHaveBeenCalledWith('/dashboard');
     });
   });
 

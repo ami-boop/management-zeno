@@ -231,7 +231,7 @@
     "selected": "student(s) selected",
     "schedule": "Schedule",
     "actions": "Actions",
-    "submited": "Submited"
+    "submittedTime": "Submitted Time"
   },
   "managementReport": {
     "title": "Report Class Cancellation (Management)",

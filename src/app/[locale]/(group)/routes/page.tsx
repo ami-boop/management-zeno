@@ -1,21 +1,27 @@
 import type { Route } from '@/types/routes'
 import Client from '@/components/routes/Client'
+import { getSessionToken } from '@/utils/getSessionToken'
+import { cacheTTL } from '@/constants'
 
 export default async function RoutesPage() {
 
-  const routes: Route[] = await (new Promise((resolve) => {
+  let routes: Route[] = []
 
-    // TODO: ADD API REQUEST
-    setTimeout(() => {
-      resolve([
-        { id: 1, name: 'Route A', stops: 10, students: 25, status: 'active' },
-        { id: 2, name: 'Route B', stops: 8, students: 20, status: 'inactive' },
-        { id: 3, name: 'Route C', stops: 12, students: 30, status: 'active' },
-        { id: 4, name: 'Route D', stops: 7, students: 18, status: 'active' },
-        { id: 5, name: 'Route E', stops: 9, students: 22, status: 'inactive' },
-      ])
-    }, 1500)
-  }))
+  const sessionCookie = await getSessionToken()
+
+  try {
+    routes = await fetch('https://api-ag7er5qhga-ew.a.run.app/v1/routes', {
+      headers: {
+        'Content-Type': 'application/json',
+        Cookie: `managementSessionCookie=${sessionCookie}`,
+      },
+      next: { revalidate: cacheTTL.routes } // 3 часа
+    }).then(res => res.json())
+  }
+  catch {
+    routes = []
+    throw new Error('Failed to fetch data')
+  }
 
   return <Client routes={routes} />
 }

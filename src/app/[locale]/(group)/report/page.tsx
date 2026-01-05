@@ -1,32 +1,10 @@
 import { getTranslations } from 'next-intl/server'
 import { Info } from 'lucide-react'
 import Form from '@/components/report/Form'
-import { API_URL } from '@/constants'
+import { API_URL, GRADES, PROFILES } from '@/constants'
 import { getSessionToken } from '@/utils/getSessionToken'
 
 export default async function ReportPage() {
-  const grades = [
-    { key: 'alef', hebrew: 'א׳' },
-    { key: 'bet', hebrew: 'ב׳' },
-    { key: 'gimel', hebrew: 'ג׳' },
-    { key: 'dalet', hebrew: 'ד׳' },
-    { key: 'he', hebrew: 'ה׳' },
-    { key: 'vav', hebrew: 'ו׳' },
-    { key: 'zayin', hebrew: 'ז׳' },
-    { key: 'het', hebrew: 'ח׳' },
-    { key: 'tet', hebrew: 'ט׳' },
-    { key: 'yud', hebrew: 'י׳' },
-    { key: 'yud_alef', hebrew: 'יא׳' },
-    { key: 'yud_bet', hebrew: 'יב׳' },
-  ]
-
-  const profiles = [
-    { key: 'physics_computers', label: 'פיזיקה-מחשבים' },
-    { key: 'chemistry_biology', label: 'כימיה-ביולוגיה' },
-    { key: 'theatron', label: 'תיאטרון' },
-    { key: 'art_design', label: 'יצוב אמנות' },
-  ]
-
   const sessionToken = await getSessionToken()
 
   let timeOptions: string[] = []
@@ -67,8 +45,8 @@ export default async function ReportPage() {
               <p className='text-gray-600 text-sm'>{t('description')}</p>
             </div>
             <Form
-              grades={grades}
-              profiles={profiles}
+              grades={GRADES}
+              profiles={PROFILES}
               timeOptions={timeOptions}
               classNumbers={classNumbers}
             />

@@ -231,7 +231,7 @@
     "selected": "תלמידים נבחרו",
     "schedule": "לוח זמנים",
     "actions": "פעולות",
-    "submited": "שולח"
+    "submittedTime": "זמן שליחה"
   },
   "managementReport": {
     "title": "דיווח על ביטול שיעור (ניהול)",

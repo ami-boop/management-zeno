@@ -41,11 +41,7 @@ export default function ScheduleClient({ days, routes }: ScheduleClientProps) {
     try {
       const routeId = route.name.split(' ')[1]
       const res = await getSchedule(routeId)
-      console.log(res)
-      console.log(routeId)
-      console.log(route.id)
       if (!res.ok) throw new Error('Failed to fetch schedule')
-      console.log(res.schedule)
       setScheduleData(res.schedule)
     } catch (_e: any) {
       setError(t('noSchedule'))

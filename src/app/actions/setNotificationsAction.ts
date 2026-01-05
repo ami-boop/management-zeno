@@ -23,7 +23,6 @@ export default async function setNotificationsAction(data: data) {
     },
     body: JSON.stringify(data as data),
   }).then(async res => {
-    console.log(res)
     return res.json()
   })
 }

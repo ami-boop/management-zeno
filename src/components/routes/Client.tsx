@@ -22,7 +22,7 @@ export default function Client({ routes }: RoutesClientProps) {
   }, [routes, searchQuery])
 
   return (
-    <div className='min-h-screen bg-white'>
+    <div className='min-h-screen bg-gray-50'>
       <div className='max-w-4xl mx-auto px-4 sm:px-8 py-8'>
         <div className='flex flex-col sm:flex-row justify-between gap-3 mb-6'>
           <h1 className='text-3xl font-bold text-gray-900 flex items-center gap-2'>

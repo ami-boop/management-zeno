@@ -1,5 +1,6 @@
 import { getTranslations } from 'next-intl/server'
 import type { WeekDay } from '@/types/schedule'
+import { EXAMPLE_ROUTES } from '@/constants'
 import Client from '@/components/schedule/Client'
 
 export default async function SchedulePage() {
@@ -28,13 +29,7 @@ export default async function SchedulePage() {
   ]
 
   // Examples
-  const routes = [
-    { id: 'ROUTE-A', name: 'Route A' },
-    { id: 'ROUTE-B', name: 'Route B' },
-    { id: 'ROUTE-C', name: 'Route C' },
-    { id: 'ROUTE-D', name: 'Route D' },
-    { id: 'ROUTE-E', name: 'Route E' },
-  ]
+  const routes = EXAMPLE_ROUTES
 
   return <Client days={days} routes={routes} />
 }

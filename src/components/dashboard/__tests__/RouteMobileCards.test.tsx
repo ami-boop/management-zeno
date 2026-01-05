@@ -6,7 +6,7 @@ import { routes as mockRoutes } from '@/mocks/tests'
 
 // Mock dayjs
 jest.mock('dayjs', () => {
-  return (_timestamp: number) => ({
+  return () => ({
     format: () => '10:30',
   })
 })

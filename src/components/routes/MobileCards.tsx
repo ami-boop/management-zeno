@@ -1,7 +1,7 @@
 'use client'
 
 import type { Route } from '@/types/routes'
-import { Bus, CheckCircle, Ban, Wrench } from 'lucide-react'
+import { CheckCircle, Ban, Wrench } from 'lucide-react'
 
 interface RoutesMobileCardsProps {
 	routes: Route[]
@@ -28,10 +28,6 @@ function RoutesMobileCards({ routes, t }: RoutesMobileCardsProps) {
 								<h3 className='text-lg font-semibold'>{route.name}</h3>
 								<p className='text-sm text-[#617989]'>
 									{route.stops} {t('headers.stops')} •{' '}
-									<span className='inline-flex items-center gap-1'>
-										<Bus className='w-4 h-4' />
-										{route.bus}
-									</span>
 								</p>
 							</div>
 							<span className='h-8 px-4 bg-[#f0f3f4] text-[#111518] text-sm font-medium rounded-full inline-flex items-center gap-1'>
@@ -40,9 +36,6 @@ function RoutesMobileCards({ routes, t }: RoutesMobileCardsProps) {
 							</span>
 						</div>
 						<div className='flex justify-between items-center pt-2 border-t border-[#dbe1e6]'>
-							<span className='text-sm text-[#617989]'>
-								{t('headers.bus')}: {route.bus}
-							</span>
 							<button className='text-sm font-bold text-[#617989] hover:text-blue-600'>
 								{t('view')}
 							</button>

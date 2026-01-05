@@ -38,7 +38,6 @@ const ScheduleViewerClient = ({
       setScheduleData(null)
       try {
         const res = await getLessons(scheduleKey)
-        console.log(res)
         if (!res.ok) throw new Error('Not found')
         setScheduleData(res)
         setShowSchedule(true)

@@ -8,7 +8,6 @@ import SubmitButton from './SubmitButton'
 import { validateEmail, validatePassword } from '@/lib/validation'
 import { useTranslations } from 'use-intl'
 import { loginAction } from '@/app/actions/auth'
-import { useRouter } from 'next/navigation'
 import inputValidation from '@/app/actions/inputValidation'
 import { signInWithEmailAndPassword } from 'firebase/auth'
 import { auth } from '@/lib/firebase'
@@ -16,7 +15,6 @@ import { AlertCircle } from 'lucide-react'
 
 export default function Form() {
   const t = useTranslations('Login')
-  const router = useRouter()
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [email, setEmail] = useState('')
@@ -59,7 +57,6 @@ export default function Form() {
 			}
 			// Если success, то redirect уже произошел на сервере
     } catch (_e: any) {
-      console.log(_e.message)
       setError(t('errors.genericError'))
     } finally {
       setIsSubmitting(false)

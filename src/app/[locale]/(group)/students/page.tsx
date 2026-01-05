@@ -1,5 +1,5 @@
 import Client from '@/components/students/Client'
-import { API_URL } from '@/constants'
+import { API_URL, cacheTTL } from '@/constants'
 import { getSessionToken } from '@/utils/getSessionToken'
 
 export interface Student {
@@ -81,7 +81,7 @@ export default async function StudentsPage() {
         'Content-Type': 'application/json',
         Cookie: `managementSessionCookie=${sessionCookie}`,
       },
-      cache: 'force-cache',
+      next: { revalidate: cacheTTL.students }  // 3 часа
     }
   ).then(res => res.json())
 

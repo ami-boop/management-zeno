@@ -5,7 +5,7 @@ import { API_URL } from '@/constants'
 
 export default async function DashboardPage() {
   const sessionCookie = await getSessionToken()
-  
+
   // Здесь можно заменить на загрузку данных с сервера
   const routes: DashboardRoute[] = await fetch(
     `${API_URL}/dashboard`,
@@ -16,6 +16,8 @@ export default async function DashboardPage() {
       },
     }
   ).then(res => res.json())
+
+  console.log(routes)
 
   return <Client routes={routes} />
 }

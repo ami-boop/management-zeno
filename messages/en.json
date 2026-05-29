@@ -22,21 +22,30 @@
     "tryAdjustingSearch": "Try adjusting your search or filter criteria",
     "noUpdatesYet": "No updates yet",
     "stats": {
-      "studentsOnBus": "Students on Bus",
-      "studentsNotMarked": "Students Not Marked",
+      "studentsOnBus": "Going Home by Bus",
+      "studentsNotMarked": "Going Home Other Way",
       "busesNeeded": "Total Buses Needed"
     },
     "columns": {
       "route": "Route",
-      "studentsOnBus": "Students on Bus",
-      "notMarked": "Not Marked",
+      "goingByBus": "Going by Bus",
+      "goingOtherWay": "Going Other Way",
       "totalStudents": "Total Students",
-      "busesNeeded": "Buses Needed",
+      "busesNeeded": "Ordered / Needed",
       "busesOrdered": "Buses Ordered",
       "status": "Status",
       "actions": "Actions",
       "departure": "Departure",
       "lastUpdated": "Last Updated"
+    },
+    "tooltips": {
+      "goingByBus": "Students taking the bus home",
+      "goingOtherWay": "Students going home by other means (parents, walking, etc.)",
+      "busesNeeded": "Buses ordered out of total needed for this route",
+      "busesFormat": "ordered / needed",
+      "ofTotal": "of",
+      "addBus": "Click only if the bus has already been ordered",
+      "removeBus": "Remove one ordered bus"
     }
   },
   "Header": {
@@ -278,6 +287,12 @@
     "notFound": "Schedule not found",
     "Error": "Error!",
     "loading": "Loading..."
+  },
+  "Error": {
+    "title": "Something went wrong",
+    "description": "An unexpected error occurred. Please try refresh your page or contact support if the problem persists.",
+    "tryAgain": "Try again",
+    "errorId": "Error ID"
   },
   "Login": {
     "title": "Management Access",

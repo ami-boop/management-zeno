@@ -1,8 +1,9 @@
-import { useTranslations } from 'next-intl';
+import { useTranslations } from 'next-intl'
 import { FC } from 'react'
+import { GradeSelector, Grade } from '@/components/ui/grade-selector'
 
 interface ClassSelectorProps {
-  grades: { key: string; label: string; hebrew: string }[]
+  grades: Grade[]
   selectedGrade: string
   setSelectedGrade: (grade: string) => void
   selectedClass: string
@@ -22,56 +23,21 @@ const ClassSelector: FC<ClassSelectorProps> = ({
 }) => {
   const t = useTranslations('managementLessons')
 
-  return <>
-    <div>
-      <label className='block text-sm font-medium text-gray-700 mb-3'>
-        {t('selectGrade')}
-      </label>
-      <div className='grid grid-cols-4 gap-2'>
-        {grades.map(grade => (
-          <button
-            key={grade.key}
-            type='button'
-            onClick={() => {
-              setSelectedGrade(grade.key)
-              setSelectedClass('')
-            }}
-            data-testid='select-grade'
-            className={`p-3 text-lg font-medium rounded-md border transition-colors duration-200 ${selectedGrade === grade.key
-              ? 'bg-blue-50 text-blue-700 border-blue-200'
-              : 'bg-white text-gray-700 border-gray-300 hover:bg-gray-50'
-              }`}
-          >
-            {grade.hebrew}
-          </button>
-        ))}
-      </div>
-    </div>
-    {selectedGrade && (
-      <div>
-        <label className='block text-sm font-medium text-gray-700 mb-3'>
-          {t('selectClass')}
-        </label>
-        <div className='grid grid-cols-6 gap-2'>
-          {generateClassNumbers().map(number => (
-            <button
-              key={number}
-              type='button'
-              onClick={() => setSelectedClass(number.toString())}
-              className={`p-2 text-sm font-medium rounded-md border transition-colors duration-200 ${selectedClass === number.toString()
-                ? 'bg-blue-50 text-blue-700 border-blue-200'
-                : 'bg-white text-gray-700 border-gray-300 hover:bg-gray-50'
-                }`}
-              data-testid='select-class'
-            >
-              {grades.find(g => g.key === selectedGrade)?.hebrew}
-              {number}
-            </button>
-          ))}
-        </div>
-      </div>
-    )}
-  </>
+  return (
+    <GradeSelector
+      grades={grades}
+      selectedGrade={selectedGrade}
+      onGradeChange={(grade) => {
+        setSelectedGrade(grade)
+        setSelectedClass('')
+      }}
+      selectedClass={selectedClass}
+      onClassChange={setSelectedClass}
+      classNumbers={generateClassNumbers()}
+      gradeLabel={t('selectGrade')}
+      classLabel={t('selectClass')}
+    />
+  )
 }
 
 export default ClassSelector

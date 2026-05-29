@@ -89,6 +89,7 @@ describe('LoginForm', () => {
       expect(validatePassword).toHaveBeenCalledWith('password123');
       expect(inputValidation).toHaveBeenCalledWith('test@example.com', 'password123');
       expect(signInWithEmailAndPassword).toHaveBeenCalled();
+      // TODO: remove loginAction from here
       expect(loginAction).toHaveBeenCalledWith('test-token');
     });
   });

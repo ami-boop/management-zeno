@@ -46,7 +46,7 @@ describe('RouteTable', () => {
 
     // Check headers
     expect(screen.getByText('columns.route')).toBeInTheDocument()
-    expect(screen.getByText('columns.studentsOnBus')).toBeInTheDocument()
+    expect(screen.getByText('columns.goingByBus')).toBeInTheDocument()
     expect(screen.getByText('columns.notMarked')).toBeInTheDocument()
     expect(screen.getByText('columns.totalStudents')).toBeInTheDocument()
     expect(screen.getByText('columns.busesNeeded')).toBeInTheDocument()

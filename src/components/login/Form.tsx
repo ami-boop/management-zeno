@@ -7,14 +7,15 @@ import PasswordField from './PasswordField'
 import SubmitButton from './SubmitButton'
 import { validateEmail, validatePassword } from '@/lib/validation'
 import { useTranslations } from 'use-intl'
-import { loginAction } from '@/app/actions/auth'
 import inputValidation from '@/app/actions/inputValidation'
 import { signInWithEmailAndPassword } from 'firebase/auth'
 import { auth } from '@/lib/firebase'
 import { AlertCircle } from 'lucide-react'
+import { useRouter } from 'next/navigation'
 
 export default function Form() {
   const t = useTranslations('Login')
+  const router = useRouter()
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [email, setEmail] = useState('')
@@ -42,20 +43,32 @@ export default function Form() {
       )
 
       const userCredential = await signInWithEmailAndPassword(
-        auth,
-        sanitizedEmail!,
-        sanitizedPassword!
-      )
+				auth,
+				sanitizedEmail!,
+				sanitizedPassword!
+			);
+    
+      // Add try catch for signinwithermail to track errors
 
-      const result = await loginAction(
-        await userCredential.user.getIdToken(true)
-      )
+			const token = await userCredential.user.getIdToken(true);
 
-      if (result?.error) {
-				setError(t(`errors.${result.error}`) || result.error)
-				auth.signOut()
+			const result = await fetch("/api/auth/login", {
+				method: "POST",
+				headers: {
+					"Content-Type": "application/json",
+				},
+				body: JSON.stringify({ token }),
+			});
+
+			console.log(await result.json())
+
+			if (!result.ok) {
+				setError(t("errors.genericError"));
+				auth.signOut();
+				return;
 			}
-			// Если success, то redirect уже произошел на сервере
+
+			router.push('/dashboard')
     } catch (_e: any) {
       setError(t('errors.genericError'))
     } finally {

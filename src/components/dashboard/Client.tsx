@@ -141,18 +141,6 @@ const Client = ({ routes }: { routes: DashboardRoute[] }) => {
         return 'bg-gray-50 text-gray-900 border-gray-200'
     }
   }
-  const getStatusDot = (status: DashboardRoute['status']): string => {
-    switch (status) {
-      case 'completed':
-        return 'bg-emerald-500'
-      case 'partial':
-        return 'bg-amber-500'
-      case 'pending':
-        return 'bg-red-500'
-      default:
-        return 'bg-gray-500'
-    }
-  }
   const getStatusText = (status: DashboardRoute['status']): string => {
     switch (status) {
       case 'completed':
@@ -215,7 +203,6 @@ const Client = ({ routes }: { routes: DashboardRoute[] }) => {
               routes={filteredRoutes}
               onOrderBuses={handleOrderBuses}
               getStatusColor={getStatusColor}
-              getStatusDot={getStatusDot}
               getStatusText={getStatusText}
             />
           </div>
@@ -223,7 +210,6 @@ const Client = ({ routes }: { routes: DashboardRoute[] }) => {
             routes={filteredRoutes}
             onOrderBuses={handleOrderBuses}
             getStatusColor={getStatusColor}
-            getStatusDot={getStatusDot}
             getStatusText={getStatusText}
           />
           {filteredRoutes.length === 0 && (

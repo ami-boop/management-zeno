@@ -22,21 +22,30 @@
     "tryAdjustingSearch": "נסה לשנות את החיפוש או את המסננים",
     "noUpdatesYet": "אין עדכונים עדיין",
     "stats": {
-      "studentsOnBus": "תלמידים באוטובוס",
-      "studentsNotMarked": "תלמידים לא סומנו",
+      "studentsOnBus": "נוסעים הביתה באוטובוס",
+      "studentsNotMarked": "נוסעים הביתה בדרך אחרת",
       "busesNeeded": "סה\"כ אוטובוסים נדרשים"
     },
     "columns": {
       "route": "מסלול",
-      "studentsOnBus": "תלמידים באוטובוס",
-      "notMarked": "לא סומנו",
+      "goingByBus": "נוסעים באוטובוס",
+      "goingOtherWay": "נוסעים בדרך אחרת",
       "totalStudents": "סה\"כ תלמידים",
-      "busesNeeded": "אוטובוסים נדרשים",
+      "busesNeeded": "הוזמנו / נדרשים",
       "busesOrdered": "אוטובוסים הוזמנו",
       "status": "סטטוס",
       "actions": "פעולות",
       "departure": "יציאה",
       "lastUpdated": "עודכן לאחרונה"
+    },
+    "tooltips": {
+      "goingByBus": "תלמידים שנוסעים הביתה באוטובוס",
+      "goingOtherWay": "תלמידים שנוסעים הביתה בדרכים אחרות (הורים, הליכה וכו')",
+      "busesNeeded": "אוטובוסים שהוזמנו מתוך הסה\"כ הנדרש למסלול זה",
+      "busesFormat": "הוזמנו / נדרשים",
+      "ofTotal": "מתוך",
+      "addBus": "לחץ רק אם האוטובוס כבר הוזמן",
+      "removeBus": "הסר אוטובוס אחד שהוזמן"
     }
   },
   "Header": {
@@ -237,6 +246,8 @@
     "title": "דיווח על ביטול שיעור (ניהול)",
     "description": "דווח על ביטול שיעורים כדי שנוכל לארגן אוטובוסים נוספים לתלמידים.",
     "reportButton": "דווח על ביטול",
+    "gradeLabel": "בחר שכבה",
+    "classLabel": "בחר כיתה",
     "classPlaceholder": "בחר כיתה",
     "profileLabel": "בחר פרופיל",
     "selectAllProfiles": "כל הפרופילים",
@@ -278,6 +289,12 @@
     "notFound": "לא נמצאה מערכת",
     "Error": "שגיאה!",
     "loading": "טוען..."
+  },
+  "Error": {
+    "title": "משהו השתבש",
+    "description": "אירעה שגיאה בלתי צפויה. אנא נסה לרענן את הדף או פנה לתמיכה אם הבעיה נמשכת.",
+    "tryAgain": "נסה שוב",
+    "errorId": "מזהה שגיאה"
   },
   "Login": {
     "title": "גישה לניהול",

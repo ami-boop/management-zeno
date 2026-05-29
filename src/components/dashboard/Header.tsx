@@ -13,10 +13,6 @@ const Header = ({
           <p className='text-gray-600 text-base'>{t('description')}</p>
         </div>
         <div className='flex items-center space-x-4'>
-          <div className='flex items-center text-sm text-gray-600'>
-            <CheckCircle className='w-4 h-4 text-green-500 mr-2' data-testid='check-circle' />
-            {t('systemStatus')}
-          </div>
           {lastUpdated && (
             <div className='text-sm text-gray-500 flex items-center'>
               <Clock className='w-4 h-4 mr-1' data-testid='clock-icon' />

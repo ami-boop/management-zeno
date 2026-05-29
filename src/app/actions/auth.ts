@@ -2,6 +2,7 @@
 'use server'
 
 import { API_URL } from '@/constants'
+import { isRedirectError } from 'next/dist/client/components/redirect-error'
 import { cookies } from 'next/headers'
 import { redirect } from 'next/navigation'
 
@@ -13,36 +14,37 @@ export interface LoginFormState {
 export async function loginAction(idToken: string): Promise<LoginFormState> {
   try {
     // check user role
-    const userCheckRes = await fetch(
-      'https://verifyadminrole-ag7er5qhga-ew.a.run.app',
-      {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${idToken}`,
-        },
-      }
-    )
+    // const userCheckRes = await fetch(
+    //   'https://verifyadminrole-ag7er5qhga-ew.a.run.app',
+    //   {
+    //     method: 'POST',
+    //     headers: {
+    //       'Content-Type': 'application/json',
+    //       Authorization: `Bearer ${idToken}`,
+    //     },
+    //   }
+    // )
 
-    const userCheckResult = await userCheckRes.json()
+    // const userCheckResult = await userCheckRes.json()
 
-    if (!userCheckRes.ok) {
-      if (userCheckResult.accessDenied) {
-        return { error: 'accessDenied' }
-      }
-      return { error: 'genericError' }
-    }
+    // if (!userCheckRes.ok) {
+    //   if (userCheckResult.accessDenied) {
+    //     return { error: 'accessDenied' }
+    //   }
+    //   return { error: 'genericError' }
+    // }
 
     const setTokenRes = await fetch(
       `${API_URL}/auth/session`,
       {
         method: 'POST',
         headers: {
-          'Content-Type': 'application/json',
           Authorization: `Bearer ${idToken}`,
         },
       }
     )
+
+    console.log(setTokenRes)
 
     if (!setTokenRes.ok) {
       return { error: 'Failed to create session' }
@@ -59,11 +61,15 @@ export async function loginAction(idToken: string): Promise<LoginFormState> {
         maxAge: Math.floor(tokenResult.expiresIn / 1000),
         path: '/',
       })
-      redirect('/dashboard')
+      
     }
 
-    throw new Error()
+    redirect('/dashboard')
   } catch (error: any) {
+    if (isRedirectError(error)) {
+			throw error
+		}
+
     switch (error.code) {
       case 'auth/user-not-found':
         return { error: 'userNotFound' }

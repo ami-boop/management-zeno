@@ -1,13 +1,13 @@
-import { Bus, Users, AlertTriangle } from 'lucide-react'
+import { Bus, Users, Car, CheckCircle, AlertCircle, Clock } from 'lucide-react'
 import { useTranslations } from 'next-intl'
 import { DashboardRoute } from '@/types/dashboard'
+import { ProgressBar } from '@/components/ui/progress-bar'
 import dayjs from 'dayjs'
 
 interface DashboardRouteMobileCardsProps {
   routes: DashboardRoute[]
   onOrderBuses: (routeId: string, count: number) => void
   getStatusColor: (status: DashboardRoute['status']) => string
-  getStatusDot: (status: DashboardRoute['status']) => string
   getStatusText: (status: DashboardRoute['status']) => string
 }
 
@@ -15,148 +15,207 @@ const RouteMobileCards = ({
   routes,
   onOrderBuses,
   getStatusColor,
-  getStatusDot,
   getStatusText,
 }: DashboardRouteMobileCardsProps) => {
   const t = useTranslations('Dashboard')
+
+  const getStatusIcon = (status: DashboardRoute['status']) => {
+    switch (status) {
+      case 'completed':
+        return <CheckCircle className="w-3.5 h-3.5" />
+      case 'partial':
+        return <Clock className="w-3.5 h-3.5" />
+      case 'pending':
+        return <AlertCircle className="w-3.5 h-3.5" />
+      default:
+        return null
+    }
+  }
+
   return (
-    <div className='lg:hidden divide-y divide-gray-200'>
-      {routes.map(route => (
-        <div key={route.id} className='p-6' data-testid='route-container'>
-          <div className='flex items-center justify-between mb-4'>
-            <div>
-              <h3 className='text-lg font-medium text-gray-900'>
-                {route.name}
-              </h3>
-              <p className='text-sm text-gray-500'>
-                {t('columns.departure')}: {route.estimatedTime}
-              </p>
-            </div>
-            <div
-              className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium border ${getStatusColor(
-                route.status
-              )}`}
-            >
+    <div className="lg:hidden divide-y divide-gray-200">
+      {routes.map((route) => {
+        const busPercent = Math.round(
+          (route.studentsOnBus / route.totalStudents) * 100
+        )
+        const otherPercent = Math.round(
+          (route.studentsNotMarked / route.totalStudents) * 100
+        )
+        const busesPercent = Math.round(
+          (route.busesOrdered / route.busesNeeded) * 100
+        )
+
+        return (
+          <div
+            key={route.id}
+            className="p-4 sm:p-6"
+            data-testid="route-container"
+          >
+            {/* Header */}
+            <div className="flex items-start justify-between mb-4">
+              <div className="flex-1 min-w-0">
+                <h3 className="text-base sm:text-lg font-medium text-gray-900 truncate">
+                  {route.name}
+                </h3>
+                <p className="text-xs sm:text-sm text-gray-500">
+                  {t('columns.departure')}: {route.estimatedTime}
+                </p>
+              </div>
               <div
-                className={`w-1.5 h-1.5 rounded-full mr-1.5 ${getStatusDot(
+                className={`inline-flex items-center gap-1 px-2 py-1 rounded-full text-xs font-medium border shrink-0 ${getStatusColor(
                   route.status
                 )}`}
-              ></div>
-              {getStatusText(route.status)}
-            </div>
-          </div>
-
-          <div className='grid grid-cols-2 gap-4 mb-4'>
-            <div>
-              <dt className='text-sm font-medium text-gray-500'>
-                <Users className='inline w-4 h-4 mr-1' />{' '}
-                {t('columns.studentsOnBus')}
-              </dt>
-              <dd className='text-lg font-semibold text-emerald-600'>
-                {route.studentsOnBus}
-              </dd>
-            </div>
-            <div>
-              <dt className='text-sm font-medium text-gray-500'>
-                <AlertTriangle className='inline w-4 h-4 mr-1' />{' '}
-                {t('columns.notMarked')}
-              </dt>
-              <dd
-                className={`text-lg font-semibold ${route.studentsNotMarked > 0
-                  ? 'text-amber-600'
-                  : 'text-gray-500'
-                  }`}
               >
-                {route.studentsNotMarked}
-              </dd>
+                {getStatusIcon(route.status)}
+                <span className="hidden sm:inline">
+                  {getStatusText(route.status)}
+                </span>
+              </div>
             </div>
-          </div>
 
-          <div className='mb-4'>
-            <div className='flex justify-between text-sm mb-2'>
-              <span className='font-medium text-gray-500'>
-                {t('columns.totalStudents')}
-              </span>
-              <span className='text-gray-900'>{route.totalStudents}</span>
+            {/* Total Students */}
+            <div className="mb-3 p-2 bg-gray-50 rounded-lg">
+              <div className="flex justify-between items-center">
+                <span className="text-xs sm:text-sm font-medium text-gray-600">
+                  {t('columns.totalStudents')}
+                </span>
+                <span className="text-sm sm:text-base font-semibold text-gray-900">
+                  {route.totalStudents}
+                </span>
+              </div>
             </div>
-            <div className='w-full bg-gray-200 rounded-full h-2'>
-              <div
-                className='bg-emerald-500 h-2 rounded-full transition-all duration-300'
-                style={{
-                  width: `${Math.min(
-                    100,
-                    Math.max(
-                      0,
-                      (route.studentsOnBus / route.totalStudents) * 100
-                    )
-                  )}%`,
-                }}
-              ></div>
-            </div>
-          </div>
 
-          <div className='mb-4'>
-            <div className='flex justify-between text-sm mb-2'>
-              <span className='font-medium text-gray-500'>
-                <Bus className='inline w-4 h-4 mr-1' />{' '}
-                {t('columns.busesOrdered')}
-              </span>
-              <span className='text-gray-900'>
-                {route.busesOrdered}/{route.busesNeeded}
-              </span>
-            </div>
-            <div className='w-full bg-gray-200 rounded-full h-2'>
-              <div
-                className='bg-blue-500 h-2 rounded-full transition-all duration-300'
-                style={{
-                  width: `${Math.min(
-                    100,
-                    Math.max(0, (route.busesOrdered / route.busesNeeded) * 100)
-                  )}%`,
-                }}
-              ></div>
-            </div>
-          </div>
+            {/* Students Stats */}
+            <div className="grid grid-cols-2 gap-3 mb-4">
+              {/* Going by Bus */}
+              <div className="p-3 bg-emerald-50 rounded-lg">
+                <div className="flex items-center gap-1.5 mb-1">
+                  <Users className="w-4 h-4 text-emerald-600" />
+                  <span className="text-xs text-emerald-700 font-medium truncate">
+                    {t('columns.goingByBus')}
+                  </span>
+                </div>
+                <div className="flex items-baseline gap-1.5">
+                  <span className="text-lg sm:text-xl font-bold text-emerald-600">
+                    {route.studentsOnBus}
+                  </span>
+                  <span className="text-xs text-emerald-500">
+                    ({busPercent}%)
+                  </span>
+                </div>
+                <div className="mt-2">
+                  <ProgressBar value={busPercent} color="emerald" size="sm" />
+                </div>
+              </div>
 
-          {route.busesOrdered < route.busesNeeded && (
-            <div className='flex items-center space-x-2 mb-4'>
-              <button
-                onClick={() => onOrderBuses(route.id, 1)}
-                className='flex-1 inline-flex justify-center items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors duration-200'
-              >
-                +1 <Bus className='w-4 h-4 ml-1' />
-              </button>
-              {route.busesOrdered + 2 <= route.busesNeeded && (
+              {/* Going Other Way */}
+              <div className="p-3 bg-amber-50 rounded-lg">
+                <div className="flex items-center gap-1.5 mb-1">
+                  <Car className="w-4 h-4 text-amber-600" />
+                  <span className="text-xs text-amber-700 font-medium truncate">
+                    {t('columns.goingOtherWay')}
+                  </span>
+                </div>
+                <div className="flex items-baseline gap-1.5">
+                  <span
+                    className={`text-lg sm:text-xl font-bold ${
+                      route.studentsNotMarked > 0
+                        ? 'text-amber-600'
+                        : 'text-gray-400'
+                    }`}
+                  >
+                    {route.studentsNotMarked}
+                  </span>
+                  <span className="text-xs text-amber-500">
+                    ({otherPercent}%)
+                  </span>
+                </div>
+                <div className="mt-2">
+                  <ProgressBar
+                    value={otherPercent}
+                    color={route.studentsNotMarked > 0 ? 'amber' : 'gray'}
+                    size="sm"
+                  />
+                </div>
+              </div>
+            </div>
+
+            {/* Buses */}
+            <div className="mb-4 p-3 bg-blue-50 rounded-lg">
+              <div className="flex items-center justify-between mb-2">
+                <div className="flex items-center gap-1.5">
+                  <Bus className="w-4 h-4 text-blue-600" />
+                  <span className="text-xs sm:text-sm text-blue-700 font-medium">
+                    {t('columns.busesNeeded')}
+                  </span>
+                </div>
+                <div className="flex items-baseline gap-1">
+                  <span className="text-base sm:text-lg font-bold text-blue-600">
+                    {route.busesOrdered}
+                  </span>
+                  <span className="text-xs text-blue-500">
+                    {t('tooltips.ofTotal')} {route.busesNeeded}
+                  </span>
+                </div>
+              </div>
+              <ProgressBar value={busesPercent} color="blue" size="md" />
+            </div>
+
+            {/* Actions */}
+            <div className="flex items-center gap-2 mb-3">
+              {route.busesOrdered < route.busesNeeded && (
+                <>
+                  <button
+                    onClick={() => onOrderBuses(route.id, 1)}
+                    title={t('tooltips.addBus')}
+                    className="flex-1 inline-flex justify-center items-center px-3 py-2 border border-transparent text-sm font-medium rounded-lg text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors duration-200"
+                  >
+                    +1 <Bus className="w-4 h-4 ml-1" />
+                  </button>
+                  {route.busesOrdered + 2 <= route.busesNeeded && (
+                    <button
+                      onClick={() =>
+                        onOrderBuses(
+                          route.id,
+                          route.busesNeeded - route.busesOrdered
+                        )
+                      }
+                      className="flex-1 inline-flex justify-center items-center px-3 py-2 border border-gray-300 text-sm font-medium rounded-lg text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors duration-200"
+                    >
+                      {t('orderAll')}
+                    </button>
+                  )}
+                </>
+              )}
+              {route.busesOrdered === route.busesNeeded &&
+                route.busesOrdered > 0 && (
+                  <div className="inline-flex items-center gap-1.5 text-sm text-emerald-600 font-medium">
+                    <CheckCircle className="w-4 h-4" />
+                    {t('allOrdered')}
+                  </div>
+                )}
+              {route.busesOrdered > 0 && (
                 <button
-                  onClick={() =>
-                    onOrderBuses(
-                      route.id,
-                      route.busesNeeded - route.busesOrdered
-                    )
-                  }
-                  className='flex-1 inline-flex justify-center items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors duration-200'
+                  onClick={() => onOrderBuses(route.id, -1)}
+                  title={t('tooltips.removeBus')}
+                  className="flex-1 inline-flex justify-center items-center px-3 py-2 border border-gray-300 text-sm font-medium rounded-lg text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-400 transition-colors duration-200"
                 >
-                  {t('orderAll')}
+                  -1 <Bus className="w-4 h-4 ml-1" />
                 </button>
               )}
             </div>
-          )}
 
-          {route.busesOrdered === route.busesNeeded && (
-            <span className='text-xs text-emerald-600 font-medium'>
-              {t('allOrdered')}
-            </span>
-          )}
-
-          <div className='text-sm text-gray-500'>
-            {t('columns.lastUpdated')}:{' '}
-            {dayjs(
-              route.lastUpdate._seconds * 1000 +
-              Math.floor(route.lastUpdate._nanoseconds / 1e6)
-            ).format('HH:MM')}
+            {/* Footer */}
+            <div className="text-xs text-gray-400 pt-2 border-t border-gray-100">
+              {t('columns.lastUpdated')}:{' '}
+              {dayjs(
+                route.lastUpdate._seconds * 1000 +
+                  Math.floor(route.lastUpdate._nanoseconds / 1e6)
+              ).format('HH:mm')}
+            </div>
           </div>
-        </div>
-      ))}
+        )
+      })}
     </div>
   )
 }

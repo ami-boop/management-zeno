@@ -1,5 +1,5 @@
 import { useTranslations } from 'next-intl'
-import { CheckCircle, Clock } from 'lucide-react'
+import { Clock } from 'lucide-react'
 
 const Header = ({
   lastUpdated,

@@ -13,15 +13,6 @@ const mockGetStatusColor = (status: DashboardRoute['status']) => {
   return colors[status] || ''
 }
 
-const mockGetStatusDot = (status: DashboardRoute['status']) => {
-  const dots: Record<DashboardRoute['status'], string> = {
-    pending: 'bg-yellow-500',
-    partial: 'bg-amber-500',
-    completed: 'bg-gray-500',
-  }
-  return dots[status] || ''
-}
-
 const mockGetStatusText = (status: DashboardRoute['status']) => {
   return status
 }
@@ -39,7 +30,6 @@ describe('RouteTable', () => {
         routes={mockRoutes}
         onOrderBuses={mockOnOrderBuses}
         getStatusColor={mockGetStatusColor}
-        getStatusDot={mockGetStatusDot}
         getStatusText={mockGetStatusText}
       />
     )
@@ -47,7 +37,7 @@ describe('RouteTable', () => {
     // Check headers
     expect(screen.getByText('columns.route')).toBeInTheDocument()
     expect(screen.getByText('columns.goingByBus')).toBeInTheDocument()
-    expect(screen.getByText('columns.notMarked')).toBeInTheDocument()
+    expect(screen.getByText('columns.goingOtherWay')).toBeInTheDocument()
     expect(screen.getByText('columns.totalStudents')).toBeInTheDocument()
     expect(screen.getByText('columns.busesNeeded')).toBeInTheDocument()
     expect(screen.getByText('columns.status')).toBeInTheDocument()
@@ -70,7 +60,6 @@ describe('RouteTable', () => {
         routes={mockRoutes}
         onOrderBuses={mockOnOrderBuses}
         getStatusColor={mockGetStatusColor}
-        getStatusDot={mockGetStatusDot}
         getStatusText={mockGetStatusText}
       />
     )
@@ -90,7 +79,6 @@ describe('RouteTable', () => {
         routes={mockRoutes}
         onOrderBuses={mockOnOrderBuses}
         getStatusColor={mockGetStatusColor}
-        getStatusDot={mockGetStatusDot}
         getStatusText={mockGetStatusText}
       />
     )
@@ -113,7 +101,6 @@ describe('RouteTable', () => {
         routes={customRoutes}
         onOrderBuses={mockOnOrderBuses}
         getStatusColor={mockGetStatusColor}
-        getStatusDot={mockGetStatusDot}
         getStatusText={mockGetStatusText}
       />
     )

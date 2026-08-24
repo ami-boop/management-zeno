@@ -20,15 +20,6 @@ const mockGetStatusColor = (status: DashboardRoute['status']) => {
   return colors[status] || ''
 }
 
-const mockGetStatusDot = (status: DashboardRoute['status']) => {
-  const dots: Record<DashboardRoute['status'], string> = {
-    pending: 'bg-yellow-500',
-    partial: 'bg-amber-500',
-    completed: 'bg-gray-500',
-  }
-  return dots[status] || ''
-}
-
 const mockGetStatusText = (status: DashboardRoute['status']) => {
   return status
 }
@@ -46,7 +37,6 @@ describe('RouteMobileCards', () => {
         routes={mockRoutes}
         onOrderBuses={mockOnOrderBuses}
         getStatusColor={mockGetStatusColor}
-        getStatusDot={mockGetStatusDot}
         getStatusText={mockGetStatusText}
       />
     )
@@ -55,8 +45,13 @@ describe('RouteMobileCards', () => {
     expect(screen.getByText('Route B')).toBeInTheDocument()
     expect(screen.getByText('85')).toBeInTheDocument()
     expect(screen.getByText('60')).toBeInTheDocument()
-    expect(screen.getByText('2/4')).toBeInTheDocument()
-    expect(screen.getByText('1/3')).toBeInTheDocument()
+    expect(screen.getAllByText('columns.busesNeeded').length).toBeGreaterThan(0)
+    expect(
+      screen.getByText((_, el) => el?.textContent === 'tooltips.ofTotal 4'),
+    ).toBeInTheDocument()
+    expect(
+      screen.getByText((_, el) => el?.textContent === 'tooltips.ofTotal 3'),
+    ).toBeInTheDocument()
   })
 
   test('calls onOrderBuses with correct parameters when +1 button is clicked', async () => {
@@ -67,7 +62,6 @@ describe('RouteMobileCards', () => {
         routes={mockRoutes}
         onOrderBuses={mockOnOrderBuses}
         getStatusColor={mockGetStatusColor}
-        getStatusDot={mockGetStatusDot}
         getStatusText={mockGetStatusText}
       />
     )
@@ -87,7 +81,6 @@ describe('RouteMobileCards', () => {
         routes={mockRoutes}
         onOrderBuses={mockOnOrderBuses}
         getStatusColor={mockGetStatusColor}
-        getStatusDot={mockGetStatusDot}
         getStatusText={mockGetStatusText}
       />
     )
@@ -107,7 +100,6 @@ describe('RouteMobileCards', () => {
         routes={mockRoutes}
         onOrderBuses={mockOnOrderBuses}
         getStatusColor={mockGetStatusColor}
-        getStatusDot={mockGetStatusDot}
         getStatusText={mockGetStatusText}
       />
     )

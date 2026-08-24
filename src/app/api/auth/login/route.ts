@@ -46,7 +46,7 @@ export async function POST(req: Request) {
       uid,
       role,
     });
-  } catch (err) {
+  } catch {
     return NextResponse.json(
       { error: "Unauthorized" },
       { status: 401 }

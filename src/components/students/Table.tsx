@@ -1,7 +1,6 @@
 'use client'
 
 import type { Student } from '@/app/[locale]/(group)/students/page'
-import { CircleCheck, CircleX } from 'lucide-react'
 
 interface StudentTableProps {
 	students: Student[]

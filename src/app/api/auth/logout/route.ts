@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import { cookies } from "next/headers";
 
 
-export async function POST(req: Request) {
+export async function POST() {
   try {
     const cookieStore = await cookies();
 
@@ -11,7 +11,7 @@ export async function POST(req: Request) {
     return NextResponse.json({
       success: true,
     });
-  } catch (err) {
+  } catch {
     return NextResponse.json(
       { error: "Internal Service Error" },
       { status: 500 }

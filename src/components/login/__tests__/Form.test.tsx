@@ -1,7 +1,6 @@
 import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import Form from '../Form';
-import { loginAction } from '@/app/actions/auth';
 import inputValidation from '@/app/actions/inputValidation';
 import { validateEmail, validatePassword } from '@/lib/validation';
 import { signInWithEmailAndPassword } from 'firebase/auth';
@@ -17,9 +16,6 @@ jest.mock('next/navigation', () => ({
 }));
 
 // Mock server actions and validation
-jest.mock('@/app/actions/auth', () => ({
-  loginAction: jest.fn(),
-}));
 jest.mock('@/app/actions/inputValidation', () => ({
   __esModule: true,
   default: jest.fn(),
@@ -67,10 +63,10 @@ describe('LoginForm', () => {
       sanitizedEmail: 'test@example.com',
       sanitizedPassword: 'password123',
     });
+    global.fetch = jest.fn().mockResolvedValue({ ok: true });
     (signInWithEmailAndPassword as jest.Mock).mockResolvedValue({
       user: { getIdToken: jest.fn().mockResolvedValue('test-token') },
     });
-    (loginAction as jest.Mock).mockResolvedValue({ success: true });
 
     render(<Form />);
 
@@ -89,8 +85,7 @@ describe('LoginForm', () => {
       expect(validatePassword).toHaveBeenCalledWith('password123');
       expect(inputValidation).toHaveBeenCalledWith('test@example.com', 'password123');
       expect(signInWithEmailAndPassword).toHaveBeenCalled();
-      // TODO: remove loginAction from here
-      expect(loginAction).toHaveBeenCalledWith('test-token');
+      expect(global.fetch).toHaveBeenCalledWith('/api/auth/login', expect.objectContaining({ method: 'POST' }));
     });
   });
 

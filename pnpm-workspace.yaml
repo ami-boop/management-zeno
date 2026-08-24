@@ -4,3 +4,7 @@ allowBuilds:
   protobufjs: true
   sharp: true
   unrs-resolver: true
+
+# Supply-chain protection: only install package versions published >= 24h ago
+minimumReleaseAge: 1440
+minimumReleaseAgeStrict: true

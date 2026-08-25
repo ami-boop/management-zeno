@@ -27,7 +27,7 @@ export default async function setStudentReturnStatus(reportData: reportData) {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        Cookie: `managementSessionCookie=${sessionCookie}`,
+        Authorization: `Bearer ${sessionCookie}`,
       },
       body: JSON.stringify(requestBody),
     }

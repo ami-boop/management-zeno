@@ -23,11 +23,12 @@ function getLocaleFromPath(pathname: string): string {
 
 export default async function middleware(request: NextRequest) {
 	const { pathname } = request.nextUrl
-	const sessionCookie = request.cookies.get('managementSessionCookie')?.value
+	const authHeader = request.headers.get('authorization')
+	const hasSession = !!authHeader?.toLowerCase().startsWith('bearer ')
 
 	// if public path, apply internationalization
 	if (isPublicPath(pathname)) {
-		if (sessionCookie) {
+		if (hasSession) {
 			return NextResponse.redirect(
 				new URL(
 					`/${getLocaleFromPath(pathname)}/dashboard`,
@@ -39,7 +40,7 @@ export default async function middleware(request: NextRequest) {
 	}
 
 	// if not session cookie, redirect to login
-	if (!sessionCookie) {
+	if (!hasSession) {
 		const locale = getLocaleFromPath(pathname)
 		const loginUrl = new URL(`/${locale}/login`, request.nextUrl.origin)
 		return NextResponse.redirect(loginUrl)
@@ -52,6 +53,6 @@ export default async function middleware(request: NextRequest) {
 
 export const config = {
 	matcher: [
-		'/((?!api|_next/static|_next/image|favicon.ico|robots.txt|sitemap.xml).*)',
+		'/((?!api|_next/static|_next/image|favicon.ico|robots.txt|sitemap.xml|service-worker.js|.*\\.(?:svg|png|jpg|jpeg|gif|webp|ico)$).*)',
 	],
 }

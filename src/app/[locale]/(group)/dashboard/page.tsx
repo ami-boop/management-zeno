@@ -12,7 +12,7 @@ export default async function DashboardPage() {
     {
       headers: {
         'Content-Type': 'application/json',
-        Cookie: `managementSessionCookie=${sessionCookie}`,
+        Authorization: `Bearer ${sessionCookie}`,
       },
     }
   ).then(res => res.json())

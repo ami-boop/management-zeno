@@ -19,7 +19,7 @@ export default async function setNotificationsAction(data: data) {
     method,
     headers: {
       'Content-Type': 'application/json',
-      Cookie: `managementSessionCookie=${sessionCookie as string}`,
+      Authorization: `Bearer ${sessionCookie as string}`,
     },
     body: JSON.stringify(data as data),
   }).then(async res => {

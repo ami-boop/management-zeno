@@ -11,7 +11,7 @@ export async function getLessons(classId: string) {
     {
       headers: {
         'Content-Type': 'application/json',
-        Cookie: `managementSessionCookie=${sessionCookie}`,
+        Authorization: `Bearer ${sessionCookie}`,
       },
       cache: 'force-cache',
     }

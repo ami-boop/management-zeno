@@ -13,7 +13,7 @@ export async function getSchedule(routeId: string) {
 		{
 			headers: {
 				'Content-Type': 'application/json',
-				Cookie: `managementSessionCookie=${sessionCookie}`,
+				Authorization: `Bearer ${sessionCookie}`,
 			},
 			cache: 'force-cache',
 		}

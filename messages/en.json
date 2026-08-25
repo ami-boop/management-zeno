@@ -313,6 +313,7 @@
       "tooManyRequests": "Too many requests. Please try again later",
       "userDisabled": "User account is disabled",
       "genericError": "An error occurred. Please try again",
+      "networkError": "Network error. Check your connection and try again",
       "accessDenied": "Access denied."
     }
   }

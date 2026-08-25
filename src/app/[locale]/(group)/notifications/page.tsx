@@ -11,7 +11,7 @@ export default async function NotificationsPage() {
     {
       headers: {
         'Content-Type': 'application/json',
-        Cookie: `managementSessionCookie=${sessionCookie as string}`,
+        Authorization: `Bearer ${sessionCookie as string}`,
       },
     }
   ).then(res => res.json())

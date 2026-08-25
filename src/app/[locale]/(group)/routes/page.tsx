@@ -13,7 +13,7 @@ export default async function RoutesPage() {
     routes = await fetch('https://api-ag7er5qhga-ew.a.run.app/v1/routes', {
       headers: {
         'Content-Type': 'application/json',
-        Cookie: `managementSessionCookie=${sessionCookie}`,
+        Authorization: `Bearer ${sessionCookie}`,
       },
       next: { revalidate: cacheTTL.routes } // 3 часа
     }).then(res => res.json())

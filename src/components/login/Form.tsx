@@ -5,17 +5,34 @@ import Header from './Header'
 import EmailField from './EmailField'
 import PasswordField from './PasswordField'
 import SubmitButton from './SubmitButton'
-import { validateEmail, validatePassword } from '@/lib/validation'
-import { useTranslations } from 'use-intl'
-import inputValidation from '@/app/actions/inputValidation'
+import { useLocale, useTranslations } from 'next-intl'
 import { signInWithEmailAndPassword } from 'firebase/auth'
 import { auth } from '@/lib/firebase'
+import { ensureServiceWorkerReady } from '@/lib/service-worker'
+import { navigate } from '@/utils/navigate'
 import { AlertCircle } from 'lucide-react'
-import { useRouter } from 'next/navigation'
+
+const LOGIN_ERROR_KEYS: Record<string, string> = {
+	'auth/invalid-email': 'invalidEmail',
+	'auth/invalid-credential': 'invalidCredential',
+	'auth/user-not-found': 'userNotFound',
+	'auth/wrong-password': 'wrongPassword',
+	'auth/too-many-requests': 'tooManyRequests',
+	'auth/user-disabled': 'userDisabled',
+	'auth/network-request-failed': 'networkError',
+}
+
+const getErrorCode = (error: unknown): string => {
+	if (typeof error === 'object' && error !== null && 'code' in error) {
+		const code = (error as { code?: unknown }).code
+		if (typeof code === 'string') return code
+	}
+	return ''
+}
 
 export default function Form() {
   const t = useTranslations('Login')
-  const router = useRouter()
+  const locale = useLocale()
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [email, setEmail] = useState('')
@@ -24,53 +41,28 @@ export default function Form() {
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
     setError(null)
-    if (!validateEmail(email)) {
-      setError(t('errors.invalidEmail'))
-      return
-    }
-
-    if (!validatePassword(password)) {
-      setError(t('errors.invalidPassword'))
-      return
-    }
-
     setIsSubmitting(true)
 
     try {
-      const { sanitizedEmail, sanitizedPassword } = await inputValidation(
-        email,
-        password
-      )
+      const userCredential = await signInWithEmailAndPassword(auth, email, password)
 
-      const userCredential = await signInWithEmailAndPassword(
-				auth,
-				sanitizedEmail!,
-				sanitizedPassword!
-			);
-    
-      // Add try catch for signinwithermail to track errors
+      const tokenResult = await userCredential.user.getIdTokenResult()
+      if (tokenResult.claims.role !== 'admin') {
+        await auth.signOut()
+        setError(t('errors.accessDenied'))
+        return
+      }
 
-			const token = await userCredential.user.getIdToken(true);
+      const swReady = await ensureServiceWorkerReady()
+      if (!swReady) {
+        setError(t('errors.genericError'))
+        return
+      }
 
-			const result = await fetch("/api/auth/login", {
-				method: "POST",
-				headers: {
-					"Content-Type": "application/json",
-				},
-				body: JSON.stringify({ token }),
-			});
-
-			console.log(await result.json())
-
-			if (!result.ok) {
-				setError(t("errors.genericError"));
-				auth.signOut();
-				return;
-			}
-
-			router.push('/dashboard')
-    } catch (_e: any) {
-      setError(t('errors.genericError'))
+      navigate(`/${locale}/dashboard`)
+    } catch (error) {
+      const key = LOGIN_ERROR_KEYS[getErrorCode(error)] ?? 'genericError'
+      setError(t(`errors.${key}`))
     } finally {
       setIsSubmitting(false)
     }

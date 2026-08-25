@@ -13,7 +13,7 @@ export default async function ReportPage() {
     const res = await fetch(`${API_URL}/report-time/management`, {
       headers: {
         'Content-Type': 'application/json',
-        Cookie: `managementSessionCookie=${sessionToken}`,
+        Authorization: `Bearer ${sessionToken}`,
       },
       cache: 'force-cache',
     })

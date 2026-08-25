@@ -79,7 +79,7 @@ export default async function StudentsPage() {
     {
       headers: {
         'Content-Type': 'application/json',
-        Cookie: `managementSessionCookie=${sessionCookie}`,
+        Authorization: `Bearer ${sessionCookie}`,
       },
       next: { revalidate: cacheTTL.students }  // 3 часа
     }

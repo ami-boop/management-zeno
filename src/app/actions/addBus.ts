@@ -10,7 +10,7 @@ export default async function addBus(routeId: string, busesToOrder: number) {
 		method: 'POST',
 		headers: {
 			'Content-Type': 'application/json',
-			Cookie: `managementSessionCookie=${sessionCookie}`,
+			Authorization: `Bearer ${sessionCookie}`,
 		},
 		body: JSON.stringify({ routeId, busesToOrder }),
 	}).then(res => res.json())

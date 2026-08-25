@@ -1,4 +1,5 @@
 import { NextIntlClientProvider, hasLocale } from 'next-intl'
+import ServiceWorkerRegistrar from '@/components/ServiceWorkerRegistrar'
 import { notFound } from 'next/navigation'
 import { routing } from '@/i18n/routing'
 import { Metadata } from 'next'
@@ -33,6 +34,7 @@ export default async function LocaleLayout({
   return (
     <html lang={locale} dir={locale === 'he' ? 'rtl' : 'ltr'} suppressHydrationWarning>
       <body className={poppins.className}>
+        <ServiceWorkerRegistrar />
         <NextIntlClientProvider>{children}</NextIntlClientProvider>
         <Toaster richColors position='top-right' />
       </body>

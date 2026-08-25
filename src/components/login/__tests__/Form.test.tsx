@@ -1,34 +1,33 @@
 import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import Form from '../Form';
-import inputValidation from '@/app/actions/inputValidation';
-import { validateEmail, validatePassword } from '@/lib/validation';
 import { signInWithEmailAndPassword } from 'firebase/auth';
+import { ensureServiceWorkerReady } from '@/lib/service-worker';
+import { navigate } from '@/utils/navigate';
 
 // --- MOCKS ---
 
-// Mock next-intl globally (assuming it's in jest.setup.js)
-
-// Mock next/navigation to control router
-const mockRouterPush = jest.fn();
-jest.mock('next/navigation', () => ({
-  useRouter: () => ({ push: mockRouterPush }),
+jest.mock('use-intl', () => ({
+  useTranslations: () => (key: string) => key,
+  useLocale: () => 'en',
 }));
 
-// Mock server actions and validation
-jest.mock('@/app/actions/inputValidation', () => ({
-  __esModule: true,
-  default: jest.fn(),
+jest.mock('@/lib/service-worker', () => ({
+  ensureServiceWorkerReady: jest.fn(),
 }));
-jest.mock('@/lib/validation', () => ({
-  validateEmail: jest.fn(() => true),
-  validatePassword: jest.fn(() => true),
+
+jest.mock('@/utils/navigate', () => ({
+  navigate: jest.fn(),
 }));
 
 // Mock Firebase auth
 jest.mock('firebase/auth', () => ({
   signInWithEmailAndPassword: jest.fn(),
-  getAuth: jest.fn(), // Also mock getAuth if it's used in @/lib/firebase
+  getAuth: jest.fn(),
+}));
+
+jest.mock('@/lib/firebase', () => ({
+  auth: { signOut: jest.fn() },
 }));
 
 // Mock Child Components
@@ -37,11 +36,20 @@ jest.mock('../EmailField', () => ({ __esModule: true, default: ({ value, onChang
 jest.mock('../PasswordField', () => ({ __esModule: true, default: ({ value, onChange }: any) => <input type="password" value={value} onChange={onChange} placeholder="MockedPasswordField" /> }));
 jest.mock('../SubmitButton', () => ({ __esModule: true, default: ({ isSubmitting, isDisabled }: any) => <button type="submit" disabled={isSubmitting || isDisabled}>{isSubmitting ? 'Submitting...' : 'Mocked Submit'}</button> }));
 
+const mockSignIn = signInWithEmailAndPassword as jest.Mock;
+const mockEnsureSw = ensureServiceWorkerReady as jest.Mock;
+
 // --- TESTS ---
 
 describe('LoginForm', () => {
   beforeEach(() => {
     jest.clearAllMocks();
+    mockEnsureSw.mockResolvedValue(true);
+    mockSignIn.mockResolvedValue({
+      user: {
+        getIdTokenResult: jest.fn().mockResolvedValue({ claims: { role: 'admin' } }),
+      },
+    });
   });
 
   it('should render all mocked child components', () => {
@@ -55,50 +63,54 @@ describe('LoginForm', () => {
     expect(screen.getByText('securityNotice')).toBeInTheDocument()
   });
 
-  it('should submit the form with valid data and redirect on success', async () => {
+  it('should sign in, verify admin role and navigate to dashboard', async () => {
     const user = userEvent.setup();
-
-    // --- Arrange: Setup mock return values ---
-    (inputValidation as jest.Mock).mockResolvedValue({
-      sanitizedEmail: 'test@example.com',
-      sanitizedPassword: 'password123',
-    });
-    global.fetch = jest.fn().mockResolvedValue({ ok: true });
-    (signInWithEmailAndPassword as jest.Mock).mockResolvedValue({
-      user: { getIdToken: jest.fn().mockResolvedValue('test-token') },
-    });
 
     render(<Form />);
 
-    // --- Act: Simulate user input and form submission ---
-    const emailInput = screen.getByPlaceholderText('MockedUsernameField');
-    const passwordInput = screen.getByPlaceholderText('MockedPasswordField');
-    const submitButton = screen.getByRole('button', { name: 'Mocked Submit' });
+    await user.type(screen.getByPlaceholderText('MockedUsernameField'), 'test@example.com');
+    await user.type(screen.getByPlaceholderText('MockedPasswordField'), 'password123');
+    await user.click(screen.getByRole('button', { name: 'Mocked Submit' }));
 
-    await user.type(emailInput, 'test@example.com');
-    await user.type(passwordInput, 'password123');
-    await user.click(submitButton);
-
-    // --- Assert: Check if functions were called (redirect happens on server) ---
     await waitFor(() => {
-      expect(validateEmail).toHaveBeenCalledWith('test@example.com');
-      expect(validatePassword).toHaveBeenCalledWith('password123');
-      expect(inputValidation).toHaveBeenCalledWith('test@example.com', 'password123');
-      expect(signInWithEmailAndPassword).toHaveBeenCalled();
-      expect(global.fetch).toHaveBeenCalledWith('/api/auth/login', expect.objectContaining({ method: 'POST' }));
+      expect(mockSignIn).toHaveBeenCalledWith(expect.anything(), 'test@example.com', 'password123');
+      expect(mockEnsureSw).toHaveBeenCalled();
+      expect(navigate).toHaveBeenCalledWith('/en/dashboard');
     });
   });
 
-  it('handles error correctly', async () => {
-    (inputValidation as jest.Mock).mockResolvedValue(new Error('Error for test'));
+  it('shows accessDenied and signs out for non-admin role', async () => {
     const user = userEvent.setup();
+    mockSignIn.mockResolvedValue({
+      user: {
+        getIdTokenResult: jest.fn().mockResolvedValue({ claims: { role: 'student' } }),
+      },
+    });
+
     render(<Form />);
-    const submitButton = screen.getByRole('button', { name: 'Mocked Submit' });
 
-    await user.click(submitButton)
+    await user.type(screen.getByPlaceholderText('MockedUsernameField'), 'test@example.com');
+    await user.type(screen.getByPlaceholderText('MockedPasswordField'), 'password123');
+    await user.click(screen.getByRole('button', { name: 'Mocked Submit' }));
 
-    waitFor(() => {
-      expect(screen.getByTestId('error')).toHaveTextContent('errors.genericError')
-    })
-  })
+    await waitFor(() => {
+      expect(screen.getByTestId('error')).toHaveTextContent('errors.accessDenied');
+      expect(navigate).not.toHaveBeenCalled();
+    });
+  });
+
+  it('maps Firebase error codes to messages', async () => {
+    const user = userEvent.setup();
+    mockSignIn.mockRejectedValue(Object.assign(new Error('bad creds'), { code: 'auth/invalid-credential' }));
+
+    render(<Form />);
+
+    await user.type(screen.getByPlaceholderText('MockedUsernameField'), 'test@example.com');
+    await user.type(screen.getByPlaceholderText('MockedPasswordField'), 'password123');
+    await user.click(screen.getByRole('button', { name: 'Mocked Submit' }));
+
+    await waitFor(() => {
+      expect(screen.getByTestId('error')).toHaveTextContent('errors.invalidCredential');
+    });
+  });
 });

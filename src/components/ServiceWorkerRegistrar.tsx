@@ -1,10 +1,13 @@
 'use client'
 
 import { useEffect } from 'react'
-import { registerServiceWorker } from '@/lib/service-worker'
+import { auth } from '@/lib/firebase'
+import { installServiceWorkerTokenBridge, registerServiceWorker } from '@/lib/service-worker'
 
 export default function ServiceWorkerRegistrar() {
 	useEffect(() => {
+		installServiceWorkerTokenBridge(auth)
+
 		if (document.readyState === 'complete') {
 			registerServiceWorker()
 			return

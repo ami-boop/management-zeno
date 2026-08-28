@@ -1,7 +1,11 @@
 import { getTranslations } from 'next-intl/server'
 import type { WeekDay } from '@/types/schedule'
-import { EXAMPLE_ROUTES } from '@/constants'
+import { apiGet } from '@/lib/api/client'
+import { parseRouteNames } from '@/lib/api-contracts'
+import { getSessionToken } from '@/utils/getSessionToken'
 import Client from '@/components/schedule/Client'
+
+export const dynamic = 'force-dynamic'
 
 export default async function SchedulePage() {
   const t = await getTranslations('Schedule')
@@ -28,8 +32,9 @@ export default async function SchedulePage() {
     },
   ]
 
-  // Examples
-  const routes = EXAMPLE_ROUTES
+  const token = await getSessionToken()
+  const routeNames = token ? parseRouteNames(await apiGet('routes/names', token)) : []
+  const routes = routeNames.map((route) => ({ id: route.routeId, name: route.name }))
 
   return <Client days={days} routes={routes} />
 }

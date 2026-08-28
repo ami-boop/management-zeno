@@ -3,13 +3,16 @@ import ServiceWorkerRegistrar from '@/components/ServiceWorkerRegistrar'
 import { notFound } from 'next/navigation'
 import { routing } from '@/i18n/routing'
 import { Metadata } from 'next'
-import { Poppins } from 'next/font/google'
+import localFont from 'next/font/local'
 import { Toaster } from 'sonner'
 import '@/styles/globals.css'
 
-const poppins = Poppins({
-  subsets: ['latin'],
-  weight: ['400', '500', '700'],
+const poppins = localFont({
+  src: [
+    { path: './fonts/poppins-400.woff2', weight: '400', style: 'normal' },
+    { path: './fonts/poppins-500.woff2', weight: '500', style: 'normal' },
+    { path: './fonts/poppins-700.woff2', weight: '700', style: 'normal' },
+  ],
   display: 'swap',
 })
 

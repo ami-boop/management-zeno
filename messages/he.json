@@ -1,7 +1,7 @@
 {
   "Dashboard": {
-    "title": "לוח בקרה להסעות תלמידים",
-    "description": "ניטור נוכחות תלמידים וניהול הזמנות אוטובוסים",
+    "title": "נסיעות היום",
+    "description": "מעקב אחר נסיעות היום והקצאת אוטובוסים",
     "studentsOnBus": "תלמידים באוטובוס",
     "studentsNotMarked": "תלמידים לא סומנו",
     "busesNeeded": "סה\"כ אוטובוסים נדרשים",
@@ -46,7 +46,35 @@
       "ofTotal": "מתוך",
       "addBus": "לחץ רק אם האוטובוס כבר הוזמן",
       "removeBus": "הסר אוטובוס אחד שהוזמן"
-    }
+    },
+    "kicker": "ניהול",
+    "status": {
+      "all": "הכל",
+      "scheduled": "מתוזמן",
+      "boarding": "עלייה",
+      "in_transit": "בדרך",
+      "completed": "הושלם",
+      "cancelled": "בוטל"
+    },
+    "metrics": {
+      "students": "תלמידים",
+      "buses": "אוטובוסים",
+      "minibuses": "מיניבוסים"
+    },
+    "totals": {
+      "trips": "נסיעות",
+      "students": "תלמידים",
+      "buses": "אוטובוסים",
+      "minibuses": "מיניבוסים"
+    },
+    "friendDialogTitle": "נוסע לחבר",
+    "friendDialogDescription": "תלמידים הממתינים לאישור הורה לנסיעה לחבר.",
+    "friendDialogLoading": "טוען…",
+    "friendDialogEmpty": "אין בקשות הממתינות לאישור",
+    "friendDialogTo": "מסלול לחבר",
+    "approve": "אשר",
+    "reject": "דחה",
+    "friendSleepover": "לינה"
   },
   "Header": {
     "menu": {
@@ -305,7 +333,8 @@
     "signingIn": "מתחבר...",
     "emailPlaceholder": "הכנס שם משתמש",
     "passwordPlaceholder": "הכנס סיסמה",
-    "securityNotice": "כל הפעולות נרשמות ומנוטרות."
+    "securityNotice": "כל הפעולות נרשמות ומנוטרות.",
+    "kicker": "פורטל ניהול"
   },
   "errors": {
     "invalidEmail": "כתובת אימייל לא תקינה",

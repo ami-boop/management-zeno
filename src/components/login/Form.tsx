@@ -69,26 +69,25 @@ export default function Form() {
   }
 
   return (
-    <div className='min-h-screen bg-gray-50'>
-      <div className='flex justify-center items-center h-screen'>
-        <div className='max-w-md w-full'>
-          <div className='bg-white rounded-lg shadow-sm border border-gray-200 p-8'>
+    <div className='min-h-screen bg-zeno-paper'>
+      <div className='flex min-h-screen items-center justify-center px-4 py-10'>
+        <div className='w-full max-w-md'>
+          <div className='zeno-card px-8 py-9'>
             <Header />
 
             {error && (
-              <div className='mb-4 p-3 bg-red-50 border border-red-200 rounded-md'>
-                <p className='text-sm text-red-800' data-testid='error'>{error}</p>
+              <div className='mb-4 rounded-lg border border-zeno-danger/30 bg-zeno-danger-soft px-4 py-3'>
+                <p className='text-sm text-zeno-danger' data-testid='error'>
+                  {error}
+                </p>
               </div>
             )}
 
-            <form onSubmit={e => handleSubmit(e)} className='space-y-6'>
-              <EmailField
-                value={email}
-                onChange={e => setEmail(e.target.value)}
-              />
+            <form onSubmit={handleSubmit} className='space-y-5'>
+              <EmailField value={email} onChange={(e) => setEmail(e.target.value)} />
               <PasswordField
                 value={password}
-                onChange={e => setPassword(e.target.value)}
+                onChange={(e) => setPassword(e.target.value)}
               />
               <SubmitButton
                 isSubmitting={isSubmitting}
@@ -96,11 +95,9 @@ export default function Form() {
               />
             </form>
 
-            <div className='mt-6 p-3 bg-red-50 border border-red-200 rounded-md'>
-              <div className='flex'>
-                <AlertCircle className='w-5 h-5 text-red-400 mr-2 flex-shrink-0 mt-0.5' />
-                <p className='text-sm text-red-800'>{t('securityNotice')}</p>
-              </div>
+            <div className='mt-6 flex gap-1.5 rounded-lg border border-zeno-amber/30 bg-zeno-cream px-4 py-3'>
+              <AlertCircle className='mt-0.5 h-4 w-4 shrink-0 text-zeno-amber-ink' />
+              <p className='text-sm text-zeno-amber-ink'>{t('securityNotice')}</p>
             </div>
           </div>
         </div>

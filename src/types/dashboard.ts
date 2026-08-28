@@ -9,4 +9,5 @@ export interface DashboardRoute {
   status: 'pending' | 'partial' | 'completed'
   lastUpdate: Record<string, number>
   estimatedTime: string
+  pendingFriendCount?: number
 }

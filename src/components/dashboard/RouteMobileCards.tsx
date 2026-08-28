@@ -2,10 +2,12 @@ import { Bus, Users, Car, CheckCircle, AlertCircle, Clock } from 'lucide-react'
 import { useTranslations } from 'next-intl'
 import { DashboardRoute } from '@/types/dashboard'
 import { ProgressBar } from '@/components/ui/progress-bar'
+import FriendIndicator from './FriendIndicator'
 import dayjs from 'dayjs'
 
 interface DashboardRouteMobileCardsProps {
   routes: DashboardRoute[]
+  routeNameMap?: Record<string, string>
   onOrderBuses: (routeId: string, count: number) => void
   getStatusColor: (status: DashboardRoute['status']) => string
   getStatusText: (status: DashboardRoute['status']) => string
@@ -13,6 +15,7 @@ interface DashboardRouteMobileCardsProps {
 
 const RouteMobileCards = ({
   routes,
+  routeNameMap,
   onOrderBuses,
   getStatusColor,
   getStatusText,
@@ -60,6 +63,11 @@ const RouteMobileCards = ({
                 <p className="text-xs sm:text-sm text-gray-500">
                   {t('columns.departure')}: {route.estimatedTime}
                 </p>
+                <FriendIndicator
+                  tripId={route.id}
+                  count={route.pendingFriendCount ?? 0}
+                  routeNameMap={routeNameMap ?? {}}
+                />
               </div>
               <div
                 className={`inline-flex items-center gap-1 px-2 py-1 rounded-full text-xs font-medium border shrink-0 ${getStatusColor(

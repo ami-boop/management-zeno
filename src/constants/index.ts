@@ -1,6 +1,7 @@
 export const API_VERSION = 'v1'
 
-export const API_URL = `https://api-ag7er5qhga-ew.a.run.app/${API_VERSION}`
+const baseUrl = process.env.NEXT_PUBLIC_API_BASE_URL || 'https://api-ag7er5qhga-ew.a.run.app'
+export const API_URL = `${baseUrl}/${API_VERSION}`
 
 export const GRADES = [
     { key: 'alef', hebrew: 'א׳' },
@@ -30,11 +31,3 @@ export const cacheTTL = {
 }
 
 export const DAY_KEYS = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'] as const
-
-export const EXAMPLE_ROUTES = [
-    { id: 'ROUTE-A', name: 'Route A' },
-    { id: 'ROUTE-B', name: 'Route B' },
-    { id: 'ROUTE-C', name: 'Route C' },
-    { id: 'ROUTE-D', name: 'Route D' },
-    { id: 'ROUTE-E', name: 'Route E' },
-]

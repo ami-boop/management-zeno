@@ -1,11 +1,14 @@
 import { render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import Client from '../Client'
-import dayjs from 'dayjs'
-import addBus from '@/app/actions/addBus'
+import setTripBuses from '@/app/actions/setTripBuses'
 import { routes as mockRoutes } from '@/mocks/tests'
+import { DashboardResponse } from '@/lib/api-contracts'
 
-// ✅ Моки зависимостей
+jest.mock('next/navigation', () => ({
+  useRouter: () => ({ refresh: jest.fn() }),
+}))
+
 jest.mock('../Header', () => (props: any) => (
   <div data-testid="header">{props.lastUpdated}</div>
 ))
@@ -27,64 +30,83 @@ jest.mock('../RouteTable', () => ({
   default: ({ routes, onOrderBuses }: any) => (
     <div>
       <div data-testid="route-table">{routes.map((r: any) => r.id).join(',')}</div>
-      <button data-testid="order-bus" onClick={() => onOrderBuses('A_12:00', 1)}>
-        Order Bus
+      <button data-testid="order-bus" onClick={() => onOrderBuses(routes[0].id, 1)}>
+        +1
       </button>
     </div>
   ),
 }))
-jest.mock('../RouteMobileCards', () => () => (
-  <div data-testid="mobile-cards">MobileCards</div>
-))
+jest.mock('../RouteMobileCards', () => ({
+  __esModule: true,
+  default: () => <div data-testid="mobile-cards" />,
+}))
+jest.mock('@/app/actions/setTripBuses', () => ({
+  __esModule: true,
+  default: jest.fn(),
+}))
 
-jest.mock('@/app/actions/addBus', () => jest.fn())
+const data: DashboardResponse = {
+  trips: mockRoutes.map((r) => ({
+    tripId: r.id,
+    routeId: r.id,
+    scheduledTime: r.estimatedTime,
+    scheduledAt: null,
+    status:
+      r.status === 'completed'
+        ? 'completed'
+        : r.status === 'partial'
+          ? 'in_transit'
+          : 'scheduled',
+    busId: null,
+    driverUid: null,
+    metrics: { totalStudents: r.totalStudents, busesNeeded: r.busesNeeded, minibusesNeeded: 0 },
+    autoBusesNeeded: r.busesNeeded,
+    autoMinibusesNeeded: 0,
+    assignedBuses: null,
+    assignedMinibuses: null,
+    pendingFriendCount: 0,
+    capacityAvailable: 0,
+  })),
+  totals: null,
+  capacities: null,
+}
 
 describe('<Client />', () => {
-
-  beforeEach(() => {
-    jest.clearAllMocks()
-  })
-
-  it('renders basic components (Header, Stats, RouteTable)', () => {
-    render(<Client routes={mockRoutes} />)
+  it('renders header, stats and a table with all routes', () => {
+    render(<Client data={data} routeNameMap={{}} />)
 
     expect(screen.getByTestId('header')).toBeInTheDocument()
     expect(screen.getByTestId('stats')).toBeInTheDocument()
-    expect(screen.getByTestId('route-table')).toBeInTheDocument()
+    expect(screen.getByTestId('route-table')).toHaveTextContent(
+      mockRoutes.map((r) => r.id).join(',')
+    )
     expect(screen.getByTestId('mobile-cards')).toBeInTheDocument()
   })
 
-  it('passes right lastUpdate information Header', () => {
-    render(<Client routes={mockRoutes} />)
-
-    const latestUnix = Math.max(...mockRoutes.map(r => r.lastUpdate._seconds))
-    const expectedDate = dayjs.unix(latestUnix).format('YYYY-MM-DD HH:mm:ss')
-
-    expect(screen.getByTestId('header')).toHaveTextContent(expectedDate)
-  })
-
-  it('filter "completed" works correctly', async () => {
+  it('filters trips by completed status', async () => {
     const user = userEvent.setup()
-    render(<Client routes={mockRoutes} />)
+    render(<Client data={data} routeNameMap={{}} />)
 
     await user.click(screen.getByTestId('filter-completed'))
 
     await waitFor(() => {
-      const table = screen.getByTestId('route-table')
-      expect(table).toHaveTextContent('A_12:00')
-      expect(table).not.toHaveTextContent('B_12:00')
+      expect(screen.getByTestId('route-table')).toHaveTextContent(
+        mockRoutes.filter((r) => r.status === 'completed').map((r) => r.id).join(',')
+      )
     })
   })
 
-  it('calls addBus when requesting a bus', async () => {
+  it('orders a bus through setTripBuses', async () => {
     const user = userEvent.setup()
-    render(<Client routes={mockRoutes} />)
+    render(<Client data={data} routeNameMap={{}} />)
 
     await user.click(screen.getByTestId('order-bus'))
 
     await waitFor(() => {
-      expect(addBus).toHaveBeenCalledTimes(1)
-      expect(addBus).toHaveBeenCalledWith('A_12:00', 1)
+      expect(setTripBuses).toHaveBeenCalledWith(
+        mockRoutes[0].id,
+        { buses: mockRoutes[0].busesNeeded }
+      )
     })
   })
 })

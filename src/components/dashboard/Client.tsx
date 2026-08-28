@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useMemo } from 'react'
+import { useRouter } from 'next/navigation'
 import { useTranslations } from 'next-intl'
 import Header from './Header'
 import Stats from './Stats'
@@ -8,9 +9,9 @@ import RouteFilters from './RouteFilters'
 import RouteTable from './RouteTable'
 import RouteMobileCards from './RouteMobileCards'
 import dayjs from 'dayjs'
-import addBus from '@/app/actions/addBus'
+import setTripBuses from '@/app/actions/setTripBuses'
+import { DashboardResponse } from '@/lib/api-contracts'
 import { DashboardRoute } from '@/types/dashboard'
-
 
 interface DashboardStat {
   label: string
@@ -18,15 +19,50 @@ interface DashboardStat {
   change?: string
 }
 
-const Client = ({ routes }: { routes: DashboardRoute[] }) => {
+const adaptTrip = (
+  trip: DashboardResponse['trips'][number],
+  routeNameMap: Record<string, string>
+): DashboardRoute => {
+  const busesNeeded = trip.metrics?.busesNeeded ?? 0
+  const totalStudents = trip.metrics?.totalStudents ?? 0
+  const status: DashboardRoute['status'] =
+    trip.status === 'completed'
+      ? 'completed'
+      : trip.status === 'boarding' || trip.status === 'in_transit'
+        ? 'partial'
+        : 'pending'
+  const ts = trip.scheduledAt ? dayjs(trip.scheduledAt).unix() : dayjs().unix()
+  return {
+    id: trip.tripId,
+    name: routeNameMap[trip.routeId] ?? trip.routeId,
+    studentsOnBus: totalStudents,
+    studentsNotMarked: 0,
+    totalStudents,
+    busesNeeded,
+    busesOrdered: busesNeeded,
+    status,
+    lastUpdate: { _seconds: ts, _nanoseconds: 0 },
+    estimatedTime: trip.scheduledTime,
+    pendingFriendCount: trip.pendingFriendCount,
+  }
+}
+
+const Client = ({
+  data,
+  routeNameMap,
+}: {
+  data: DashboardResponse
+  routeNameMap: Record<string, string>
+}) => {
   const t = useTranslations('Dashboard')
+  const router = useRouter()
   const [selectedFilter, setSelectedFilter] = useState<string>('all')
   const [selectedRoute, setSelectedRoute] = useState<string>('all')
   const [searchQuery, setSearchQuery] = useState<string>('')
-  const [localRoutes, setRoutes] = useState<DashboardRoute[]>(routes)
+  const [localRoutes, setRoutes] = useState<DashboardRoute[]>(() =>
+    (data?.trips ?? []).map((trip) => adaptTrip(trip, routeNameMap))
+  )
 
-
-  // TODO: Maybe stats should be coming from Backend with "change" option
   const dashboardStats: DashboardStat[] = useMemo(() => {
     const totalStudentsOnBus = localRoutes.reduce(
       (sum: number, route: DashboardRoute) => sum + route.studentsOnBus,
@@ -100,22 +136,23 @@ const Client = ({ routes }: { routes: DashboardRoute[] }) => {
   }, [localRoutes, t])
 
   const handleOrderBuses = async (routeId: string, busesToOrder: number) => {
+    let newOrdered = 0
     setRoutes((prevRoutes: DashboardRoute[]) =>
       prevRoutes.map((route: DashboardRoute) => {
         if (route.id === routeId) {
-          const newBusesOrdered = Math.min(
+          newOrdered = Math.min(
             route.busesOrdered + busesToOrder,
             route.busesNeeded
           )
           const newStatus =
-            newBusesOrdered === 0
+            newOrdered === 0
               ? 'pending'
-              : newBusesOrdered === route.busesNeeded
+              : newOrdered === route.busesNeeded
                 ? 'completed'
                 : 'partial'
           return {
             ...route,
-            busesOrdered: newBusesOrdered,
+            busesOrdered: newOrdered,
             status: newStatus,
             lastUpdate: {
               _seconds: dayjs().unix(),
@@ -126,7 +163,8 @@ const Client = ({ routes }: { routes: DashboardRoute[] }) => {
         return route
       })
     )
-    await addBus(routeId as string, busesToOrder as number)
+    await setTripBuses(routeId, { buses: newOrdered })
+    router.refresh()
   }
 
   const getStatusColor = (status: DashboardRoute['status']) => {
@@ -182,7 +220,7 @@ const Client = ({ routes }: { routes: DashboardRoute[] }) => {
     <div className='min-h-screen bg-gray-50'>
       <div className='max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8'>
         <Header
-          lastUpdated={getLatestUpdate(routes, t('noUpdatesYet'))}
+          lastUpdated={getLatestUpdate(localRoutes, t('noUpdatesYet'))}
         />
         <Stats stats={dashboardStats} />
         <div className='bg-white rounded-lg shadow-sm border border-gray-200'>
@@ -201,6 +239,7 @@ const Client = ({ routes }: { routes: DashboardRoute[] }) => {
           <div className='hidden lg:block'>
             <RouteTable
               routes={filteredRoutes}
+              routeNameMap={routeNameMap}
               onOrderBuses={handleOrderBuses}
               getStatusColor={getStatusColor}
               getStatusText={getStatusText}
@@ -208,6 +247,7 @@ const Client = ({ routes }: { routes: DashboardRoute[] }) => {
           </div>
           <RouteMobileCards
             routes={filteredRoutes}
+            routeNameMap={routeNameMap}
             onOrderBuses={handleOrderBuses}
             getStatusColor={getStatusColor}
             getStatusText={getStatusText}
@@ -218,9 +258,6 @@ const Client = ({ routes }: { routes: DashboardRoute[] }) => {
               <h3 className='mt-2 text-sm font-medium text-gray-900'>
                 {t('noRoutesFound')}
               </h3>
-              <p className='mt-1 text-sm text-gray-500'>
-                {t('tryAdjustingSearch')}
-              </p>
             </div>
           )}
         </div>

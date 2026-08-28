@@ -10,6 +10,9 @@ firebase.initializeApp({
 
 const PASS_THROUGH_PATTERNS = [/_next\/static\//, /_next\/image\?/, /favicon\.ico$/, /service-worker\.js$/]
 
+const GET_ID_TOKEN = 'GET_ID_TOKEN'
+const ID_TOKEN = 'ID_TOKEN'
+
 const isSecureOrigin = () => self.location.protocol === 'https:' || self.location.hostname === 'localhost'
 
 let authReady = new Promise(resolve => {
@@ -28,6 +31,38 @@ async function getFreshIdToken() {
   } catch {
     return null
   }
+}
+
+function queryClientToken(client, timeoutMs = 1500) {
+  return new Promise(resolve => {
+    const channel = new MessageChannel()
+    const timer = setTimeout(() => {
+      channel.port1.onmessage = null
+      resolve(null)
+    }, timeoutMs)
+    channel.port1.onmessage = event => {
+      clearTimeout(timer)
+      const idToken = event.data?.idToken
+      resolve(typeof idToken === 'string' && idToken.length > 50 ? idToken : null)
+    }
+    client.postMessage({ type: GET_ID_TOKEN, port: channel.port2 }, [channel.port2])
+  })
+}
+
+async function askClientsForToken() {
+  try {
+    const clientList = await self.clients.matchAll({ type: 'window', includeUncontrolled: true })
+    const ordered = [...clientList].sort((a, b) => Number(b.focused) - Number(a.focused))
+    for (const client of ordered) {
+      const token = await queryClientToken(client)
+      if (token) return token
+    }
+  } catch {}
+  return null
+}
+
+async function resolveIdToken() {
+  return (await askClientsForToken()) || (await getFreshIdToken())
 }
 
 async function getBodyContent(request) {
@@ -64,7 +99,7 @@ self.addEventListener('fetch', event => {
   event.respondWith(
     (async () => {
       try {
-        const token = await getFreshIdToken()
+        const token = await resolveIdToken()
         if (!token || request.headers.has('authorization')) return fetch(request)
 
         const headers = new Headers()

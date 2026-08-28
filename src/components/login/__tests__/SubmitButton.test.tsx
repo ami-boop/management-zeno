@@ -8,7 +8,7 @@ describe('SubmitButton', () => {
     const button = screen.getByRole('button')
 
     expect(button).toBeEnabled()
-    expect(button).toHaveClass('bg-red-600 text-white hover:bg-red-700')
+    expect(button).toHaveClass(/zeno-primary/)
     expect(screen.getByText('signInButton')).toBeInTheDocument()
   })
 
@@ -17,7 +17,7 @@ describe('SubmitButton', () => {
     const button = screen.getByRole('button')
 
     expect(button).toBeDisabled()
-    expect(button).toHaveClass('bg-gray-400 text-white cursor-not-allowed')
+    expect(button).toHaveClass(/cursor-not-allowed/)
     expect(screen.queryByText('signInButton')).not.toBeInTheDocument()
     expect(screen.getByText(/signingIn/i)).toBeInTheDocument()
   })

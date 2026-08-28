@@ -5,6 +5,6 @@ describe('LoginHeader', () => {
   it('renders correctly', () => {
     render(<Header />)
     expect(screen.getByRole('heading')).toHaveTextContent('title')
-    expect(screen.getByTestId('svg-icon')).toBeInTheDocument()
+    expect(screen.getByTestId('login-logo')).toBeInTheDocument()
   })
 })

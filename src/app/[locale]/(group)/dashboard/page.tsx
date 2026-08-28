@@ -1,23 +1,28 @@
 import Client from '@/components/dashboard/Client'
 import { getSessionToken } from '@/utils/getSessionToken'
-import { DashboardRoute } from '@/types/dashboard'
-import { API_URL } from '@/constants'
+import { apiGet } from '@/lib/api/client'
+import {
+  parseDashboardResponse,
+  parseRouteNames,
+  type DashboardResponse,
+} from '@/lib/api-contracts'
+import { redirect } from 'next/navigation'
+
+export const dynamic = 'force-dynamic'
 
 export default async function DashboardPage() {
-  const sessionCookie = await getSessionToken()
+  const token = await getSessionToken()
+  if (!token) redirect('/login')
 
-  // Здесь можно заменить на загрузку данных с сервера
-  const routes: DashboardRoute[] = await fetch(
-    `${API_URL}/dashboard`,
-    {
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${sessionCookie}`,
-      },
-    }
-  ).then(res => res.json())
+  const [data, routeNames] = await Promise.all([
+    apiGet('dashboard', token),
+    apiGet('routes/names', token),
+  ])
 
-  console.log(routes)
+  const dashboard: DashboardResponse = parseDashboardResponse(data)
+  const routeNameMap = Object.fromEntries(
+    parseRouteNames(routeNames).map((route) => [route.routeId, route.name])
+  )
 
-  return <Client routes={routes} />
+  return <Client data={dashboard} routeNameMap={routeNameMap} />
 }

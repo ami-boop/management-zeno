@@ -1,7 +1,7 @@
 {
   "Dashboard": {
-    "title": "Student Transportation Dashboard",
-    "description": "Monitor student attendance and manage bus orders",
+    "title": "Today’s Trips",
+    "description": "Monitor today’s trips and bus assignments",
     "studentsOnBus": "Students on Bus",
     "studentsNotMarked": "Students Not Marked",
     "busesNeeded": "Total Buses Needed",
@@ -46,7 +46,35 @@
       "ofTotal": "of",
       "addBus": "Click only if the bus has already been ordered",
       "removeBus": "Remove one ordered bus"
-    }
+    },
+    "kicker": "Management",
+    "status": {
+      "all": "All",
+      "scheduled": "Scheduled",
+      "boarding": "Boarding",
+      "in_transit": "In transit",
+      "completed": "Completed",
+      "cancelled": "Cancelled"
+    },
+    "metrics": {
+      "students": "students",
+      "buses": "buses",
+      "minibuses": "minibuses"
+    },
+    "totals": {
+      "trips": "Trips",
+      "students": "Students",
+      "buses": "Buses",
+      "minibuses": "Minibuses"
+    },
+    "friendDialogTitle": "Going to a friend",
+    "friendDialogDescription": "Students awaiting parent approval for a friend-route trip.",
+    "friendDialogLoading": "Loading…",
+    "friendDialogEmpty": "No requests awaiting approval",
+    "friendDialogTo": "Friend route",
+    "approve": "Approve",
+    "reject": "Reject",
+    "friendSleepover": "Sleepover"
   },
   "Header": {
     "menu": {
@@ -315,6 +343,7 @@
       "genericError": "An error occurred. Please try again",
       "networkError": "Network error. Check your connection and try again",
       "accessDenied": "Access denied."
-    }
+    },
+    "kicker": "Admin Portal"
   }
 }

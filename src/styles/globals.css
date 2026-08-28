@@ -6,8 +6,9 @@
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --font-sans: "Poppins", "Noto Sans Hebrew", ui-sans-serif, system-ui, sans-serif;
+  --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  --font-display: "Poppins", ui-sans-serif, system-ui, sans-serif;
   --color-sidebar-ring: var(--sidebar-ring);
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
@@ -41,82 +42,152 @@
   --radius-md: calc(var(--radius) - 2px);
   --radius-lg: var(--radius);
   --radius-xl: calc(var(--radius) + 4px);
+
+  --color-zeno-ink: var(--zeno-ink);
+  --color-zeno-ink-soft: var(--zeno-ink-soft);
+  --color-zeno-muted: var(--zeno-muted);
+  --color-zeno-paper: var(--zeno-paper);
+  --color-zeno-paper-soft: var(--zeno-paper-soft);
+  --color-zeno-surface: var(--zeno-surface);
+  --color-zeno-night: var(--zeno-night);
+  --color-zeno-amber: var(--zeno-amber);
+  --color-zeno-amber-deep: var(--zeno-amber-deep);
+  --color-zeno-amber-ink: var(--zeno-amber-ink);
+  --color-zeno-amber-fg: var(--zeno-amber-fg);
+  --color-zeno-sage: var(--zeno-sage);
+  --color-zeno-sage-soft: var(--zeno-sage-soft);
+  --color-zeno-line: var(--zeno-line);
+  --color-zeno-line-strong: var(--zeno-line-strong);
+  --color-zeno-cream: var(--zeno-cream);
+  --color-zeno-cream-surface: var(--zeno-cream-surface);
+  --color-zeno-danger: var(--zeno-danger);
+  --color-zeno-danger-soft: var(--zeno-danger-soft);
+  --radius-zeno: 1.5rem;
+  --radius-zeno-lg: 2rem;
+  --radius-zeno-sm: 0.75rem;
+  --shadow-zeno-card: 0 1px 2px rgb(21 35 45 / 0.05), 0 4px 16px rgb(21 35 45 / 0.06);
+  --shadow-zeno-board: 0 2px 8px rgb(21 35 45 / 0.10), 0 12px 32px rgb(21 35 45 / 0.16);
 }
 
 :root {
+	color-scheme: light;
   --radius: 0.625rem;
-  --background: oklch(1 0 0);
-  --foreground: oklch(0.145 0 0);
-  --card: oklch(1 0 0);
-  --card-foreground: oklch(0.145 0 0);
-  --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.145 0 0);
-  --primary: oklch(0.205 0 0);
-  --primary-foreground: oklch(0.985 0 0);
-  --secondary: oklch(0.97 0 0);
-  --secondary-foreground: oklch(0.205 0 0);
-  --muted: oklch(0.97 0 0);
-  --muted-foreground: oklch(0.556 0 0);
-  --accent: oklch(0.97 0 0);
-  --accent-foreground: oklch(0.205 0 0);
-  --destructive: oklch(0.577 0.245 27.325);
-  --border: oklch(0.922 0 0);
-  --input: oklch(0.922 0 0);
-  --ring: oklch(0.708 0 0);
+  --background: var(--zeno-paper);
+  --foreground: var(--zeno-ink);
+  --card: var(--zeno-surface);
+  --card-foreground: var(--zeno-ink);
+  --popover: var(--zeno-surface);
+  --popover-foreground: var(--zeno-ink);
+  --primary: var(--zeno-night);
+  --primary-foreground: #ffffff;
+  --secondary: var(--zeno-paper-soft);
+  --secondary-foreground: var(--zeno-ink);
+  --muted: var(--zeno-paper-soft);
+  --muted-foreground: var(--zeno-muted);
+  --accent: var(--zeno-sage-soft);
+  --accent-foreground: var(--zeno-ink);
+  --destructive: var(--zeno-danger);
+  --border: var(--zeno-line);
+  --input: var(--zeno-line);
+  --ring: var(--zeno-amber);
   --chart-1: oklch(0.646 0.222 41.116);
   --chart-2: oklch(0.6 0.118 184.704);
   --chart-3: oklch(0.398 0.07 227.392);
   --chart-4: oklch(0.828 0.189 84.429);
   --chart-5: oklch(0.769 0.188 70.08);
-  --sidebar: oklch(0.985 0 0);
-  --sidebar-foreground: oklch(0.145 0 0);
-  --sidebar-primary: oklch(0.205 0 0);
-  --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.97 0 0);
-  --sidebar-accent-foreground: oklch(0.205 0 0);
-  --sidebar-border: oklch(0.922 0 0);
-  --sidebar-ring: oklch(0.708 0 0);
+  --sidebar: var(--zeno-surface);
+  --sidebar-foreground: var(--zeno-ink);
+  --sidebar-primary: var(--zeno-night);
+  --sidebar-primary-foreground: #ffffff;
+  --sidebar-accent: var(--zeno-sage-soft);
+  --sidebar-accent-foreground: var(--zeno-ink);
+  --sidebar-border: var(--zeno-line);
+  --sidebar-ring: var(--zeno-amber);
+
+  --zeno-ink: #15232d;
+  --zeno-ink-soft: #40515c;
+  --zeno-muted: #74818a;
+  --zeno-paper: #f5f7f8;
+  --zeno-paper-soft: #f8faf9;
+  --zeno-surface: #ffffff;
+  --zeno-night: #15232d;
+  --zeno-amber: #f4b860;
+  --zeno-amber-deep: #b77a13;
+  --zeno-amber-ink: #795313;
+  --zeno-amber-fg: #2b1a05;
+  --zeno-sage: #486b58;
+  --zeno-sage-soft: #eef3f0;
+  --zeno-line: #dfe5e8;
+  --zeno-line-strong: #c8d6dc;
+  --zeno-cream: #fff8e8;
+  --zeno-cream-surface: #fffdf7;
+  --zeno-danger: #b42318;
+  --zeno-danger-soft: #fef3f2;
 }
 
-.dark {
-  --background: oklch(0.145 0 0);
-  --foreground: oklch(0.985 0 0);
-  --card: oklch(0.205 0 0);
-  --card-foreground: oklch(0.985 0 0);
-  --popover: oklch(0.205 0 0);
-  --popover-foreground: oklch(0.985 0 0);
-  --primary: oklch(0.922 0 0);
-  --primary-foreground: oklch(0.205 0 0);
-  --secondary: oklch(0.269 0 0);
-  --secondary-foreground: oklch(0.985 0 0);
-  --muted: oklch(0.269 0 0);
-  --muted-foreground: oklch(0.708 0 0);
-  --accent: oklch(0.269 0 0);
-  --accent-foreground: oklch(0.985 0 0);
-  --destructive: oklch(0.704 0.191 22.216);
-  --border: oklch(1 0 0 / 10%);
-  --input: oklch(1 0 0 / 15%);
-  --ring: oklch(0.556 0 0);
-  --chart-1: oklch(0.488 0.243 264.376);
-  --chart-2: oklch(0.696 0.17 162.48);
-  --chart-3: oklch(0.769 0.188 70.08);
-  --chart-4: oklch(0.627 0.265 303.9);
-  --chart-5: oklch(0.645 0.246 16.439);
-  --sidebar: oklch(0.205 0 0);
-  --sidebar-foreground: oklch(0.985 0 0);
-  --sidebar-primary: oklch(0.488 0.243 264.376);
-  --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.269 0 0);
-  --sidebar-accent-foreground: oklch(0.985 0 0);
-  --sidebar-border: oklch(1 0 0 / 10%);
-  --sidebar-ring: oklch(0.556 0 0);
+@media (prefers-color-scheme: dark) {
+	:root:not(.light) {
+		color-scheme: dark;
+		--zeno-ink: #edf4f2;
+		--zeno-ink-soft: #b7c8ce;
+		--zeno-muted: #91a5ad;
+		--zeno-paper: #0e171b;
+		--zeno-paper-soft: #142126;
+		--zeno-surface: #18282f;
+		--zeno-night: #091216;
+		--zeno-amber: #f5c66d;
+		--zeno-amber-deep: #f0b95a;
+		--zeno-amber-ink: #f6d58e;
+		--zeno-amber-fg: #2b1a05;
+		--zeno-sage: #8fc0a1;
+		--zeno-sage-soft: #1d352c;
+		--zeno-line: #2b3d45;
+		--zeno-line-strong: #40555e;
+		--zeno-cream: #2d2718;
+		--zeno-cream-surface: #201d16;
+		--zeno-danger: #ff9b91;
+		--zeno-danger-soft: #3a211f;
+	}
 }
 
 @layer base {
   * {
     @apply border-border outline-ring/50;
   }
-  body {
-    @apply bg-background text-foreground;
-  }
+	body {
+		@apply bg-zeno-paper font-sans text-zeno-ink transition-colors duration-200;
+	}
+}
+
+@layer components {
+	.zeno-page {
+		min-height: 100vh;
+		@apply bg-zeno-paper text-zeno-ink;
+	}
+
+	.zeno-card {
+		@apply rounded-zeno border border-zeno-line bg-zeno-surface shadow-zeno-card;
+	}
+
+	.zeno-kicker {
+		font-size: 0.6875rem;
+		font-weight: 700;
+		letter-spacing: 0.18em;
+		line-height: 1.25;
+		text-transform: uppercase;
+		@apply text-zeno-muted;
+	}
+
+	.zeno-primary {
+		@apply bg-zeno-night text-white;
+		transition: background-color 180ms ease, transform 180ms ease;
+	}
+
+	.zeno-primary:hover {
+		@apply bg-zeno-night/90;
+	}
+
+	.zeno-primary:active {
+		transform: scale(0.985);
+	}
 }

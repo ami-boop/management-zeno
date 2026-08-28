@@ -1,8 +1,25 @@
 const SW_PATH = '/service-worker.js'
 const SW_SCOPE = '/'
 const AUTH_STATE_MESSAGE = 'AUTH_STATE'
+const GET_ID_TOKEN_MESSAGE = 'GET_ID_TOKEN'
+const ID_TOKEN_MESSAGE = 'ID_TOKEN'
 
 const isServiceWorkerSupported = () => typeof navigator !== 'undefined' && 'serviceWorker' in navigator
+
+type FirebaseAuthLike = { currentUser: { getIdToken: () => Promise<string> } | null }
+
+export function installServiceWorkerTokenBridge(firebaseAuth: FirebaseAuthLike): void {
+	if (!isServiceWorkerSupported()) return
+
+	navigator.serviceWorker.addEventListener('message', event => {
+		const data = event.data as { type?: string; port?: MessagePort } | null
+		if (data?.type !== GET_ID_TOKEN_MESSAGE || !data.port) return
+
+		Promise.resolve(firebaseAuth.currentUser?.getIdToken() ?? null)
+			.catch(() => null)
+			.then(idToken => data.port?.postMessage({ type: ID_TOKEN_MESSAGE, idToken }))
+	})
+}
 
 export async function registerServiceWorker(): Promise<void> {
 	if (!isServiceWorkerSupported()) return

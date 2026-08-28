@@ -2,9 +2,11 @@ import { DashboardRoute } from '@/types/dashboard'
 import { Bus, Car, CheckCircle, AlertCircle, Clock } from 'lucide-react'
 import { useTranslations } from 'next-intl'
 import { ProgressBar } from '@/components/ui/progress-bar'
+import FriendIndicator from './FriendIndicator'
 
 interface DashboardRouteTableProps {
   routes: DashboardRoute[]
+  routeNameMap?: Record<string, string>
   onOrderBuses: (routeId: string, count: number) => void
   getStatusColor: (status: DashboardRoute['status']) => string
   getStatusText: (status: DashboardRoute['status']) => string
@@ -12,6 +14,7 @@ interface DashboardRouteTableProps {
 
 const RouteTable = ({
   routes,
+  routeNameMap,
   onOrderBuses,
   getStatusColor,
   getStatusText,
@@ -102,6 +105,11 @@ const RouteTable = ({
                     <div className="text-xs text-gray-500">
                       {t('columns.departure')}: {route.estimatedTime}
                     </div>
+                    <FriendIndicator
+                      tripId={route.id}
+                      count={route.pendingFriendCount ?? 0}
+                      routeNameMap={routeNameMap ?? {}}
+                    />
                   </div>
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 font-medium">

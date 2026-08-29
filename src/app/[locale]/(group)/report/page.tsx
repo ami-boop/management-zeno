@@ -1,26 +1,26 @@
 import { getTranslations } from 'next-intl/server'
 import { Info } from 'lucide-react'
 import Form from '@/components/report/Form'
-import { API_URL, GRADES, PROFILES } from '@/constants'
+import { GRADES, PROFILES } from '@/constants'
 import { getSessionToken } from '@/utils/getSessionToken'
+import { apiGet } from '@/lib/api/client'
+import { redirect } from 'next/navigation'
+
+export const dynamic = 'force-dynamic'
 
 export default async function ReportPage() {
-  const sessionToken = await getSessionToken()
+  const token = await getSessionToken()
+  if (!token) redirect('/login')
 
   let timeOptions: string[] = []
 
   try {
-    const res = await fetch(`${API_URL}/report-time/management`, {
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${sessionToken}`,
-      },
-      cache: 'force-cache',
-    })
-
-    const data = await res.json()
-    
-    timeOptions = data.times || []
+    const data = await apiGet('report-time/management', token)
+    if (data && typeof data === 'object' && Array.isArray((data as { times?: unknown }).times)) {
+      timeOptions = ((data as { times: unknown[] }).times).filter(
+        (time): time is string => typeof time === 'string'
+      )
+    }
   } catch (error) {
     console.error('Failed to fetch time options:', error)
   }
@@ -30,7 +30,7 @@ export default async function ReportPage() {
   const t = await getTranslations('managementReport')
 
   return (
-    <div className='min-h-screen bg-gray-50'>
+    <div className='bg-gray-50'>
       <div className='flex justify-center py-12 px-4'>
         <div className='max-w-md w-full'>
           <div className='bg-white rounded-lg shadow-sm border border-gray-200 p-8'>

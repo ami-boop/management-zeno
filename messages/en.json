@@ -320,7 +320,22 @@
     "backButton": "Report Another Cancellation",
     "noticeMessage": "All affected students will be notified.",
     "submitting": "Submitting...",
-    "submitButton": "Submit Report"
+    "submitButton": "Submit Report",
+    "modeParallel": "Class / parallel",
+    "modeManual": "Select students manually",
+    "searchStudentsPlaceholder": "Search students...",
+    "selectAllVisible": "Select all shown",
+    "clearSelection": "Clear selection",
+    "selectedPreview": "{count} selected",
+    "loadingStudents": "Loading students...",
+    "noStudentsFound": "No students found",
+    "studentsLoadError": "Failed to load students",
+    "stopOverrideLabel": "Override stop (optional)",
+    "stopOverrideDefault": "Use default stops",
+    "submitPreview": "{count} student(s) will be marked as going at the selected time",
+    "submitError": "Failed to submit. Please try again.",
+    "successCount": "{count} student(s) were updated",
+    "operationLabel": "Scope: {operation}"
   },
   "managementLessons": {
     "viewClassSchedule": "View Class Schedule",

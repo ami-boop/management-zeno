@@ -1,0 +1,156 @@
+'use client'
+
+import { useEffect, useState } from 'react'
+import { useTranslations } from 'next-intl'
+import { Check, Search } from 'lucide-react'
+import getManagementStudents from '@/app/actions/getManagementStudents'
+import type { ManagementStudent } from '@/lib/api-contracts'
+
+interface StudentPickerProps {
+	selectedUids: string[]
+	onChange: (uids: string[]) => void
+	onStopChange: (stopId: string | null) => void
+}
+
+const listClass = (active: boolean) =>
+	`flex items-center justify-between w-full px-3 py-2.5 rounded-md border text-start transition-colors duration-200 ${
+		active
+			? 'bg-blue-50 text-blue-700 border-blue-200'
+			: 'bg-white text-gray-700 border-gray-300 hover:bg-gray-50'
+	}`
+
+export default function StudentPicker({ selectedUids, onChange, onStopChange }: StudentPickerProps) {
+	const t = useTranslations('managementReport')
+	const [search, setSearch] = useState('')
+	const [stopId, setStopId] = useState('')
+	const [students, setStudents] = useState<ManagementStudent[]>([])
+	const [loading, setLoading] = useState(false)
+	const [error, setError] = useState(false)
+
+	useEffect(() => {
+		let cancelled = false
+		const timer = setTimeout(async () => {
+			setLoading(true)
+			setError(false)
+			const result = await getManagementStudents({ search, limit: 200, offset: 0 })
+			if (cancelled) return
+			if (result.error) {
+				setError(true)
+				setStudents([])
+			} else {
+				setStudents(result.students)
+			}
+			setLoading(false)
+		}, 250)
+		return () => {
+			cancelled = true
+			clearTimeout(timer)
+		}
+	}, [search])
+
+	const toggle = (uid: string) => {
+		onChange(
+			selectedUids.includes(uid)
+				? selectedUids.filter(id => id !== uid)
+				: [...selectedUids, uid]
+		)
+	}
+
+	const toggleAllVisible = () => {
+		const visibleUids = students.map(s => s.uid)
+		const allSelected = visibleUids.every(uid => selectedUids.includes(uid))
+		onChange(allSelected ? [] : [...new Set([...selectedUids, ...visibleUids])])
+	}
+
+	const stopOptions = [
+		...new Set(
+			students
+				.filter(s => selectedUids.includes(s.uid))
+				.map(s => s.stopId)
+				.filter((id): id is string => Boolean(id))
+		),
+	]
+
+	return (
+		<div className='space-y-3'>
+			<div className='flex items-center justify-between'>
+				<span className='text-sm font-medium text-gray-700'>
+					{t('selectedPreview', { count: selectedUids.length })}
+				</span>
+				{students.length > 0 && (
+					<button
+						type='button'
+						onClick={toggleAllVisible}
+						className='text-sm font-medium text-blue-600 hover:text-blue-700'
+					>
+						{selectedUids.length === students.length ? t('clearSelection') : t('selectAllVisible')}
+					</button>
+				)}
+			</div>
+
+			<div className='relative'>
+				<Search className='absolute start-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400' />
+				<input
+					type='text'
+					placeholder={t('searchStudentsPlaceholder')}
+					value={search}
+					onChange={e => setSearch(e.target.value)}
+					className='block w-full ps-9 pe-3 py-2 border border-gray-300 rounded-xl text-sm placeholder-gray-500 focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500'
+				/>
+			</div>
+
+			{error && <p className='text-sm text-red-600'>{t('studentsLoadError')}</p>}
+			{!error && loading && students.length === 0 && (
+				<p className='text-sm text-gray-500 text-center py-2'>{t('loadingStudents')}</p>
+			)}
+			{!error && !loading && students.length === 0 && (
+				<p className='text-sm text-gray-500 text-center py-2'>{t('noStudentsFound')}</p>
+			)}
+
+			<div className='max-h-64 overflow-y-auto space-y-2 rounded-md border border-gray-200 p-2'>
+				{students.map(student => {
+					const active = selectedUids.includes(student.uid)
+					return (
+						<button
+							key={student.uid}
+							type='button'
+							onClick={() => toggle(student.uid)}
+							className={listClass(active)}
+						>
+							<span className='text-sm'>
+								{student.firstName} {student.lastName}
+								<span className='text-gray-500'> · {student.grade}</span>
+							</span>
+							{active && <Check className='h-4 w-4 text-blue-600' />}
+						</button>
+					)
+				})}
+			</div>
+
+			{selectedUids.length > 0 && stopOptions.length > 1 && (
+				<div>
+					<label htmlFor='stop-override' className='block text-sm font-medium text-gray-700 mb-2'>
+						{t('stopOverrideLabel')}
+					</label>
+					<select
+						id='stop-override'
+						value={stopId}
+						onChange={e => {
+							const value = e.target.value
+							setStopId(value)
+							onStopChange(value || null)
+						}}
+						className='w-full px-3 py-2 border border-gray-300 rounded-xl text-sm focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500'
+					>
+						<option value=''>{t('stopOverrideDefault')}</option>
+						{stopOptions.map(option => (
+							<option key={option} value={option}>
+								{option}
+							</option>
+						))}
+					</select>
+				</div>
+			)}
+		</div>
+	)
+}

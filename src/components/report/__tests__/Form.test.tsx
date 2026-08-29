@@ -255,7 +255,7 @@ describe('ManagementReportForm', () => {
   it('submits form with parallel data', async () => {
     const user = userEvent.setup()
     const mockSetStudentReturnStatus = setStudentReturnStatus as jest.MockedFunction<typeof setStudentReturnStatus>
-    mockSetStudentReturnStatus.mockResolvedValue({ success: true })
+    mockSetStudentReturnStatus.mockResolvedValue({ ok: true, updatedCount: 5, operation: "test_scope" })
 
     renderComponent()
 
@@ -286,7 +286,7 @@ describe('ManagementReportForm', () => {
   it('submits form with individual class data without profile', async () => {
     const user = userEvent.setup()
     const mockSetStudentReturnStatus = setStudentReturnStatus as jest.MockedFunction<typeof setStudentReturnStatus>
-    mockSetStudentReturnStatus.mockResolvedValue({ success: true })
+    mockSetStudentReturnStatus.mockResolvedValue({ ok: true, updatedCount: 5, operation: "test_scope" })
 
     renderComponent()
 
@@ -319,7 +319,7 @@ describe('ManagementReportForm', () => {
   it('submits form with individual class data with profile', async () => {
     const user = userEvent.setup()
     const mockSetStudentReturnStatus = setStudentReturnStatus as jest.MockedFunction<typeof setStudentReturnStatus>
-    mockSetStudentReturnStatus.mockResolvedValue({ success: true })
+    mockSetStudentReturnStatus.mockResolvedValue({ ok: true, updatedCount: 5, operation: "test_scope" })
 
     renderComponent()
 
@@ -356,7 +356,7 @@ describe('ManagementReportForm', () => {
   it('resets form after successful submission', async () => {
     const user = userEvent.setup()
     const mockSetStudentReturnStatus = setStudentReturnStatus as jest.MockedFunction<typeof setStudentReturnStatus>
-    mockSetStudentReturnStatus.mockResolvedValue({ success: true })
+    mockSetStudentReturnStatus.mockResolvedValue({ ok: true, updatedCount: 5, operation: "test_scope" })
 
     renderComponent()
 

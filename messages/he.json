@@ -321,7 +321,22 @@
     "estimatedArrival": "הגעה משוערת: 15-20 דקות",
     "backButton": "דווח על ביטול נוסף",
     "noticeMessage": "כל התלמידים הרלוונטיים יעודכנו.",
-    "submitting": "שולח..."
+    "submitting": "שולח...",
+    "modeParallel": "כיתה / מקבילה",
+    "modeManual": "בחירת תלמידים ידנית",
+    "searchStudentsPlaceholder": "חפש תלמידים...",
+    "selectAllVisible": "בחר את כל המוצגים",
+    "clearSelection": "נקה בחירה",
+    "selectedPreview": "נבחרו: {count}",
+    "loadingStudents": "טוען תלמידים...",
+    "noStudentsFound": "לא נמצאו תלמידים",
+    "studentsLoadError": "טעינת התלמידים נכשלה",
+    "stopOverrideLabel": "שינוי תחנה (לא חובה)",
+    "stopOverrideDefault": "השאר תחנות ברירת מחדל",
+    "submitPreview": "{count} תלמידים יסומנו לשעה שנבחרה",
+    "submitError": "השליחה נכשלה. נסה שוב.",
+    "successCount": "עודכנו {count} תלמידים",
+    "operationLabel": "היקף: {operation}"
   },
   "managementLessons": {
     "viewClassSchedule": "צפייה במערכת שיעורים",

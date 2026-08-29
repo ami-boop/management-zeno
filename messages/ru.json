@@ -320,7 +320,22 @@
     "estimatedArrival": "Ожидаемое прибытие: 15-20 минут",
     "backButton": "Сообщить об ещё одной отмене",
     "noticeMessage": "Все затронутые ученики будут уведомлены.",
-    "submitting": "Отправка..."
+    "submitting": "Отправка...",
+    "modeParallel": "Класс / параллель",
+    "modeManual": "Выбрать учеников вручную",
+    "searchStudentsPlaceholder": "Поиск учеников...",
+    "selectAllVisible": "Выбрать всех показанных",
+    "clearSelection": "Снять выбор",
+    "selectedPreview": "Выбрано: {count}",
+    "loadingStudents": "Загрузка учеников...",
+    "noStudentsFound": "Ученики не найдены",
+    "studentsLoadError": "Не удалось загрузить учеников",
+    "stopOverrideLabel": "Сменить остановку (необязательно)",
+    "stopOverrideDefault": "Оставить остановки по умолчанию",
+    "submitPreview": "{count} ученик(ов) будут отмечены на выбранное время",
+    "submitError": "Не удалось отправить. Попробуйте ещё раз.",
+    "successCount": "Обновлено учеников: {count}",
+    "operationLabel": "Область: {operation}"
   },
   "managementLessons": {
     "viewClassSchedule": "Просмотр расписания класса",

@@ -6,7 +6,7 @@ const Header = ({
 }: { lastUpdated?: string }) => {
   const t = useTranslations('Dashboard')
   return (
-    <div className='mb-8 rounded-xl bg-zeno-paper border border-zeno-line px-5 py-4'>
+    <div className='mb-8 rounded-xl bg-white border border-zeno-line px-5 py-4'>
       <div className='flex items-center justify-between'>
         <div>
           <h1 className='text-3xl font-bold text-gray-900 mb-2'>{t('title')}</h1>

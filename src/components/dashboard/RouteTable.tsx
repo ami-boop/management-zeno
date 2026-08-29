@@ -76,6 +76,9 @@ const RouteTable = ({
               {t('columns.status')}
             </th>
             <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+              {t('columns.friends')}
+            </th>
+            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
               {t('columns.actions')}
             </th>
           </tr>
@@ -105,11 +108,6 @@ const RouteTable = ({
                     <div className="text-xs text-gray-500">
                       {t('columns.departure')}: {route.estimatedTime}
                     </div>
-                    <FriendIndicator
-                      tripId={route.id}
-                      count={route.pendingFriendCount ?? 0}
-                      routeNameMap={routeNameMap ?? {}}
-                    />
                   </div>
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 font-medium">
@@ -199,6 +197,13 @@ const RouteTable = ({
                     {getStatusIcon(route.status)}
                     {getStatusText(route.status)}
                   </div>
+                </td>
+                <td className="px-6 py-4 whitespace-nowrap">
+                  <FriendIndicator
+                    tripId={route.id}
+                    count={route.pendingFriendCount ?? 0}
+                    routeNameMap={routeNameMap ?? {}}
+                  />
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
                   <div className="flex items-center gap-2">

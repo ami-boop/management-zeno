@@ -34,6 +34,7 @@
       "busesNeeded": "הוזמנו / נדרשים",
       "busesOrdered": "אוטובוסים הוזמנו",
       "status": "סטטוס",
+      "friends": "לנסיעה לחבר",
       "actions": "פעולות",
       "departure": "יציאה",
       "lastUpdated": "עודכן לאחרונה"
@@ -72,6 +73,7 @@
     "friendDialogLoading": "טוען…",
     "friendDialogEmpty": "אין בקשות הממתינות לאישור",
     "friendDialogTo": "מסלול לחבר",
+    "friendDialogParent": "הורה",
     "approve": "אשר",
     "reject": "דחה",
     "friendSleepover": "לינה"
@@ -88,7 +90,12 @@
       "students": "תלמידים",
       "report": "דיווח",
       "lessons": "שיעורים"
-    }
+    },
+    "theme": "ערכת נושא",
+    "themeSystem": "מערכת",
+    "themeLight": "בהיר",
+    "themeDark": "כהה",
+    "notifications": "התראות"
   },
   "Notifications": {
     "title": "התראות",
@@ -268,7 +275,32 @@
     "selected": "תלמידים נבחרו",
     "schedule": "לוח זמנים",
     "actions": "פעולות",
-    "submittedTime": "זמן שליחה"
+    "submittedTime": "זמן שליחה",
+    "statusToday": "מצב היום",
+    "statusAll": "הכל",
+    "statusSubmitted": "דיווחו",
+    "statusNotMarked": "לא דיווחו",
+    "statusFriendPending": "נסיעה לחבר (ממתין)",
+    "friendBadge": "לחבר",
+    "noRoute": "ללא מסלול",
+    "notMarked": "לא דיווחו",
+    "friendPendingCount": "ממתינות לאישור",
+    "selectAll": "בחר הכל",
+    "previous": "הקודם",
+    "next": "הבא",
+    "pageInfo": "מוצג {from}–{to} מתוך {total}",
+    "filters": "מסננים",
+    "parallelAll": "כל המקבילות",
+    "classAll": "כל הכיתות",
+    "stopAll": "כל התחנות",
+    "timeAll": "כל השעות",
+    "filterParallel": "מקבילה",
+    "filterClass": "כיתה",
+    "filterStop": "תחנה",
+    "filterTime": "שעת יציאה",
+    "resetFilters": "אפס",
+    "noClass": "ללא כיתה",
+    "departure": "יציאה"
   },
   "managementReport": {
     "title": "דיווח על ביטול שיעור (ניהול)",

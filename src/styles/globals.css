@@ -125,29 +125,27 @@
   --zeno-danger-soft: #fef3f2;
 }
 
-@media (prefers-color-scheme: dark) {
-	:root:not(.light) {
-		color-scheme: dark;
-		--zeno-ink: #edf4f2;
-		--zeno-ink-soft: #b7c8ce;
-		--zeno-muted: #91a5ad;
-		--zeno-paper: #0e171b;
-		--zeno-paper-soft: #142126;
-		--zeno-surface: #18282f;
-		--zeno-night: #091216;
-		--zeno-amber: #f5c66d;
-		--zeno-amber-deep: #f0b95a;
-		--zeno-amber-ink: #f6d58e;
-		--zeno-amber-fg: #2b1a05;
-		--zeno-sage: #8fc0a1;
-		--zeno-sage-soft: #1d352c;
-		--zeno-line: #2b3d45;
-		--zeno-line-strong: #40555e;
-		--zeno-cream: #2d2718;
-		--zeno-cream-surface: #201d16;
-		--zeno-danger: #ff9b91;
-		--zeno-danger-soft: #3a211f;
-	}
+:root.dark {
+	color-scheme: dark;
+	--zeno-ink: #edf4f2;
+	--zeno-ink-soft: #b7c8ce;
+	--zeno-muted: #91a5ad;
+	--zeno-paper: #0e171b;
+	--zeno-paper-soft: #142126;
+	--zeno-surface: #18282f;
+	--zeno-night: #091216;
+	--zeno-amber: #f5c66d;
+	--zeno-amber-deep: #f0b95a;
+	--zeno-amber-ink: #f6d58e;
+	--zeno-amber-fg: #2b1a05;
+	--zeno-sage: #8fc0a1;
+	--zeno-sage-soft: #1d352c;
+	--zeno-line: #2b3d45;
+	--zeno-line-strong: #40555e;
+	--zeno-cream: #2d2718;
+	--zeno-cream-surface: #201d16;
+	--zeno-danger: #ff9b91;
+	--zeno-danger-soft: #3a211f;
 }
 
 @layer base {
@@ -189,5 +187,30 @@
 
 	.zeno-primary:active {
 		transform: scale(0.985);
+	}
+}
+
+@media (prefers-color-scheme: dark) {
+	:root:not(.light):not(.dark) {
+		color-scheme: dark;
+		--zeno-ink: #edf4f2;
+		--zeno-ink-soft: #b7c8ce;
+		--zeno-muted: #91a5ad;
+		--zeno-paper: #0e171b;
+		--zeno-paper-soft: #142126;
+		--zeno-surface: #18282f;
+		--zeno-night: #091216;
+		--zeno-amber: #f5c66d;
+		--zeno-amber-deep: #f0b95a;
+		--zeno-amber-ink: #f6d58e;
+		--zeno-amber-fg: #2b1a05;
+		--zeno-sage: #8fc0a1;
+		--zeno-sage-soft: #1d352c;
+		--zeno-line: #2b3d45;
+		--zeno-line-strong: #40555e;
+		--zeno-cream: #2d2718;
+		--zeno-cream-surface: #201d16;
+		--zeno-danger: #ff9b91;
+		--zeno-danger-soft: #3a211f;
 	}
 }

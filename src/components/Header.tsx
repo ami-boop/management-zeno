@@ -1,6 +1,6 @@
 'use client'
 
-import { Bell, MenuIcon } from 'lucide-react'
+import { Bell, MenuIcon, Monitor, Moon, Sun } from 'lucide-react'
 import { Link } from '@/i18n/navigation'
 import { useLocale, useTranslations } from 'next-intl'
 import {
@@ -16,6 +16,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
+import { useTheme, type ThemeSetting } from '@/context/ThemeContext'
 import { setLocaleCookie } from '@/utils/setlocale'
 import { locales } from '@/i18n/routing'
 
@@ -84,14 +85,53 @@ export default function Header() {
     </div>
   )
 
-  const ToolButton = ({ children }: { children: React.ReactNode }) => (
-    <button className='flex h-10 items-center justify-center rounded-full bg-[#f0f3f4] px-2.5 text-sm font-bold text-[#111518]'>
+  const ToolButton = ({ children, label }: { children: React.ReactNode; label?: string }) => (
+    <button
+      aria-label={label}
+      className='flex h-10 items-center justify-center rounded-full bg-[#f0f3f4] px-2.5 text-sm font-bold text-[#111518]'
+    >
       {children}
     </button>
   )
 
+  const ThemeToggle = () => {
+    const { setting, setTheme } = useTheme()
+    const options: { key: ThemeSetting; icon: React.ReactNode; label: string }[] = [
+      { key: 'system', icon: <Monitor className='h-4 w-4' />, label: t('themeSystem') },
+      { key: 'light', icon: <Sun className='h-4 w-4' />, label: t('themeLight') },
+      { key: 'dark', icon: <Moon className='h-4 w-4' />, label: t('themeDark') },
+    ]
+    const activeIcon =
+      setting === 'dark' ? <Moon className='h-4 w-4' /> : setting === 'light' ? <Sun className='h-4 w-4' /> : <Monitor className='h-4 w-4' />
+
+    return (
+      <DropdownMenu>
+        <DropdownMenuTrigger asChild>
+          <span>
+            <ToolButton label={t('theme')}>{activeIcon}</ToolButton>
+          </span>
+        </DropdownMenuTrigger>
+        <DropdownMenuContent align='end'>
+          {options.map(option => (
+            <DropdownMenuItem
+              key={option.key}
+              onClick={() => setTheme(option.key)}
+              data-testid={`theme-${option.key}`}
+              className={setting === option.key ? 'bg-accent' : ''}
+            >
+              <span className='flex items-center gap-2'>
+                {option.icon}
+                {option.label}
+              </span>
+            </DropdownMenuItem>
+          ))}
+        </DropdownMenuContent>
+      </DropdownMenu>
+    )
+  }
+
   return (
-    <header className='flex items-center justify-between border-b border-[#f0f3f4] px-10 py-3'>
+    <header className='flex items-center justify-between border-b border-[#f0f3f4] bg-white px-10 py-3'>
       <div className='flex items-center gap-4 text-[#111518]'>
         <h2 className='text-lg font-bold tracking-[-0.015em] leading-tight'>
           <Link href='/dashboard'>Zeno</Link>
@@ -101,7 +141,8 @@ export default function Header() {
       <div className='hidden md:flex flex-1 justify-end gap-8'>
         {menuOptions('line')}
         <div className='flex gap-4'>
-          <ToolButton>
+          <ThemeToggle />
+          <ToolButton label={t('notifications')}>
             <Link href='/notifications'>
               <Bell className='cursor-pointer' />
             </Link>

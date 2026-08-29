@@ -1,98 +1,99 @@
 'use client'
-import type { Student } from '@/app/[locale]/(group)/students/page'
-import { CircleCheck, CircleX } from 'lucide-react'
+
+import { useTranslations } from 'next-intl'
+import { CircleCheck, Clock, UserPlus } from 'lucide-react'
+import type { ManagementStudent } from '@/lib/api-contracts'
 
 interface StudentMobileCardsProps {
-	students: Student[]
-	selectedStudents: number[]
-	onSelectStudent: (id: number) => void
-	t: (key: string) => string
+	students: ManagementStudent[]
+	selectedStudents: string[]
+	onSelectStudent: (uid: string) => void
+	routeNameMap: Record<string, string>
 }
 
 export default function StudentMobileCards({
 	students,
 	selectedStudents,
 	onSelectStudent,
-	t,
+	routeNameMap,
 }: StudentMobileCardsProps) {
+	const t = useTranslations('Students')
+
 	return (
 		<div className='lg:hidden divide-y divide-gray-200'>
-			{students.map(student => (
-				<div key={student.id} className='p-6'>
-					<div className='flex items-start justify-between mb-4'>
-						<div className='flex items-center space-x-3'>
-							<input
-								type='checkbox'
-								checked={selectedStudents.includes(student.id)}
-								onChange={() => onSelectStudent(student.id)}
-								className='h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded'
-							/>
-							<div>
-								<h3 className='text-lg font-medium text-gray-900'>
-									{student.name}
-								</h3>
-								<p className='text-sm text-gray-500'>{student.grade}</p>
+			{students.map(student => {
+				const routeName = student.routeId
+					? routeNameMap[student.routeId] ?? student.routeId
+					: null
+				return (
+					<div key={student.uid} className='p-4'>
+						<div className='flex items-start justify-between gap-3 mb-3'>
+							<div className='flex items-start gap-3'>
+								<input
+									type='checkbox'
+									checked={selectedStudents.includes(student.uid)}
+									onChange={() => onSelectStudent(student.uid)}
+									aria-label={`${student.firstName} ${student.lastName}`}
+									className='mt-1 h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded'
+								/>
+								<div>
+									<h3 className='text-base font-medium text-gray-900'>
+										{student.firstName} {student.lastName}
+									</h3>
+									<p className='text-sm text-gray-500'>{student.grade}</p>
+									{student.today?.friendPending && (
+										<span className='mt-1 inline-flex items-center gap-1 rounded-full bg-amber-50 px-2 py-0.5 text-[11px] font-semibold text-amber-700 border border-amber-200'>
+											<UserPlus className='h-3 w-3' />
+											{t('statusFriendPending')}
+										</span>
+									)}
+								</div>
 							</div>
-						</div>
-					</div>
-
-					<div className='grid grid-cols-2 gap-4 mb-4'>
-						<div>
-							<dt className='text-sm font-medium text-gray-500'>
-								{t('route')}
-							</dt>
-							<dd className='text-sm text-gray-900'>{student.route}</dd>
-						</div>
-						<div>
-							<dt className='text-sm font-medium text-gray-500'>{t('stop')}</dt>
-							<dd className='text-sm text-gray-900'>{student.stop}</dd>
-						</div>
-					</div>
-
-					<div className='grid grid-cols-2 gap-4'>
-						<div className='flex items-center space-x-3 p-2'>
-							<div>
-								<dt className='text-xs font-medium text-gray-500'>
-									{t('submited')}
-								</dt>
-							</div>
-							<div className='flex-shrink-0'>
-								{student.submited ? (
-									<CircleCheck className='text-green-500' size={24} />
+							{student.departureTime ? (
+								student.today?.submitted ? (
+									<span
+										className='inline-flex shrink-0 items-center gap-1 text-sm font-semibold text-emerald-700'
+										title={t('statusSubmitted')}
+									>
+										<CircleCheck className='h-4 w-4 text-emerald-600' />
+										<span className='tabular-nums'>{student.departureTime}</span>
+									</span>
 								) : (
-									<CircleX className='text-red-500' size={24} />
+									<span
+										className='inline-flex shrink-0 items-center gap-1 text-sm font-medium text-gray-700'
+										title={t('statusNotMarked')}
+									>
+										<Clock className='h-4 w-4 text-gray-400' />
+										<span className='tabular-nums'>{student.departureTime}</span>
+									</span>
+								)
+							) : (
+								<span className='text-sm text-gray-400'>—</span>
+							)}
+						</div>
+
+						<div className='grid grid-cols-2 gap-3'>
+							<div>
+								<dt className='text-xs font-medium text-gray-500'>{t('route')}</dt>
+								<dd className='text-sm text-gray-900'>{routeName ?? '—'}</dd>
+							</div>
+							<div>
+								<dt className='text-xs font-medium text-gray-500'>{t('stop')}</dt>
+								<dd className='text-sm text-gray-900'>{student.stopId ?? '—'}</dd>
+							</div>
+							<div>
+								<dt className='text-xs font-medium text-gray-500'>{t('guardian')}</dt>
+								<dd className='text-sm font-medium text-gray-900'>
+									{student.guardian || '—'}
+								</dd>
+								{student.phone && (
+									<dd className='mt-0.5 text-xs text-gray-500'>{student.phone}</dd>
 								)}
 							</div>
 						</div>
-
-						<div className='p-2'>
-							<dt className='text-xs font-medium text-gray-500'>
-								{t('guardian')}
-							</dt>
-							<dd className='text-sm font-medium text-gray-900'>
-								{student.guardian}
-							</dd>
-							<dd className='mt-1 text-xs text-gray-500 flex items-center'>
-								<svg
-									className='w-3 h-3 mr-1'
-									fill='none'
-									stroke='currentColor'
-									viewBox='0 0 24 24'
-									xmlns='http://www.w3.org/2000/svg'
-								>
-									<path
-										strokeLinecap='round'
-										strokeLinejoin='round'
-										strokeWidth={2}
-										d='M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z'
-									/>
-								</svg>
-								{student.phone}
-							</dd>
-						</div>
 					</div>
-				</div>
-			))}
+				)
+			})}
 		</div>
 	)
 }

@@ -21,10 +21,10 @@ export default function FriendIndicator({ tripId, count, routeNameMap }: FriendI
 				type='button'
 				data-testid='friend-pending-badge'
 				onClick={() => setOpen(true)}
-				className='mt-1 inline-flex items-center gap-1 rounded-full bg-zeno-sage-soft px-2 py-0.5 text-[11px] font-semibold text-zeno-sage transition hover:bg-zeno-sage/20'
+				className='inline-flex items-center gap-1.5 rounded-xl border border-zeno-amber/50 bg-zeno-cream px-3 py-1.5 text-xs font-semibold text-zeno-amber-ink transition hover:bg-zeno-amber/20'
 			>
-				<UserPlus className='h-3 w-3' />
-				<span className='tabular-nums'>{count}</span>
+				<UserPlus className='h-3.5 w-3.5' />
+				{count}
 			</button>
 			<FriendPendingDialog
 				tripId={tripId}

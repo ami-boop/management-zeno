@@ -3,7 +3,7 @@
 import { useCallback, useEffect, useState, useTransition } from 'react'
 import { useRouter } from 'next/navigation'
 import { useTranslations } from 'next-intl'
-import { Check, MoonStar, StickyNote, UserPlus, X } from 'lucide-react'
+import { Check, MoonStar, Phone, StickyNote, UserPlus, X } from 'lucide-react'
 import {
 	Dialog,
 	DialogContent,
@@ -108,6 +108,21 @@ export default function FriendPendingDialog({
 										<p className='mt-1.5 flex items-start gap-1 rounded-lg bg-zeno-paper-soft px-2 py-1 text-xs text-zeno-ink-soft'>
 											<StickyNote className='mt-0.5 h-3 w-3 shrink-0 text-zeno-muted' />
 											{student.friendRoute!.note}
+										</p>
+									)}
+									{student.parentPhone && (
+										<p className='mt-1.5 flex items-center gap-1.5 text-xs text-zeno-ink-soft'>
+											<Phone className='h-3 w-3 shrink-0 text-zeno-muted' />
+											<a
+												href={`tel:${student.parentPhone}`}
+												className='font-medium text-zeno-ink underline-offset-2 hover:underline'
+												data-testid='parent-phone'
+											>
+												{student.parentPhone}
+											</a>
+											{student.parentName && (
+												<span className='text-zeno-muted'>· {student.parentName}</span>
+											)}
 										</p>
 									)}
 									<div className='mt-3 flex gap-2'>

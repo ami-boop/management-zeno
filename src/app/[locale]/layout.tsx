@@ -5,6 +5,7 @@ import { routing } from '@/i18n/routing'
 import { Metadata } from 'next'
 import localFont from 'next/font/local'
 import { Toaster } from 'sonner'
+import { ThemeProvider, ThemeScript } from '@/context/ThemeContext'
 import '@/styles/globals.css'
 
 const poppins = localFont({
@@ -36,10 +37,15 @@ export default async function LocaleLayout({
 
   return (
     <html lang={locale} dir={locale === 'he' ? 'rtl' : 'ltr'} suppressHydrationWarning>
+      <head>
+        <ThemeScript />
+      </head>
       <body className={poppins.className}>
-        <ServiceWorkerRegistrar />
-        <NextIntlClientProvider>{children}</NextIntlClientProvider>
-        <Toaster richColors position='top-right' />
+        <ThemeProvider>
+          <ServiceWorkerRegistrar />
+          <NextIntlClientProvider>{children}</NextIntlClientProvider>
+          <Toaster richColors position='top-right' />
+        </ThemeProvider>
       </body>
     </html>
   )

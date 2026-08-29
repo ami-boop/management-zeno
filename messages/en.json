@@ -34,6 +34,7 @@
       "busesNeeded": "Ordered / Needed",
       "busesOrdered": "Buses Ordered",
       "status": "Status",
+      "friends": "Friends",
       "actions": "Actions",
       "departure": "Departure",
       "lastUpdated": "Last Updated"
@@ -72,6 +73,7 @@
     "friendDialogLoading": "Loading…",
     "friendDialogEmpty": "No requests awaiting approval",
     "friendDialogTo": "Friend route",
+    "friendDialogParent": "Parent",
     "approve": "Approve",
     "reject": "Reject",
     "friendSleepover": "Sleepover"
@@ -88,7 +90,12 @@
       "students": "Students",
       "report": "Report",
       "lessons": "Lessons"
-    }
+    },
+    "theme": "Theme",
+    "themeSystem": "System",
+    "themeLight": "Light",
+    "themeDark": "Dark",
+    "notifications": "Notifications"
   },
   "Notifications": {
     "title": "Notifications",
@@ -268,7 +275,32 @@
     "selected": "student(s) selected",
     "schedule": "Schedule",
     "actions": "Actions",
-    "submittedTime": "Submitted Time"
+    "submittedTime": "Submitted Time",
+    "statusToday": "Status Today",
+    "statusAll": "All",
+    "statusSubmitted": "Submitted",
+    "statusNotMarked": "Not marked",
+    "statusFriendPending": "Friend trip pending",
+    "friendBadge": "Friend",
+    "noRoute": "No route",
+    "notMarked": "Not Marked",
+    "friendPendingCount": "Friend Trips Pending",
+    "selectAll": "Select all",
+    "previous": "Previous",
+    "next": "Next",
+    "pageInfo": "Showing {from}–{to} of {total}",
+    "filters": "Filters",
+    "parallelAll": "All parallels",
+    "classAll": "All classes",
+    "stopAll": "All stops",
+    "timeAll": "All times",
+    "filterParallel": "Parallel",
+    "filterClass": "Class",
+    "filterStop": "Stop",
+    "filterTime": "Departure time",
+    "resetFilters": "Reset",
+    "noClass": "No class",
+    "departure": "Departure"
   },
   "managementReport": {
     "title": "Report Class Cancellation (Management)",

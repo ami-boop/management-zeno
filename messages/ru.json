@@ -34,6 +34,7 @@
       "busesNeeded": "Заказано / Нужно",
       "busesOrdered": "Заказано автобусов",
       "status": "Статус",
+      "friends": "К друзьям",
       "actions": "Действия",
       "departure": "Отправление",
       "lastUpdated": "Последнее обновление"
@@ -72,6 +73,7 @@
     "friendDialogLoading": "Загрузка…",
     "friendDialogEmpty": "Нет запросов, ожидающих одобрения",
     "friendDialogTo": "Маршрут к другу",
+    "friendDialogParent": "Родитель",
     "approve": "Одобрить",
     "reject": "Отклонить",
     "friendSleepover": "С ночёвкой"
@@ -88,7 +90,12 @@
       "students": "Ученики",
       "report": "Отмена",
       "lessons": "Уроки"
-    }
+    },
+    "theme": "Тема",
+    "themeSystem": "Системная",
+    "themeLight": "Светлая",
+    "themeDark": "Тёмная",
+    "notifications": "Уведомления"
   },
   "Notifications": {
     "title": "Уведомления",
@@ -268,7 +275,32 @@
     "selected": "выбрано студентов",
     "schedule": "Расписание",
     "actions": "Действия",
-    "submittedTime": "Время отправки"
+    "submittedTime": "Время отправки",
+    "statusToday": "Статус сегодня",
+    "statusAll": "Все",
+    "statusSubmitted": "Отметились",
+    "statusNotMarked": "Не отметились",
+    "statusFriendPending": "Поездка к другу (ожидает)",
+    "friendBadge": "К другу",
+    "noRoute": "Без маршрута",
+    "notMarked": "Не отметились",
+    "friendPendingCount": "Ожидают одобрения",
+    "selectAll": "Выбрать всех",
+    "previous": "Назад",
+    "next": "Далее",
+    "pageInfo": "Показано {from}–{to} из {total}",
+    "filters": "Фильтры",
+    "parallelAll": "Все параллели",
+    "classAll": "Все классы",
+    "stopAll": "Все остановки",
+    "timeAll": "Всё время",
+    "filterParallel": "Параллель",
+    "filterClass": "Класс",
+    "filterStop": "Остановка",
+    "filterTime": "Время отъезда",
+    "resetFilters": "Сбросить",
+    "noClass": "Без класса",
+    "departure": "Отправление"
   },
   "managementReport": {
     "title": "Сообщить об отмене урока (Администрирование)",

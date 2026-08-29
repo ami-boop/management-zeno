@@ -4,14 +4,18 @@ import { getSessionToken } from '@/utils/getSessionToken'
 import { apiGet } from '@/lib/api/client'
 import { parseRoutes } from '@/lib/api-contracts'
 
+export const dynamic = 'force-dynamic'
+
 export default async function RoutesPage() {
-  const token = await getSessionToken()
-  if (!token) {
-    redirect('/login')
-  }
+	const token = await getSessionToken()
+	if (!token) redirect('/login')
 
-  const [routes] = await Promise.all([apiGet('routes', token)])
-  const parsed = parseRoutes(routes)
+	let routes = null
+	try {
+		routes = parseRoutes(await apiGet('routes', token))
+	} catch {
+		routes = null
+	}
 
-  return <Client routes={parsed} />
+	return <Client routes={routes} />
 }

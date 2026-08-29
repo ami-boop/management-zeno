@@ -98,3 +98,85 @@ export function parseManagementStudents(value: unknown): ManagementStudent[] {
 	}
 	return students
 }
+
+export interface ManagementFacetEntry {
+	id: string
+	label: string
+	count: number
+}
+
+export interface ManagementStudentsMeta {
+	total: number
+	filtered: number
+	counts: {
+		submitted: number
+		notMarked: number
+		friendPending: number
+	}
+	facets: {
+		routes: ManagementFacetEntry[]
+		parallels: ManagementFacetEntry[]
+		classes: ManagementFacetEntry[]
+		stops: ManagementFacetEntry[]
+		times: ManagementFacetEntry[]
+	}
+}
+
+export interface ManagementStudentsResponse {
+	students: ManagementStudent[]
+	meta: ManagementStudentsMeta | null
+	error?: boolean
+}
+
+export function parseManagementStudentsMeta(value: unknown): ManagementStudentsMeta | null {
+	if (!isRecord(value)) return null
+	if (!isNonNegativeNumber(value.total) || !isNonNegativeNumber(value.filtered)) return null
+	if (!isRecord(value.counts) || !isRecord(value.facets)) return null
+
+	const parseFacet = (v: unknown): ManagementFacetEntry[] => {
+		if (!Array.isArray(v)) return []
+		const entries: ManagementFacetEntry[] = []
+		for (const item of v) {
+			if (!isRecord(item)) continue
+			if (!isString(item.id)) continue
+			entries.push({
+				id: item.id,
+				label: isString(item.label) ? item.label : item.id,
+				count: isNonNegativeNumber(item.count) ? item.count : 0,
+			})
+		}
+		return entries
+	}
+
+	const counts = value.counts
+	const facets = value.facets
+	return {
+		total: value.total,
+		filtered: value.filtered,
+		counts: {
+			submitted: isNonNegativeNumber(counts.submitted) ? counts.submitted : 0,
+			notMarked: isNonNegativeNumber(counts.notMarked) ? counts.notMarked : 0,
+			friendPending: isNonNegativeNumber(counts.friendPending) ? counts.friendPending : 0,
+		},
+		facets: {
+			routes: parseFacet(facets.routes),
+			parallels: parseFacet(facets.parallels),
+			classes: parseFacet(facets.classes),
+			stops: parseFacet(facets.stops),
+			times: parseFacet(facets.times),
+		},
+	}
+}
+
+export function parseManagementStudentsResponse(value: unknown): ManagementStudentsResponse {
+	if (Array.isArray(value)) {
+		return { students: parseManagementStudents(value), meta: null }
+	}
+	if (!isRecord(value)) {
+		return { students: [], meta: null }
+	}
+	return {
+		students: parseManagementStudents(value.students),
+		meta: parseManagementStudentsMeta(value.meta),
+	}
+}

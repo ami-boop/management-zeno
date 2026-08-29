@@ -172,7 +172,9 @@
     "totalRoutes": "Total Routes",
     "totalStops": "Total Stops",
     "totalStudents": "Total Students",
-    "readOnlyHint": "View-only — route editing will be available later"
+    "readOnlyHint": "View-only — route editing will be available later",
+    "loadError": "Failed to load routes",
+    "loadErrorHint": "Check your connection and try again"
   },
   "Schedule": {
     "title": "Bus Schedule",
@@ -290,7 +292,12 @@
     "filterTime": "Departure time",
     "resetFilters": "Reset",
     "noClass": "No class",
-    "departure": "Departure"
+    "departure": "Departure",
+    "loading": "Loading...",
+    "loadError": "Failed to load students",
+    "retry": "Retry",
+    "noStop": "No stop",
+    "noTime": "No time"
   },
   "managementReport": {
     "title": "Report Class Cancellation (Management)",
@@ -312,7 +319,8 @@
     "estimatedArrival": "Estimated arrival: 15-20 minutes",
     "backButton": "Report Another Cancellation",
     "noticeMessage": "All affected students will be notified.",
-    "submitting": "Submitting..."
+    "submitting": "Submitting...",
+    "submitButton": "Submit Report"
   },
   "managementLessons": {
     "viewClassSchedule": "View Class Schedule",

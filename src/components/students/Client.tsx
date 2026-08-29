@@ -1,18 +1,24 @@
 'use client'
 
-import { useMemo, useState } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { useTranslations } from 'next-intl'
 import {
 	AlertCircle,
 	CheckCircle2,
 	ChevronLeft,
 	ChevronRight,
-	Clock,
+	RefreshCw,
 	Search,
 	UserPlus,
 } from 'lucide-react'
-import type { ManagementStudent } from '@/lib/api-contracts'
-import { GRADES } from '@/constants'
+import type {
+	ManagementStudent,
+	ManagementStudentsMeta,
+	ManagementStudentsResponse,
+} from '@/lib/api-contracts'
+import getManagementStudents, {
+	type StudentsQuery,
+} from '@/app/actions/getManagementStudents'
 import Table from './Table'
 import MobileCards from './MobileCards'
 
@@ -20,204 +26,140 @@ const PAGE_SIZE = 25
 
 type StatusFilter = 'all' | 'submitted' | 'notMarked' | 'friendPending'
 
-const parallelOfClass = (classId: string | null): string =>
-	classId ? classId.replace(/_\d+$/, '') : 'none'
+interface StudentsClientProps {
+	initial: ManagementStudentsResponse
+	routeNameMap: Record<string, string>
+}
 
-const parallelLabel = (key: string, t: (k: string) => string): string => {
-	if (key === 'none') return t('noClass')
-	return GRADES.find(g => g.key === key)?.hebrew ?? key
+interface FilterState {
+	route: string
+	parallel: string
+	classId: string
+	stop: string
+	time: string
+	status: StatusFilter
+	search: string
+}
+
+const EMPTY_FILTERS: FilterState = {
+	route: 'all',
+	parallel: 'all',
+	classId: 'all',
+	stop: 'all',
+	time: 'all',
+	status: 'all',
+	search: '',
 }
 
 const selectClass =
 	'rounded-xl border border-gray-300 bg-white px-3 py-2 text-sm text-gray-700 focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 max-w-[180px]'
 
-interface StudentsClientProps {
-	students: ManagementStudent[]
-	routeNameMap: Record<string, string>
-}
-
-export default function StudentsClient({ students, routeNameMap }: StudentsClientProps) {
+export default function StudentsClient({ initial, routeNameMap }: StudentsClientProps) {
 	const t = useTranslations('Students')
-	const [searchQuery, setSearchQuery] = useState('')
-	const [selectedRoute, setSelectedRoute] = useState('all')
-	const [statusFilter, setStatusFilter] = useState<StatusFilter>('all')
-	const [selectedParallel, setSelectedParallel] = useState('all')
-	const [selectedClass, setSelectedClass] = useState('all')
-	const [selectedStop, setSelectedStop] = useState('all')
-	const [selectedTime, setSelectedTime] = useState('all')
-	const [selectedStudents, setSelectedStudents] = useState<string[]>([])
+	const [filters, setFilters] = useState<FilterState>(EMPTY_FILTERS)
 	const [page, setPage] = useState(1)
+	const [data, setData] = useState<ManagementStudentsResponse>(initial)
+	const [loading, setLoading] = useState(false)
+	const [error, setError] = useState(false)
+	const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null)
+	const requestSeq = useRef(0)
 
-	const routeFilters = useMemo(() => {
-		const uniqueRoutes = [...new Set(students.map(s => s.routeId ?? 'none'))]
-		return [
-			{ key: 'all', label: t('filterAll'), count: students.length },
-			...uniqueRoutes.map(routeId => ({
-				key: routeId,
-				label: routeId === 'none' ? t('noRoute') : routeNameMap[routeId] ?? routeId,
-				count: students.filter(s => (s.routeId ?? 'none') === routeId).length,
-			})),
-		]
-	}, [students, routeNameMap, t])
+	const meta = data.meta
+	const students = data.students
 
-	const statusFilters = useMemo(
-		() => [
-			{ key: 'all' as StatusFilter, label: t('statusAll'), count: students.length },
-			{
-				key: 'submitted' as StatusFilter,
-				label: t('statusSubmitted'),
-				count: students.filter(s => s.today?.submitted).length,
-			},
-			{
-				key: 'notMarked' as StatusFilter,
-				label: t('statusNotMarked'),
-				count: students.filter(s => !s.today?.submitted).length,
-			},
-			{
-				key: 'friendPending' as StatusFilter,
-				label: t('statusFriendPending'),
-				count: students.filter(s => s.today?.friendPending).length,
-			},
-		],
-		[students, t]
+	const fetchPage = useCallback(
+		async (filterState: FilterState, currentPage: number) => {
+			const seq = ++requestSeq.current
+			setLoading(true)
+			setError(false)
+			const query: StudentsQuery = {
+				routeId: filterState.route,
+				parallel: filterState.parallel,
+				classId: filterState.classId,
+				stopId: filterState.stop,
+				status: filterState.status,
+				search: filterState.search,
+				limit: PAGE_SIZE,
+				offset: (currentPage - 1) * PAGE_SIZE,
+			}
+			const result = await getManagementStudents(query)
+			if (seq !== requestSeq.current) return
+			if (result.error) {
+				setError(true)
+			} else {
+				setData(result)
+			}
+			setLoading(false)
+		},
+		[]
 	)
 
-	const parallelOptions = useMemo(() => {
-		const parallels = [...new Set(students.map(s => parallelOfClass(s.classId)))]
-		return [
-			{ key: 'all', label: t('parallelAll') },
-			...parallels.map(key => ({
-				key,
-				label: `${parallelLabel(key, t)} (${students.filter(s => parallelOfClass(s.classId) === key).length})`,
-			})),
-		]
-	}, [students, t])
+	useEffect(() => {
+		if (debounceRef.current) clearTimeout(debounceRef.current)
+		debounceRef.current = setTimeout(() => {
+			void fetchPage(filters, page)
+		}, 250)
+		return () => {
+			if (debounceRef.current) clearTimeout(debounceRef.current)
+		}
+	}, [filters, page, fetchPage])
 
-	const classOptions = useMemo(() => {
-		const classes = [
-			...new Set(
-				students
-					.map(s => s.classId)
-					.filter((id): id is string => Boolean(id) && (selectedParallel === 'all' || parallelOfClass(id) === selectedParallel))
-			),
-		]
-		const gradeByClass = new Map(students.map(s => [s.classId, s.grade]))
-		return [
-			{ key: 'all', label: t('classAll') },
-			...classes
-				.sort()
-				.map(classId => ({
-					key: classId,
-					label: `${gradeByClass.get(classId) ?? classId} (${students.filter(s => s.classId === classId).length})`,
-				})),
-		]
-	}, [students, selectedParallel, t])
+	const updateFilters = (patch: Partial<FilterState>) => {
+		setFilters(prev => ({ ...prev, ...patch }))
+		setPage(1)
+	}
 
-	const stopOptions = useMemo(() => {
-		const stops = [...new Set(students.map(s => s.stopId).filter((id): id is string => Boolean(id)))]
-		return [
-			{ key: 'all', label: t('stopAll') },
-			...stops
-				.sort()
-				.map(stopId => ({
-					key: stopId,
-					label: `${stopId} (${students.filter(s => s.stopId === stopId).length})`,
-				})),
-		]
-	}, [students, t])
+	const resetAdvancedFilters = () =>
+		updateFilters({ parallel: 'all', classId: 'all', stop: 'all', time: 'all' })
 
-	const timeOptions = useMemo(() => {
-		const times = [
-			...new Set(students.map(s => s.departureTime).filter((time): time is string => Boolean(time))),
-		]
-		return [
-			{ key: 'all', label: t('timeAll') },
-			...times
-				.sort()
-				.map(time => ({
-					key: time,
-					label: `${time} (${students.filter(s => s.departureTime === time).length})`,
-				})),
-		]
-	}, [students, t])
+	// Fallback meta when the backend response has no meta (legacy shape)
+	const effectiveMeta: ManagementStudentsMeta = useMemo(() => {
+		if (meta) return meta
+		const count = (fn: (s: ManagementStudent) => boolean) => students.filter(fn).length
+		return {
+			total: students.length,
+			filtered: students.length,
+			counts: {
+				submitted: count(s => s.today?.submitted === true),
+				notMarked: count(s => s.today?.submitted !== true),
+				friendPending: count(s => s.today?.friendPending === true),
+			},
+			facets: { routes: [], parallels: [], classes: [], stops: [], times: [] },
+		}
+	}, [meta, students])
 
-	const filteredStudents = useMemo(() => {
-		const query = searchQuery.toLowerCase()
-		return students.filter(student => {
-			const parallel = parallelOfClass(student.classId)
-			const matchesRoute =
-				selectedRoute === 'all' || (student.routeId ?? 'none') === selectedRoute
-			const matchesParallel =
-				selectedParallel === 'all' || parallel === selectedParallel
-			const matchesClass =
-				selectedClass === 'all' || (student.classId ?? 'none') === selectedClass
-			const matchesStop =
-				selectedStop === 'all' || (student.stopId ?? 'none') === selectedStop
-			const matchesTime =
-				selectedTime === 'all' || (student.departureTime ?? 'none') === selectedTime
-			const matchesStatus =
-				statusFilter === 'all' ||
-				(statusFilter === 'submitted' && student.today?.submitted) ||
-				(statusFilter === 'notMarked' && !student.today?.submitted) ||
-				(statusFilter === 'friendPending' && student.today?.friendPending)
-			const fullName = `${student.firstName} ${student.lastName}`.toLowerCase()
-			const matchesSearch =
-				query === '' ||
-				fullName.includes(query) ||
-				student.grade.toLowerCase().includes(query) ||
-				(student.routeId ?? '').toLowerCase().includes(query) ||
-				(student.stopId ?? '').toLowerCase().includes(query) ||
-				student.guardian.toLowerCase().includes(query) ||
-				student.phone.toLowerCase().includes(query)
-			return (
-				matchesRoute &&
-				matchesParallel &&
-				matchesClass &&
-				matchesStop &&
-				matchesTime &&
-				matchesStatus &&
-				matchesSearch
-			)
-		})
-	}, [
-		students,
-		selectedRoute,
-		selectedParallel,
-		selectedClass,
-		selectedStop,
-		selectedTime,
-		statusFilter,
-		searchQuery,
-	])
-
-	const totalPages = Math.max(1, Math.ceil(filteredStudents.length / PAGE_SIZE))
+	const totalPages = Math.max(1, Math.ceil(effectiveMeta.filtered / PAGE_SIZE))
 	const currentPage = Math.min(page, totalPages)
-	const pageStudents = filteredStudents.slice(
-		(currentPage - 1) * PAGE_SIZE,
-		currentPage * PAGE_SIZE
-	)
 
-	const stats = useMemo(
-		() => [
-			{ key: 'totalStudents', value: students.length },
-			{ key: 'activeToday', value: students.filter(s => s.today?.submitted).length },
-			{ key: 'notMarked', value: students.filter(s => !s.today?.submitted).length },
-			{ key: 'friendPendingCount', value: students.filter(s => s.today?.friendPending).length },
-		],
-		[students]
-	)
+	const stats = [
+		{ key: 'totalStudents', value: effectiveMeta.counts.submitted + effectiveMeta.counts.notMarked },
+		{ key: 'activeToday', value: effectiveMeta.counts.submitted },
+		{ key: 'notMarked', value: effectiveMeta.counts.notMarked },
+		{ key: 'friendPendingCount', value: effectiveMeta.counts.friendPending },
+	]
 
+	const parallelOptions = meta?.facets.parallels ?? []
+	const classOptions = meta?.facets.classes ?? []
+	const stopOptions = meta?.facets.stops ?? []
+	const timeOptions = meta?.facets.times ?? []
+	const routeOptions = meta?.facets.routes ?? []
+
+	const visibleClasses =
+		filters.parallel === 'all'
+			? classOptions
+			: classOptions.filter(c => c.id === 'none' || c.id.startsWith(`${filters.parallel}_`))
+
+	const [selectedUids, setSelectedUids] = useState<string[]>([])
 	const handleSelectStudent = (uid: string) => {
-		setSelectedStudents(prev =>
+		setSelectedUids(prev =>
 			prev.includes(uid) ? prev.filter(id => id !== uid) : [...prev, uid]
 		)
 	}
-
 	const handleSelectAll = () => {
-		if (selectedStudents.length === pageStudents.length) {
-			setSelectedStudents([])
+		if (selectedUids.length === students.length) {
+			setSelectedUids([])
 		} else {
-			setSelectedStudents(pageStudents.map(s => s.uid))
+			setSelectedUids(students.map(s => s.uid))
 		}
 	}
 
@@ -261,6 +203,24 @@ export default function StudentsClient({ students, routeNameMap }: StudentsClien
 					))}
 				</div>
 
+				{/* Error banner */}
+				{error && (
+					<div className='mb-6 flex items-center justify-between gap-4 bg-red-50 border border-red-200 rounded-xl p-4'>
+						<div className='flex items-center gap-2 text-sm text-red-800'>
+							<AlertCircle className='h-4 w-4' />
+							{t('loadError')}
+						</div>
+						<button
+							type='button'
+							onClick={() => void fetchPage(filters, currentPage)}
+							className='inline-flex items-center gap-1.5 text-sm font-medium text-red-800 hover:text-red-900'
+						>
+							<RefreshCw className='h-4 w-4' />
+							{t('retry')}
+						</button>
+					</div>
+				)}
+
 				{/* Main Content */}
 				<div className='bg-white rounded-lg shadow-sm border border-gray-200'>
 					<div className='px-6 py-4 border-b border-gray-200'>
@@ -271,56 +231,75 @@ export default function StudentsClient({ students, routeNameMap }: StudentsClien
 								<input
 									type='text'
 									placeholder={t('searchPlaceholder')}
-									value={searchQuery}
-									onChange={e => {
-										setSearchQuery(e.target.value)
-										setPage(1)
-									}}
+									value={filters.search}
+									onChange={e => updateFilters({ search: e.target.value })}
 									className='block w-full ps-9 pe-3 py-2 border border-gray-300 rounded-xl text-sm placeholder-gray-500 focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500'
 								/>
 							</div>
 						</div>
 
 						{/* Route Filters */}
-						<div className='flex flex-wrap gap-2 mb-3'>
-							{routeFilters.map(filter => (
+						{routeOptions.length > 0 && (
+							<div className='flex flex-wrap gap-2 mb-3'>
 								<button
-									key={filter.key}
-									onClick={() => {
-										setSelectedRoute(filter.key)
-										setPage(1)
-									}}
+									onClick={() => updateFilters({ route: 'all' })}
 									className={`inline-flex items-center px-3 py-1.5 rounded-lg text-sm font-medium transition-colors duration-200 ${
-										selectedRoute === filter.key
+										filters.route === 'all'
 											? 'bg-blue-100 text-blue-800 border border-blue-200'
 											: 'bg-white text-gray-700 border border-gray-300 hover:bg-gray-50'
 									}`}
 								>
-									{filter.label}
+									{t('filterAll')}
 									<span
 										className={`ms-2 px-2 py-0.5 rounded-full text-xs tabular-nums ${
-											selectedRoute === filter.key
+											filters.route === 'all'
 												? 'bg-blue-200 text-blue-800'
 												: 'bg-gray-100 text-gray-600'
 										}`}
 									>
-										{filter.count}
+										{effectiveMeta.total}
 									</span>
 								</button>
-							))}
-						</div>
+								{routeOptions.map(r => (
+									<button
+										key={r.id}
+										onClick={() => updateFilters({ route: r.id })}
+										className={`inline-flex items-center px-3 py-1.5 rounded-lg text-sm font-medium transition-colors duration-200 ${
+											filters.route === r.id
+												? 'bg-blue-100 text-blue-800 border border-blue-200'
+												: 'bg-white text-gray-700 border border-gray-300 hover:bg-gray-50'
+										}`}
+									>
+										{r.id === 'none' ? t('noRoute') : routeNameMap[r.id] ?? r.id}
+										<span
+											className={`ms-2 px-2 py-0.5 rounded-full text-xs tabular-nums ${
+												filters.route === r.id
+													? 'bg-blue-200 text-blue-800'
+													: 'bg-gray-100 text-gray-600'
+											}`}
+										>
+											{r.count}
+										</span>
+									</button>
+								))}
+							</div>
+						)}
 
 						{/* Status Filters */}
 						<div className='flex flex-wrap gap-2 mb-3'>
-							{statusFilters.map(filter => (
+							{(
+								[
+									{ key: 'all' as StatusFilter, label: t('statusAll'), count: effectiveMeta.counts.submitted + effectiveMeta.counts.notMarked },
+									{ key: 'submitted' as StatusFilter, label: t('statusSubmitted'), count: effectiveMeta.counts.submitted },
+									{ key: 'notMarked' as StatusFilter, label: t('statusNotMarked'), count: effectiveMeta.counts.notMarked },
+									{ key: 'friendPending' as StatusFilter, label: t('statusFriendPending'), count: effectiveMeta.counts.friendPending },
+								] as const
+							).map(filter => (
 								<button
 									key={filter.key}
-									onClick={() => {
-										setStatusFilter(filter.key)
-										setPage(1)
-									}}
+									onClick={() => updateFilters({ status: filter.key })}
 									className={`inline-flex items-center px-3 py-1.5 rounded-lg text-sm font-medium transition-colors duration-200 ${
-										statusFilter === filter.key
+										filters.status === filter.key
 											? 'bg-emerald-50 text-emerald-800 border border-emerald-200'
 											: 'bg-white text-gray-700 border border-gray-300 hover:bg-gray-50'
 									}`}
@@ -328,7 +307,7 @@ export default function StudentsClient({ students, routeNameMap }: StudentsClien
 									{filter.label}
 									<span
 										className={`ms-2 px-2 py-0.5 rounded-full text-xs tabular-nums ${
-											statusFilter === filter.key
+											filters.status === filter.key
 												? 'bg-emerald-100 text-emerald-800'
 												: 'bg-gray-100 text-gray-600'
 										}`}
@@ -346,78 +325,63 @@ export default function StudentsClient({ students, routeNameMap }: StudentsClien
 							</span>
 							<select
 								aria-label={t('filterParallel')}
-								value={selectedParallel}
-								onChange={e => {
-									setSelectedParallel(e.target.value)
-									setSelectedClass('all')
-									setPage(1)
-								}}
+								value={filters.parallel}
+								onChange={e => updateFilters({ parallel: e.target.value, classId: 'all' })}
 								className={selectClass}
 							>
-								{parallelOptions.map(option => (
-									<option key={option.key} value={option.key}>
-										{option.label}
+								<option value='all'>{t('parallelAll')}</option>
+								{parallelOptions.map(p => (
+									<option key={p.id} value={p.id}>
+										{p.id === 'none' ? t('noClass') : p.label} ({p.count})
 									</option>
 								))}
 							</select>
 							<select
 								aria-label={t('filterClass')}
-								value={selectedClass}
-								onChange={e => {
-									setSelectedClass(e.target.value)
-									setPage(1)
-								}}
+								value={filters.classId}
+								onChange={e => updateFilters({ classId: e.target.value })}
 								className={selectClass}
 							>
-								{classOptions.map(option => (
-									<option key={option.key} value={option.key}>
-										{option.label}
+								<option value='all'>{t('classAll')}</option>
+								{visibleClasses.map(c => (
+									<option key={c.id} value={c.id}>
+										{c.id === 'none' ? t('noClass') : c.label} ({c.count})
 									</option>
 								))}
 							</select>
 							<select
 								aria-label={t('filterStop')}
-								value={selectedStop}
-								onChange={e => {
-									setSelectedStop(e.target.value)
-									setPage(1)
-								}}
+								value={filters.stop}
+								onChange={e => updateFilters({ stop: e.target.value })}
 								className={selectClass}
 							>
-								{stopOptions.map(option => (
-									<option key={option.key} value={option.key}>
-										{option.label}
+								<option value='all'>{t('stopAll')}</option>
+								{stopOptions.map(s => (
+									<option key={s.id} value={s.id}>
+										{s.id === 'none' ? t('noStop') : s.id} ({s.count})
 									</option>
 								))}
 							</select>
 							<select
 								aria-label={t('filterTime')}
-								value={selectedTime}
-								onChange={e => {
-									setSelectedTime(e.target.value)
-									setPage(1)
-								}}
+								value={filters.time}
+								onChange={e => updateFilters({ time: e.target.value })}
 								className={selectClass}
 							>
-								{timeOptions.map(option => (
-									<option key={option.key} value={option.key}>
-										{option.label}
+								<option value='all'>{t('timeAll')}</option>
+								{timeOptions.map(tm => (
+									<option key={tm.id} value={tm.id}>
+										{tm.id === 'none' ? t('noTime') : tm.id} ({tm.count})
 									</option>
 								))}
 							</select>
-							{(selectedParallel !== 'all' ||
-								selectedClass !== 'all' ||
-								selectedStop !== 'all' ||
-								selectedTime !== 'all') && (
+							{(filters.parallel !== 'all' ||
+								filters.classId !== 'all' ||
+								filters.stop !== 'all' ||
+								filters.time !== 'all') && (
 								<button
 									type='button'
-									onClick={() => {
-										setSelectedParallel('all')
-										setSelectedClass('all')
-										setSelectedStop('all')
-										setSelectedTime('all')
-										setPage(1)
-									}}
+									onClick={resetAdvancedFilters}
 									className='text-sm font-medium text-gray-500 hover:text-gray-700 underline underline-offset-2'
 								>
 									{t('resetFilters')}
@@ -426,10 +390,10 @@ export default function StudentsClient({ students, routeNameMap }: StudentsClien
 						</div>
 
 						{/* Bulk Actions */}
-						{selectedStudents.length > 0 && (
+						{selectedUids.length > 0 && (
 							<div className='flex items-center justify-between bg-blue-50 border border-blue-200 rounded-lg p-3 mt-3'>
 								<span className='text-sm text-blue-800'>
-									{selectedStudents.length} {t('selected')}
+									{selectedUids.length} {t('selected')}
 								</span>
 								<div className='flex space-x-2'>
 									<button className='text-sm text-blue-700 hover:text-blue-900'>{t('edit')}</button>
@@ -439,11 +403,19 @@ export default function StudentsClient({ students, routeNameMap }: StudentsClien
 						)}
 					</div>
 
+					{/* Loading overlay */}
+					{loading && (
+						<div className='flex items-center justify-center py-3 bg-blue-50/50 border-b border-gray-100'>
+							<RefreshCw className='h-4 w-4 text-blue-500 animate-spin' />
+							<span className='ms-2 text-sm text-gray-600'>{t('loading')}</span>
+						</div>
+					)}
+
 					{/* Desktop Table */}
 					<div className='hidden lg:block overflow-x-auto'>
 						<Table
-							students={pageStudents}
-							selectedStudents={selectedStudents}
+							students={students}
+							selectedStudents={selectedUids}
 							onSelectStudent={handleSelectStudent}
 							onSelectAll={handleSelectAll}
 							routeNameMap={routeNameMap}
@@ -452,25 +424,27 @@ export default function StudentsClient({ students, routeNameMap }: StudentsClien
 
 					{/* Mobile Cards */}
 					<MobileCards
-						students={pageStudents}
-						selectedStudents={selectedStudents}
+						students={students}
+						selectedStudents={selectedUids}
 						onSelectStudent={handleSelectStudent}
 						routeNameMap={routeNameMap}
 					/>
 
-					{filteredStudents.length === 0 ? (
+					{students.length === 0 && !loading && (
 						<div className='text-center py-12'>
 							<h3 className='mt-2 text-sm font-medium text-gray-900'>{t('noResults')}</h3>
 							<p className='mt-1 text-sm text-gray-500'>{t('tryAdjustingSearch')}</p>
 						</div>
-					) : (
-						/* Pagination */
+					)}
+
+					{/* Pagination */}
+					{effectiveMeta.filtered > 0 && (
 						<div className='flex items-center justify-between px-6 py-4 border-t border-gray-200'>
 							<p className='text-sm text-gray-500 tabular-nums'>
 								{t('pageInfo', {
 									from: (currentPage - 1) * PAGE_SIZE + 1,
-									to: Math.min(currentPage * PAGE_SIZE, filteredStudents.length),
-									total: filteredStudents.length,
+									to: Math.min(currentPage * PAGE_SIZE, effectiveMeta.filtered),
+									total: effectiveMeta.filtered,
 								})}
 							</p>
 							<div className='flex items-center gap-2'>

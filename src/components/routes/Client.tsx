@@ -2,34 +2,57 @@
 
 import { useState, useMemo } from 'react'
 import { useTranslations } from 'next-intl'
-import { Search, ListChecks, Info } from 'lucide-react'
+import { AlertCircle, Search, ListChecks, Info, RefreshCw } from 'lucide-react'
 import type { RouteItem } from '@/lib/api-contracts'
 import Table from './Table'
 import MobileCards from './MobileCards'
 
 interface RoutesClientProps {
-	routes: RouteItem[]
+	routes: RouteItem[] | null
 }
 
 export default function Client({ routes }: RoutesClientProps) {
 	const t = useTranslations('Routes')
 	const [searchQuery, setSearchQuery] = useState('')
+	const safeRoutes = useMemo(() => routes ?? [], [routes])
 
 	const filteredRoutes = useMemo(() => {
 		const query = searchQuery.toLowerCase()
-		return routes.filter(route =>
+		return safeRoutes.filter(route =>
 			route.name.toLowerCase().includes(query) || route.routeId.toLowerCase().includes(query)
 		)
-	}, [routes, searchQuery])
+	}, [safeRoutes, searchQuery])
 
 	const stats = useMemo(
 		() => [
-			{ key: 'totalRoutes', value: routes.length },
-			{ key: 'totalStops', value: routes.reduce((sum, r) => sum + r.stops, 0) },
-			{ key: 'totalStudents', value: routes.reduce((sum, r) => sum + r.students, 0) },
+			{ key: 'totalRoutes', value: safeRoutes.length },
+			{ key: 'totalStops', value: safeRoutes.reduce((sum, r) => sum + r.stops, 0) },
+			{ key: 'totalStudents', value: safeRoutes.reduce((sum, r) => sum + r.students, 0) },
 		],
-		[routes]
+		[safeRoutes]
 	)
+
+	if (routes === null) {
+		return (
+			<div className='bg-gray-50'>
+				<div className='max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8 py-8'>
+					<div className='flex flex-col items-center justify-center py-24 text-center'>
+						<AlertCircle className='h-10 w-10 text-red-400 mb-4' />
+						<h2 className='text-lg font-semibold text-gray-900 mb-1'>{t('loadError')}</h2>
+						<p className='text-sm text-gray-500 mb-6'>{t('loadErrorHint')}</p>
+						<button
+							type='button'
+							onClick={() => window.location.reload()}
+							className='inline-flex items-center gap-2 px-4 py-2 border border-gray-300 rounded-xl shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50'
+						>
+							<RefreshCw className='h-4 w-4' />
+							{t('retry')}
+						</button>
+					</div>
+				</div>
+			</div>
+		)
+	}
 
 	return (
 		<div className='bg-gray-50'>

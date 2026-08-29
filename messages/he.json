@@ -172,7 +172,9 @@
     "totalRoutes": "סכ מסלולים",
     "totalStops": "סה\"כ תחנות",
     "totalStudents": "סה\"כ תלמידים",
-    "readOnlyHint": "צפייה בלבד — עריכת מסלולים תהיה זמינה בהמשך"
+    "readOnlyHint": "צפייה בלבד — עריכת מסלולים תהיה זמינה בהמשך",
+    "loadError": "טעינת המסלולים נכשלה",
+    "loadErrorHint": "בדוק את החיבור ונסה שוב"
   },
   "Schedule": {
     "title": "לוח זמני אוטובוסים",
@@ -290,7 +292,12 @@
     "filterTime": "שעת יציאה",
     "resetFilters": "אפס",
     "noClass": "ללא כיתה",
-    "departure": "יציאה"
+    "departure": "יציאה",
+    "loading": "טוען...",
+    "loadError": "טעינת התלמידים נכשלה",
+    "retry": "נסה שוב",
+    "noStop": "ללא תחנה",
+    "noTime": "אין שעה"
   },
   "managementReport": {
     "title": "דיווח על ביטול שיעור (ניהול)",
@@ -303,7 +310,7 @@
     "selectAllProfiles": "כל הפרופילים",
     "timeLabel": "בחר שעת הגעה",
     "parallelLabel": "בחר שכבה",
-    "submitButton": "הפק דוח",
+    "submitButton": "שלח דיווח",
     "selectParallel": "בחר מקבילה שלמה...",
     "parallelOption": "כיתות {grade} (כל המקבילה)",
     "currentTime": "שעה נוכחית",
@@ -356,7 +363,19 @@
     "emailPlaceholder": "הכנס שם משתמש",
     "passwordPlaceholder": "הכנס סיסמה",
     "securityNotice": "כל הפעולות נרשמות ומנוטרות.",
-    "kicker": "פורטל ניהול"
+    "kicker": "פורטל ניהול",
+    "errors": {
+      "invalidEmail": "כתובת אימייל לא תקינה",
+      "shortPassword": "הסיסמה קצרה מדי",
+      "userNotFound": "משתמש לא נמצא",
+      "wrongPassword": "סיסמה שגויה",
+      "invalidCredential": "אימייל או סיסמה שגויים",
+      "tooManyRequests": "יותר מדי ניסיונות. נסה שוב מאוחר יותר",
+      "userDisabled": "חשבון המשתמש מושבת",
+      "genericError": "אירעה שגיאה. נסה שוב מאוחר יותר",
+      "networkError": "שגיאת רשת. בדוק את החיבור ונסה שוב",
+      "accessDenied": "הגישה נדחתה."
+    }
   },
   "errors": {
     "invalidEmail": "כתובת אימייל לא תקינה",

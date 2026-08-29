@@ -162,27 +162,17 @@
   },
   "Routes": {
     "title": "ניהול מסלולים",
-    "addRoute": "הוסף מסלול",
     "searchPlaceholder": "חפש מסלולים...",
     "headers": {
       "routeName": "שם קו",
       "stops": "תחנות",
-      "students": "תלמידים",
-      "status": "סטטוס"
+      "students": "תלמידים"
     },
-    "status": {
-      "active": "פעיל",
-      "inactive": "לא פעיל",
-      "maintenance": "בטיפול"
-    },
-    "view": "פרטים",
-    "edit": "ערוך",
-    "delete": "מחק",
     "noResults": "לא נמצאו מסלולים התואמים לחיפוש",
-    "noRoutes": "אין מסלולים זמינים",
     "totalRoutes": "סכ מסלולים",
-    "activeRoutes": "מסלולים פעילים",
-    "inactiveRoutes": "מסלולים לא פעילים"
+    "totalStops": "סה\"כ תחנות",
+    "totalStudents": "סה\"כ תלמידים",
+    "readOnlyHint": "צפייה בלבד — עריכת מסלולים תהיה זמינה בהמשך"
   },
   "Schedule": {
     "title": "לוח זמני אוטובוסים",

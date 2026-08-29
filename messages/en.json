@@ -162,27 +162,17 @@
   },
   "Routes": {
     "title": "Route Management",
-    "addRoute": "Add Route",
     "searchPlaceholder": "Search routes...",
     "headers": {
       "routeName": "Route Name",
       "stops": "Stops",
-      "students": "Students",
-      "status": "Status"
+      "students": "Students"
     },
-    "status": {
-      "active": "Active",
-      "inactive": "Inactive",
-      "maintenance": "Maintenance"
-    },
-    "view": "View Details",
-    "edit": "Edit",
-    "delete": "Delete",
     "noResults": "No routes found matching your search",
-    "noRoutes": "No routes available",
     "totalRoutes": "Total Routes",
-    "activeRoutes": "Active Routes",
-    "inactiveRoutes": "Inactive Routes"
+    "totalStops": "Total Stops",
+    "totalStudents": "Total Students",
+    "readOnlyHint": "View-only — route editing will be available later"
   },
   "Schedule": {
     "title": "Bus Schedule",

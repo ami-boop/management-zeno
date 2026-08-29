@@ -2,53 +2,95 @@
 
 import { useState, useMemo } from 'react'
 import { useTranslations } from 'next-intl'
-import { Search, ListChecks } from 'lucide-react'
-import type { Route } from '@/types/routes'
+import { Search, ListChecks, Info } from 'lucide-react'
+import type { RouteItem } from '@/lib/api-contracts'
 import Table from './Table'
 import MobileCards from './MobileCards'
 
 interface RoutesClientProps {
-  routes: Route[]
+	routes: RouteItem[]
 }
 
 export default function Client({ routes }: RoutesClientProps) {
-  const t = useTranslations('Routes')
-  const [searchQuery, setSearchQuery] = useState('')
+	const t = useTranslations('Routes')
+	const [searchQuery, setSearchQuery] = useState('')
 
-  const filteredRoutes = useMemo(() => {
-    return routes.filter(route =>
-      route.name.toLowerCase().includes(searchQuery.toLowerCase())
-    )
-  }, [routes, searchQuery])
+	const filteredRoutes = useMemo(() => {
+		const query = searchQuery.toLowerCase()
+		return routes.filter(route =>
+			route.name.toLowerCase().includes(query) || route.routeId.toLowerCase().includes(query)
+		)
+	}, [routes, searchQuery])
 
-  return (
-    <div className='min-h-screen bg-gray-50'>
-      <div className='max-w-4xl mx-auto px-4 sm:px-8 py-8'>
-        <div className='flex flex-col sm:flex-row justify-between gap-3 mb-6'>
-          <h1 className='text-3xl font-bold text-gray-900 flex items-center gap-2'>
-            <ListChecks className='w-6 h-6 text-blue-600' />
-            {t('title')}
-          </h1>
-        </div>
+	const stats = useMemo(
+		() => [
+			{ key: 'totalRoutes', value: routes.length },
+			{ key: 'totalStops', value: routes.reduce((sum, r) => sum + r.stops, 0) },
+			{ key: 'totalStudents', value: routes.reduce((sum, r) => sum + r.students, 0) },
+		],
+		[routes]
+	)
 
-        <div className='mb-6'>
-          <div className='relative'>
-            <span className='absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none'>
-              <Search className='h-4 w-4 text-gray-400' />
-            </span>
-            <input
-              type='text'
-              placeholder={t('searchPlaceholder')}
-              value={searchQuery}
-              onChange={e => setSearchQuery(e.target.value)}
-              className='block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md text-sm placeholder-gray-500 focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500'
-            />
-          </div>
-        </div>
+	return (
+		<div className='bg-gray-50'>
+			<div className='max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8 py-8'>
+				{/* Header */}
+				<div className='mb-8'>
+					<h1 className='text-3xl font-bold text-gray-900 mb-2 flex items-center gap-2'>
+						<ListChecks className='h-7 w-7 text-blue-600' />
+						{t('title')}
+					</h1>
+					<div className='inline-flex items-center gap-2 px-3 py-1.5 rounded-lg bg-amber-50 border border-amber-200 text-amber-800 text-sm'>
+						<Info className='h-4 w-4' />
+						{t('readOnlyHint')}
+					</div>
+				</div>
 
-        <Table routes={filteredRoutes} t={t} />
-        <MobileCards routes={filteredRoutes} t={t} />
-      </div>
-    </div>
-  )
+				{/* Stats */}
+				<div className='grid grid-cols-2 lg:grid-cols-3 gap-4 mb-8'>
+					{stats.map(stat => (
+						<div key={stat.key} className='bg-white rounded-2xl border border-gray-200 p-5'>
+							<h3 className='text-xs font-semibold text-gray-500 uppercase tracking-wide mb-1'>
+								{t(stat.key)}
+							</h3>
+							<p className='text-3xl font-bold text-gray-900 tabular-nums'>{stat.value}</p>
+						</div>
+					))}
+				</div>
+
+				{/* Main Content */}
+				<div className='bg-white rounded-lg shadow-sm border border-gray-200'>
+					<div className='px-6 py-4 border-b border-gray-200'>
+						<div className='flex flex-col sm:flex-row sm:items-center justify-between gap-4'>
+							<h2 className='text-xl font-semibold text-gray-900'>{t('title')}</h2>
+							<div className='relative max-w-md w-full sm:w-80'>
+								<Search className='absolute start-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400' />
+								<input
+									type='text'
+									placeholder={t('searchPlaceholder')}
+									value={searchQuery}
+									onChange={e => setSearchQuery(e.target.value)}
+									className='block w-full ps-9 pe-3 py-2 border border-gray-300 rounded-xl text-sm placeholder-gray-500 focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500'
+								/>
+							</div>
+						</div>
+					</div>
+
+					{/* Desktop Table */}
+					<div className='hidden md:block overflow-x-auto'>
+						<Table routes={filteredRoutes} />
+					</div>
+
+					{/* Mobile Cards */}
+					<MobileCards routes={filteredRoutes} />
+
+					{filteredRoutes.length === 0 && (
+						<div className='text-center py-12'>
+							<h3 className='mt-2 text-sm font-medium text-gray-900'>{t('noResults')}</h3>
+						</div>
+					)}
+				</div>
+			</div>
+		</div>
+	)
 }

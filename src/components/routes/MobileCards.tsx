@@ -1,52 +1,39 @@
 'use client'
 
-import type { Route } from '@/types/routes'
-import { CheckCircle, Ban, Wrench } from 'lucide-react'
+import { useTranslations } from 'next-intl'
+import { MapPin, Users } from 'lucide-react'
+import type { RouteItem } from '@/lib/api-contracts'
 
 interface RoutesMobileCardsProps {
-	routes: Route[]
-	t: (key: string) => string
+	routes: RouteItem[]
 }
 
-const statusIcon = {
-	active: <CheckCircle className='w-4 h-4 text-emerald-500 inline' />,
-	inactive: <Ban className='w-4 h-4 text-gray-400 inline' />,
-	maintenance: <Wrench className='w-4 h-4 text-amber-500 inline' />,
-}
+function RoutesMobileCards({ routes }: RoutesMobileCardsProps) {
+	const t = useTranslations('Routes')
 
-function RoutesMobileCards({ routes, t }: RoutesMobileCardsProps) {
 	return (
-		<div className='md:hidden px-4 py-3 space-y-4'>
-			{routes.length > 0 ? (
-				routes.map(route => (
-					<div
-						key={route.id}
-						className='bg-white border border-[#dbe1e6] rounded-xl p-4 space-y-3'
-					>
-						<div className='flex justify-between items-start'>
-							<div>
-								<h3 className='text-lg font-semibold'>{route.name}</h3>
-								<p className='text-sm text-[#617989]'>
-									{route.stops} {t('headers.stops')} •{' '}
-								</p>
-							</div>
-							<span className='h-8 px-4 bg-[#f0f3f4] text-[#111518] text-sm font-medium rounded-full inline-flex items-center gap-1'>
-								{statusIcon[route.status]}
-								{t(`status.${route.status}`)}
-							</span>
-						</div>
-						<div className='flex justify-between items-center pt-2 border-t border-[#dbe1e6]'>
-							<button className='text-sm font-bold text-[#617989] hover:text-blue-600'>
-								{t('view')}
-							</button>
-						</div>
+		<div className='md:hidden px-4 py-4 space-y-3'>
+			{routes.map(route => (
+				<div
+					key={route.routeId}
+					className='bg-white border border-gray-200 rounded-xl p-4'
+				>
+					<h3 className='text-base font-semibold text-gray-900'>{route.name}</h3>
+					<p className='text-xs text-gray-500 font-mono mb-3'>{route.routeId}</p>
+					<div className='flex items-center gap-4 text-sm text-gray-600'>
+						<span className='inline-flex items-center gap-1.5'>
+							<MapPin className='h-4 w-4 text-gray-400' />
+							<span className='tabular-nums'>{route.stops}</span>
+							{t('headers.stops')}
+						</span>
+						<span className='inline-flex items-center gap-1.5'>
+							<Users className='h-4 w-4 text-gray-400' />
+							<span className='tabular-nums'>{route.students}</span>
+							{t('headers.students')}
+						</span>
 					</div>
-				))
-			) : (
-				<div className='bg-white border border-[#dbe1e6] rounded-xl p-8 text-center'>
-					<p className='text-[#617989] text-sm'>{t('noRoutes')}</p>
 				</div>
-			)}
+			))}
 		</div>
 	)
 }

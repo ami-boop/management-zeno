@@ -20,29 +20,6 @@ export const notifications: Notification[] = [
   },
 ]
 
-export const lessons = [
-  {
-    color: '#ffffff',
-    name: 'Math',
-    teacher: 'Misha'
-  },
-  {
-    color: '#00bcd4',
-    name: 'English',
-    teacher: 'Anna'
-  },
-  {
-    color: '#ff9800',
-    name: 'History',
-    teacher: 'David'
-  },
-  {
-    color: '#8bc34a',
-    name: 'Physics',
-    teacher: 'Lior'
-  }
-]
-
 export const grades = [
   { key: 'alef', label: 'א׳', hebrew: 'א׳' },
   { key: 'bet', label: 'ב׳', hebrew: 'ב׳' },

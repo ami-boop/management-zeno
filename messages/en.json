@@ -88,8 +88,7 @@
       "profile": "Profile",
       "help": "Help",
       "students": "Students",
-      "report": "Report",
-      "lessons": "Lessons"
+      "report": "Report"
     },
     "theme": "Theme",
     "themeSystem": "System",
@@ -217,7 +216,23 @@
     "allStops": "All stops",
     "stopDuration": "Duration",
     "minutes": "min.",
-    "stopsCount": "Stops"
+    "stopsCount": "Stops",
+    "whoFinishes": "Who finishes when",
+    "timeline": "Route timeline",
+    "selectClass": "Select class",
+    "selectClassPlaceholder": "Choose a class",
+    "selectRoutePlaceholder": "Choose a route",
+    "selectDay": "Day",
+    "dayColumn": "Day",
+    "endTimeColumn": "End time",
+    "today": "Today",
+    "departure": "Departure from school",
+    "minutesShort": "min",
+    "noSchool": "No school",
+    "errorLoading": "Failed to load data. Please try again.",
+    "exceptionHoliday": "Holiday — no school today",
+    "exceptionHalfDay": "Shortened day",
+    "exceptionSpecial": "Special schedule"
   },
   "SearchBar": {
     "searchPlaceholder": "Search..."

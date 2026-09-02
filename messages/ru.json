@@ -88,8 +88,7 @@
       "profile": "Профиль",
       "help": "Помощь",
       "students": "Ученики",
-      "report": "Отмена",
-      "lessons": "Уроки"
+      "report": "Отмена"
     },
     "theme": "Тема",
     "themeSystem": "Системная",
@@ -217,7 +216,23 @@
     "allStops": "Все остановки",
     "stopDuration": "Длительность",
     "minutes": "мин.",
-    "stopsCount": "Остановки"
+    "stopsCount": "Остановки",
+    "whoFinishes": "Кто когда заканчивает",
+    "timeline": "Таймлайн маршрута",
+    "selectClass": "Выберите класс",
+    "selectClassPlaceholder": "Выберите класс",
+    "selectRoutePlaceholder": "Выберите маршрут",
+    "selectDay": "День",
+    "dayColumn": "День",
+    "endTimeColumn": "Конец занятий",
+    "today": "Сегодня",
+    "departure": "Выезд из школы",
+    "minutesShort": "мин",
+    "noSchool": "Нет занятий",
+    "errorLoading": "Не удалось загрузить данные. Попробуйте ещё раз.",
+    "exceptionHoliday": "Выходной — занятий нет",
+    "exceptionHalfDay": "Сокращённый день",
+    "exceptionSpecial": "Особое расписание"
   },
   "SearchBar": {
     "searchPlaceholder": "Поиск..."

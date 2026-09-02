@@ -56,9 +56,6 @@ export default function Header() {
       <Link className='text-sm font-medium text-[#111518]' href='/report'>
         {t('menu.report')}
       </Link>
-      <Link className='text-sm font-medium text-[#111518]' href='/lessons'>
-        {t('menu.lessons')}
-      </Link>
       {dir === 'col' && (
         <>
           <Link className='text-sm font-medium text-[#111518]' href='/profile'>

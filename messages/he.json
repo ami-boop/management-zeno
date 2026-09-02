@@ -88,8 +88,7 @@
       "profile": "פרופיל",
       "help": "עזרה",
       "students": "תלמידים",
-      "report": "דיווח",
-      "lessons": "שיעורים"
+      "report": "דיווח"
     },
     "theme": "ערכת נושא",
     "themeSystem": "מערכת",
@@ -217,7 +216,23 @@
     "allStops": "כל התחנות",
     "stopDuration": "משך עצירה",
     "minutes": "דק'",
-    "stopsCount": "תחנות"
+    "stopsCount": "תחנות",
+    "whoFinishes": "מתי מסיימים",
+    "timeline": "ציר הזמן של המסלול",
+    "selectClass": "בחרו כיתה",
+    "selectClassPlaceholder": "בחרו כיתה",
+    "selectRoutePlaceholder": "בחרו מסלול",
+    "selectDay": "יום",
+    "dayColumn": "יום",
+    "endTimeColumn": "סיום לימודים",
+    "today": "היום",
+    "departure": "יציאה מבית הספר",
+    "minutesShort": "דק׳",
+    "noSchool": "אין לימודים",
+    "errorLoading": "טעינת הנתונים נכשלה. נסו שוב.",
+    "exceptionHoliday": "חג — אין לימודים היום",
+    "exceptionHalfDay": "יום מקוצר",
+    "exceptionSpecial": "מערכת שעות מיוחדת"
   },
   "SearchBar": {
     "searchPlaceholder": "חפש..."

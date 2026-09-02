@@ -1,40 +1,31 @@
-import { getTranslations } from 'next-intl/server'
-import type { WeekDay } from '@/types/schedule'
-import { apiGet } from '@/lib/api/client'
-import { parseRouteNames } from '@/lib/api-contracts'
-import { getSessionToken } from '@/utils/getSessionToken'
 import Client from '@/components/schedule/Client'
+import { apiGet } from '@/lib/api/client'
+import {
+	parseManagementStudentsResponse,
+	parseRouteNames,
+} from '@/lib/api-contracts'
+import { todayInIsrael } from '@/lib/schedule-times'
+import { getSessionToken } from '@/utils/getSessionToken'
+import { redirect } from 'next/navigation'
 
 export const dynamic = 'force-dynamic'
 
 export default async function SchedulePage() {
-  const t = await getTranslations('Schedule')
+	const token = await getSessionToken()
+	if (!token) redirect('/login')
 
-  const days: WeekDay[] = [
-    { key: 'Sunday', name: t('days.sunday'), shortName: t('daysShort.sun') },
-    { key: 'Monday', name: t('days.monday'), shortName: t('daysShort.mon') },
-    { key: 'Tuesday', name: t('days.tuesday'), shortName: t('daysShort.tue') },
-    {
-      key: 'Wednesday',
-      name: t('days.wednesday'),
-      shortName: t('daysShort.wed'),
-    },
-    {
-      key: 'Thursday',
-      name: t('days.thursday'),
-      shortName: t('daysShort.thu'),
-    },
-    { key: 'Friday', name: t('days.friday'), shortName: t('daysShort.fri') },
-    {
-      key: 'Saturday',
-      name: t('days.saturday'),
-      shortName: t('daysShort.sat'),
-    },
-  ]
+	const [studentsData, routeNamesData] = await Promise.all([
+		apiGet('students/management', token, { params: { limit: 1 } }),
+		apiGet('routes/names', token),
+	])
 
-  const token = await getSessionToken()
-  const routeNames = token ? parseRouteNames(await apiGet('routes/names', token)) : []
-  const routes = routeNames.map((route) => ({ id: route.routeId, name: route.name }))
+	const classFacets = parseManagementStudentsResponse(studentsData).meta?.facets.classes ?? []
+	const classes = classFacets.map(facet => ({ id: facet.id, label: facet.label }))
+	const routes = parseRouteNames(routeNamesData).map(route => ({
+		id: route.routeId,
+		name: route.name,
+	}))
+	const today = todayInIsrael()
 
-  return <Client days={days} routes={routes} />
+	return <Client classes={classes} routes={routes} today={today} />
 }

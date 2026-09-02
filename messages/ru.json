@@ -335,7 +335,8 @@
     "submitPreview": "{count} ученик(ов) будут отмечены на выбранное время",
     "submitError": "Не удалось отправить. Попробуйте ещё раз.",
     "successCount": "Обновлено учеников: {count}",
-    "operationLabel": "Область: {operation}"
+    "operationLabel": "Область: {operation}",
+    "loadMore": "Показать ещё"
   },
   "managementLessons": {
     "viewClassSchedule": "Просмотр расписания класса",

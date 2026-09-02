@@ -88,6 +88,13 @@ export default function Form({
 	const manualReady = manualUids.length > 0 && !!selectedTime
 	const canSubmit = !(isSubmitting || (mode === 'parallel' ? !parallelReady : !manualReady))
 
+	const classStepComplete = Boolean(
+		selectedClass && (!selectedGrade || !needsProfile(selectedGrade) || selectedProfile)
+	)
+	const showTimeSelection =
+		(mode === 'manual' && manualUids.length > 0) ||
+		(mode === 'parallel' && (Boolean(selectedParallel) || classStepComplete))
+
 	if (result) {
 		return (
 			<Success
@@ -263,12 +270,7 @@ export default function Form({
 				</>
 			)}
 			{/* Time Selection */}
-			{((mode === 'manual' && manualUids.length > 0) ||
-				(mode === 'parallel' && selectedParallel) ||
-				(mode === 'parallel' &&
-					!selectedParallel &&
-					selectedClass &&
-					(!selectedGrade || !needsProfile(selectedGrade) || selectedProfile))) && (
+			{showTimeSelection && (
 					<div className='mb-6'>
 						<label className='block text-sm font-medium text-gray-700 mb-3'>
 							{t('timeLabel')}

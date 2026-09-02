@@ -335,7 +335,8 @@
     "submitPreview": "{count} student(s) will be marked as going at the selected time",
     "submitError": "Failed to submit. Please try again.",
     "successCount": "{count} student(s) were updated",
-    "operationLabel": "Scope: {operation}"
+    "operationLabel": "Scope: {operation}",
+    "loadMore": "Load more"
   },
   "managementLessons": {
     "viewClassSchedule": "View Class Schedule",

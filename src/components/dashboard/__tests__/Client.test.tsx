@@ -62,7 +62,7 @@ const data: DashboardResponse = {
     metrics: { totalStudents: r.totalStudents, busesNeeded: r.busesNeeded, minibusesNeeded: 0 },
     autoBusesNeeded: r.busesNeeded,
     autoMinibusesNeeded: 0,
-    assignedBuses: null,
+    assignedBuses: r.status === 'completed' ? r.busesNeeded : r.status === 'partial' ? 1 : null,
     assignedMinibuses: null,
     pendingFriendCount: 0,
     capacityAvailable: 0,
@@ -105,7 +105,7 @@ describe('<Client />', () => {
     await waitFor(() => {
       expect(setTripBuses).toHaveBeenCalledWith(
         mockRoutes[0].id,
-        { buses: mockRoutes[0].busesNeeded }
+        { buses: 4 }
       )
     })
   })

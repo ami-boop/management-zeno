@@ -19,12 +19,16 @@ const listClass = (active: boolean) =>
 			: 'bg-white text-gray-700 border-gray-300 hover:bg-gray-50'
 	}`
 
+const PAGE_SIZE = 200
+
 export default function StudentPicker({ selectedUids, onChange, onStopChange }: StudentPickerProps) {
 	const t = useTranslations('managementReport')
 	const [search, setSearch] = useState('')
 	const [stopId, setStopId] = useState('')
 	const [students, setStudents] = useState<ManagementStudent[]>([])
 	const [loading, setLoading] = useState(false)
+	const [loadingMore, setLoadingMore] = useState(false)
+	const [hasMore, setHasMore] = useState(false)
 	const [error, setError] = useState(false)
 
 	useEffect(() => {
@@ -32,13 +36,15 @@ export default function StudentPicker({ selectedUids, onChange, onStopChange }: 
 		const timer = setTimeout(async () => {
 			setLoading(true)
 			setError(false)
-			const result = await getManagementStudents({ search, limit: 200, offset: 0 })
+			setHasMore(false)
+			const result = await getManagementStudents({ search, limit: PAGE_SIZE, offset: 0 })
 			if (cancelled) return
 			if (result.error) {
 				setError(true)
 				setStudents([])
 			} else {
 				setStudents(result.students)
+				setHasMore(result.students.length === PAGE_SIZE)
 			}
 			setLoading(false)
 		}, 250)
@@ -47,6 +53,22 @@ export default function StudentPicker({ selectedUids, onChange, onStopChange }: 
 			clearTimeout(timer)
 		}
 	}, [search])
+
+	const loadMore = async () => {
+		setLoadingMore(true)
+		const result = await getManagementStudents({
+			search,
+			limit: PAGE_SIZE,
+			offset: students.length,
+		})
+		if (result.error) {
+			setError(true)
+		} else {
+			setStudents(prev => [...prev, ...result.students])
+			setHasMore(result.students.length === PAGE_SIZE)
+		}
+		setLoadingMore(false)
+	}
 
 	const toggle = (uid: string) => {
 		onChange(
@@ -121,10 +143,20 @@ export default function StudentPicker({ selectedUids, onChange, onStopChange }: 
 								{student.firstName} {student.lastName}
 								<span className='text-gray-500'> · {student.grade}</span>
 							</span>
-							{active && <Check className='h-4 w-4 text-blue-600' />}
-						</button>
+					{active && <Check className='h-4 w-4 text-blue-600' />}
+					</button>
 					)
 				})}
+				{hasMore && (
+					<button
+						type='button'
+						onClick={() => void loadMore()}
+						disabled={loadingMore}
+						className='w-full px-3 py-2 rounded-md border border-gray-300 text-sm font-medium text-blue-600 bg-white hover:bg-gray-50 disabled:opacity-50'
+					>
+						{loadingMore ? t('loadingStudents') : t('loadMore')}
+					</button>
+				)}
 			</div>
 
 			{selectedUids.length > 0 && stopOptions.length > 1 && (

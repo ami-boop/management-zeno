@@ -336,7 +336,8 @@
     "submitPreview": "{count} תלמידים יסומנו לשעה שנבחרה",
     "submitError": "השליחה נכשלה. נסה שוב.",
     "successCount": "עודכנו {count} תלמידים",
-    "operationLabel": "היקף: {operation}"
+    "operationLabel": "היקף: {operation}",
+    "loadMore": "טען עוד"
   },
   "managementLessons": {
     "viewClassSchedule": "צפייה במערכת שיעורים",

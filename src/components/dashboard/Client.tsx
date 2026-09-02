@@ -25,12 +25,14 @@ const adaptTrip = (
 ): DashboardRoute => {
   const busesNeeded = trip.metrics?.busesNeeded ?? 0
   const totalStudents = trip.metrics?.totalStudents ?? 0
+  const assigned = trip.assignedBuses
+  const busesOrdered = assigned ?? 0
   const status: DashboardRoute['status'] =
-    trip.status === 'completed'
-      ? 'completed'
-      : trip.status === 'boarding' || trip.status === 'in_transit'
-        ? 'partial'
-        : 'pending'
+    assigned === null
+      ? 'pending'
+      : busesOrdered >= busesNeeded
+        ? 'completed'
+        : 'partial'
   const ts = trip.scheduledAt ? dayjs(trip.scheduledAt).unix() : dayjs().unix()
   return {
     id: trip.tripId,
@@ -39,7 +41,7 @@ const adaptTrip = (
     studentsNotMarked: 0,
     totalStudents,
     busesNeeded,
-    busesOrdered: busesNeeded,
+    busesOrdered,
     status,
     lastUpdate: { _seconds: ts, _nanoseconds: 0 },
     estimatedTime: trip.scheduledTime,
@@ -50,9 +52,11 @@ const adaptTrip = (
 const Client = ({
   data,
   routeNameMap,
+  globalNotMarked,
 }: {
   data: DashboardResponse
   routeNameMap: Record<string, string>
+  globalNotMarked?: number
 }) => {
   const t = useTranslations('Dashboard')
   const router = useRouter()
@@ -68,20 +72,19 @@ const Client = ({
       (sum: number, route: DashboardRoute) => sum + route.studentsOnBus,
       0
     )
-    const totalStudentsNotMarked = localRoutes.reduce(
-      (sum: number, route: DashboardRoute) => sum + route.studentsNotMarked,
-      0
-    )
+    const notMarked =
+      globalNotMarked ??
+      localRoutes.reduce((sum: number, route: DashboardRoute) => sum + route.studentsNotMarked, 0)
     const totalBusesNeeded = localRoutes.reduce(
       (sum: number, route: DashboardRoute) => sum + route.busesNeeded,
       0
     )
     return [
       { label: 'studentsOnBus', value: totalStudentsOnBus },
-      { label: 'studentsNotMarked', value: totalStudentsNotMarked },
+      { label: 'studentsNotMarked', value: notMarked },
       { label: 'busesNeeded', value: totalBusesNeeded },
     ]
-  }, [localRoutes])
+  }, [localRoutes, globalNotMarked])
 
   const filteredRoutes = useMemo(() => {
     return localRoutes.filter((route: DashboardRoute) => {
@@ -136,34 +139,30 @@ const Client = ({
   }, [localRoutes, t])
 
   const handleOrderBuses = async (routeId: string, busesToOrder: number) => {
-    let newOrdered = 0
-    setRoutes((prevRoutes: DashboardRoute[]) =>
-      prevRoutes.map((route: DashboardRoute) => {
-        if (route.id === routeId) {
-          newOrdered = Math.min(
-            route.busesOrdered + busesToOrder,
-            route.busesNeeded
-          )
-          const newStatus =
-            newOrdered === 0
-              ? 'pending'
-              : newOrdered === route.busesNeeded
-                ? 'completed'
-                : 'partial'
-          return {
-            ...route,
-            busesOrdered: newOrdered,
-            status: newStatus,
-            lastUpdate: {
-              _seconds: dayjs().unix(),
-              _nanoseconds: 0,
-            },
-          }
-        }
-        return route
-      })
+    const current = localRoutes.find((route: DashboardRoute) => route.id === routeId)
+    if (!current) return
+
+    const newOrdered = Math.min(
+      Math.max(current.busesOrdered + busesToOrder, 0),
+      current.busesNeeded
     )
-    await setTripBuses(routeId, { buses: newOrdered })
+    const newStatus: DashboardRoute['status'] =
+      newOrdered === 0 ? 'pending' : newOrdered >= current.busesNeeded ? 'completed' : 'partial'
+    const now = { _seconds: dayjs().unix(), _nanoseconds: 0 }
+
+    setRoutes((prevRoutes: DashboardRoute[]) =>
+      prevRoutes.map((route: DashboardRoute) =>
+        route.id === routeId
+          ? { ...route, busesOrdered: newOrdered, status: newStatus, lastUpdate: now }
+          : route
+      )
+    )
+
+    const res = await setTripBuses(routeId, { buses: newOrdered })
+    if (!res || !res.ok) {
+      setRoutes(localRoutes)
+      return
+    }
     router.refresh()
   }
 

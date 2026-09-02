@@ -63,6 +63,7 @@ export default function StudentsClient({ initial, routeNameMap }: StudentsClient
 	const [error, setError] = useState(false)
 	const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null)
 	const requestSeq = useRef(0)
+	const firstRun = useRef(true)
 
 	const meta = data.meta
 	const students = data.students
@@ -95,6 +96,10 @@ export default function StudentsClient({ initial, routeNameMap }: StudentsClient
 	)
 
 	useEffect(() => {
+		if (firstRun.current) {
+			firstRun.current = false
+			return
+		}
 		if (debounceRef.current) clearTimeout(debounceRef.current)
 		debounceRef.current = setTimeout(() => {
 			void fetchPage(filters, page)

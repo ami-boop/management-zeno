@@ -173,7 +173,22 @@
     "totalStudents": "סה\"כ תלמידים",
     "readOnlyHint": "צפייה בלבד — עריכת מסלולים תהיה זמינה בהמשך",
     "loadError": "טעינת המסלולים נכשלה",
-    "loadErrorHint": "בדוק את החיבור ונסה שוב"
+    "loadErrorHint": "בדוק את החיבור ונסה שוב",
+    "backToList": "חזרה למסלולים",
+    "assignedStudents": "תלמידים משויכים",
+    "stopsOnRoute": "תחנות",
+    "routeLines": "כיווני המסלול",
+    "afternoonLine": "אחר הצהריים — מבית הספר לתחנות",
+    "morningLine": "בבוקר — איסוף תלמידים בדרך לבית הספר",
+    "offsetHint": "זמני התחנות מוצגים בדקות לאחר יציאת האוטובוס.",
+    "stopColumn": "תחנה",
+    "morningColumn": "בוקר",
+    "afternoonColumn": "אחר הצהריים",
+    "schoolStop": "בית הספר",
+    "minutesShort": "דק׳",
+    "mapFailed": "טעינת המפה נכשלה",
+    "mapNoCoordinates": "תחנות ללא קואורדינטות אינן מוצגות במפה",
+    "routeInfo": "מידע על המסלול"
   },
   "Schedule": {
     "title": "לוח זמני אוטובוסים",

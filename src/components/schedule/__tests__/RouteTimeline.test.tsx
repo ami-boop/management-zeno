@@ -34,6 +34,8 @@ describe('<RouteTimeline />', () => {
 			stops: {
 				routeId: 'route_B',
 				name: 'Route B',
+				pathMorning: null,
+				pathAfternoon: null,
 				stopsMorning: [
 					{ stopId: 'stop_north', order: 1, durationMin: 0 },
 					{ stopId: 'school_main', order: 2, durationMin: 30 },

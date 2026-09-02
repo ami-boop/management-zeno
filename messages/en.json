@@ -173,7 +173,22 @@
     "totalStudents": "Total Students",
     "readOnlyHint": "View-only — route editing will be available later",
     "loadError": "Failed to load routes",
-    "loadErrorHint": "Check your connection and try again"
+    "loadErrorHint": "Check your connection and try again",
+    "backToList": "Back to routes",
+    "assignedStudents": "assigned students",
+    "stopsOnRoute": "stops",
+    "routeLines": "Route directions",
+    "afternoonLine": "Afternoon — from school to stops",
+    "morningLine": "Morning — pickups on the way to school",
+    "offsetHint": "Stop times are shown as minutes after bus departure.",
+    "stopColumn": "Stop",
+    "morningColumn": "Morning",
+    "afternoonColumn": "Afternoon",
+    "schoolStop": "School",
+    "minutesShort": "min",
+    "mapFailed": "Failed to load the map",
+    "mapNoCoordinates": "Stops without coordinates are not shown on the map",
+    "routeInfo": "Route info"
   },
   "Schedule": {
     "title": "Bus Schedule",

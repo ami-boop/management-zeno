@@ -23,15 +23,6 @@ export default function Client({ routes }: RoutesClientProps) {
 		)
 	}, [safeRoutes, searchQuery])
 
-	const stats = useMemo(
-		() => [
-			{ key: 'totalRoutes', value: safeRoutes.length },
-			{ key: 'totalStops', value: safeRoutes.reduce((sum, r) => sum + r.stops, 0) },
-			{ key: 'totalStudents', value: safeRoutes.reduce((sum, r) => sum + r.students, 0) },
-		],
-		[safeRoutes]
-	)
-
 	if (routes === null) {
 		return (
 			<div className='bg-gray-50'>
@@ -67,18 +58,6 @@ export default function Client({ routes }: RoutesClientProps) {
 						<Info className='h-4 w-4' />
 						{t('readOnlyHint')}
 					</div>
-				</div>
-
-				{/* Stats */}
-				<div className='grid grid-cols-2 lg:grid-cols-3 gap-4 mb-8'>
-					{stats.map(stat => (
-						<div key={stat.key} className='bg-white rounded-2xl border border-gray-200 p-5'>
-							<h3 className='text-xs font-semibold text-gray-500 uppercase tracking-wide mb-1'>
-								{t(stat.key)}
-							</h3>
-							<p className='text-3xl font-bold text-gray-900 tabular-nums'>{stat.value}</p>
-						</div>
-					))}
 				</div>
 
 				{/* Main Content */}

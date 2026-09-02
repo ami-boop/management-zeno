@@ -1,7 +1,8 @@
 'use client'
 
+import Link from 'next/link'
 import { useTranslations } from 'next-intl'
-import { CircleCheck, Clock, UserPlus } from 'lucide-react'
+import { UserPlus } from 'lucide-react'
 import type { ManagementStudent } from '@/lib/api-contracts'
 
 interface StudentTableProps {
@@ -74,18 +75,12 @@ export default function StudentTable({
 								/>
 							</td>
 							<td className='px-6 py-4 whitespace-nowrap'>
-								<div className='text-sm font-medium text-gray-900'>
+								<Link
+									href={`/students/${student.uid}`}
+									className='text-sm font-medium text-gray-900 hover:text-blue-700'
+								>
 									{student.firstName} {student.lastName}
-								</div>
-								{student.today?.friendPending && (
-									<span
-										className='mt-0.5 inline-flex items-center gap-1 rounded-full bg-amber-50 px-2 py-0.5 text-[11px] font-semibold text-amber-700 border border-amber-200'
-										title={t('statusFriendPending')}
-									>
-										<UserPlus className='h-3 w-3' />
-										{t('friendBadge')}
-									</span>
-								)}
+								</Link>
 							</td>
 							<td className='px-6 py-4 whitespace-nowrap text-sm text-gray-700'>
 								{student.grade || '—'}
@@ -98,23 +93,18 @@ export default function StudentTable({
 							</td>
 							<td className='px-6 py-4 whitespace-nowrap'>
 								{student.departureTime ? (
-									student.today?.submitted ? (
-										<span
-											className='inline-flex items-center gap-1.5 text-sm font-semibold text-emerald-700'
-											title={t('statusSubmitted')}
-										>
-											<CircleCheck className='h-4 w-4 text-emerald-600' />
-											<span className='tabular-nums'>{student.departureTime}</span>
-										</span>
-									) : (
-										<span
-											className='inline-flex items-center gap-1.5 text-sm font-medium text-gray-700'
-											title={t('statusNotMarked')}
-										>
-											<Clock className='h-4 w-4 text-gray-400' />
-											<span className='tabular-nums'>{student.departureTime}</span>
-										</span>
-									)
+									<span className='inline-flex items-center gap-1.5 text-sm text-gray-700'>
+										{student.today?.friendPending && (
+											<span title={t('statusFriendPending')}>
+												<UserPlus className='h-4 w-4 text-amber-500' />
+											</span>
+										)}
+										<span className='tabular-nums'>{student.departureTime}</span>
+									</span>
+								) : student.today?.friendPending ? (
+									<span title={t('statusFriendPending')}>
+										<UserPlus className='h-4 w-4 text-amber-500' />
+									</span>
 								) : (
 									<span className='text-sm text-gray-400'>—</span>
 								)}

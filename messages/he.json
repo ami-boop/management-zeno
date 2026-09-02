@@ -336,7 +336,21 @@
     "loadError": "טעינת התלמידים נכשלה",
     "retry": "נסה שוב",
     "noStop": "ללא תחנה",
-    "noTime": "אין שעה"
+    "noTime": "אין שעה",
+    "backToList": "חזרה לתלמידים",
+    "megama": "מגמה",
+    "studentInfo": "פרטי תלמיד",
+    "parentsSection": "הורים",
+    "primaryParent": "ראשי",
+    "friendRouteSection": "בקשת נסיעה לחבר",
+    "friendStudent": "חבר",
+    "toRoute": "נוסע בקו",
+    "defaultRoute": "קו רגיל",
+    "parentDecision": "החלטת הורה",
+    "parentStatusPending": "ממתין לאישור",
+    "parentStatusApproved": "אושר על ידי ההורה",
+    "parentStatusRejected": "נדחה על ידי ההורה",
+    "sleepover": "שינה אצל החבר"
   },
   "managementReport": {
     "title": "דיווח על ביטול שיעור (ניהול)",

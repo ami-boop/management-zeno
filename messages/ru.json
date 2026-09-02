@@ -336,7 +336,21 @@
     "loadError": "Не удалось загрузить учеников",
     "retry": "Повторить",
     "noStop": "Без остановки",
-    "noTime": "Нет времени"
+    "noTime": "Нет времени",
+    "backToList": "К ученикам",
+    "megama": "Мегама",
+    "studentInfo": "Об ученике",
+    "parentsSection": "Родители",
+    "primaryParent": "Основной",
+    "friendRouteSection": "Заявка на поездку к другу",
+    "friendStudent": "Друг",
+    "toRoute": "Едет по маршруту",
+    "defaultRoute": "Обычный маршрут",
+    "parentDecision": "Решение родителя",
+    "parentStatusPending": "Ожидает подтверждения",
+    "parentStatusApproved": "Одобрено родителем",
+    "parentStatusRejected": "Отклонено родителем",
+    "sleepover": "С ночёвкой"
   },
   "managementReport": {
     "title": "Сообщить об отмене урока (Администрирование)",

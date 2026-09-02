@@ -51,6 +51,7 @@ export interface ManagementStudent {
 	firstName: string
 	lastName: string
 	classId: string | null
+	megamaId: string | null
 	grade: string
 	routeId: string | null
 	stopId: string | null
@@ -79,6 +80,7 @@ function parseManagementStudent(value: unknown): ManagementStudent | null {
 		firstName: isString(value.firstName) ? value.firstName : '',
 		lastName: isString(value.lastName) ? value.lastName : '',
 		classId: isNullableString(value.classId) ? value.classId : null,
+		megamaId: isNullableString(value.megamaId) ? value.megamaId : null,
 		grade: isString(value.grade) ? value.grade : '',
 		routeId: isNullableString(value.routeId) ? value.routeId : null,
 		stopId: isNullableString(value.stopId) ? value.stopId : null,
@@ -87,6 +89,68 @@ function parseManagementStudent(value: unknown): ManagementStudent | null {
 		departureTime: isNullableString(value.departureTime) ? value.departureTime : null,
 		today,
 	}
+}
+
+export interface ManagementStudentParent {
+	name: string | null
+	phone: string | null
+	relationship: string | null
+	isPrimary: boolean
+}
+
+export interface ManagementFriendRoute {
+	friendUid: string | null
+	friendName: string | null
+	fromRouteId: string | null
+	fromStopId: string | null
+	toRouteId: string | null
+	toStopId: string | null
+	sleepover: boolean
+	note: string | null
+	parentStatus: string
+}
+
+export interface ManagementStudentDetail {
+	student: ManagementStudent
+	parents: ManagementStudentParent[]
+	friendRoute: ManagementFriendRoute | null
+}
+
+export function parseManagementStudentDetail(value: unknown): ManagementStudentDetail | null {
+	if (!isRecord(value)) return null
+	const student = parseManagementStudent(value.student)
+	if (!student) return null
+
+	const parents: ManagementStudentParent[] = []
+	if (Array.isArray(value.parents)) {
+		for (const item of value.parents) {
+			if (!isRecord(item)) continue
+			parents.push({
+				name: isNullableString(item.name) ? item.name : null,
+				phone: isNullableString(item.phone) ? item.phone : null,
+				relationship: isNullableString(item.relationship) ? item.relationship : null,
+				isPrimary: item.isPrimary === true,
+			})
+		}
+	}
+
+	let friendRoute: ManagementFriendRoute | null = null
+	if (isRecord(value.friendRoute)) {
+		const fr = value.friendRoute
+		friendRoute = {
+			friendUid: isNullableString(fr.friendUid) ? fr.friendUid : null,
+			friendName: isNullableString(fr.friendName) ? fr.friendName : null,
+			fromRouteId: isNullableString(fr.fromRouteId) ? fr.fromRouteId : null,
+			fromStopId: isNullableString(fr.fromStopId) ? fr.fromStopId : null,
+			toRouteId: isNullableString(fr.toRouteId) ? fr.toRouteId : null,
+			toStopId: isNullableString(fr.toStopId) ? fr.toStopId : null,
+			sleepover: fr.sleepover === true,
+			note: isNullableString(fr.note) ? fr.note : null,
+			parentStatus: isString(fr.parentStatus) ? fr.parentStatus : 'pending',
+		}
+	}
+
+	return { student, parents, friendRoute }
 }
 
 export function parseManagementStudents(value: unknown): ManagementStudent[] {

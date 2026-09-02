@@ -336,7 +336,21 @@
     "loadError": "Failed to load students",
     "retry": "Retry",
     "noStop": "No stop",
-    "noTime": "No time"
+    "noTime": "No time",
+    "backToList": "Back to students",
+    "megama": "Megama",
+    "studentInfo": "Student info",
+    "parentsSection": "Parents",
+    "primaryParent": "Primary",
+    "friendRouteSection": "Friend trip request",
+    "friendStudent": "Friend",
+    "toRoute": "Riding on route",
+    "defaultRoute": "Default route",
+    "parentDecision": "Parent decision",
+    "parentStatusPending": "Waiting for approval",
+    "parentStatusApproved": "Approved by parent",
+    "parentStatusRejected": "Rejected by parent",
+    "sleepover": "Sleepover"
   },
   "managementReport": {
     "title": "Report Class Cancellation (Management)",

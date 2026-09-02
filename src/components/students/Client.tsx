@@ -129,7 +129,7 @@ export default function StudentsClient({ initial, routeNameMap }: StudentsClient
 				notMarked: count(s => s.today?.submitted !== true),
 				friendPending: count(s => s.today?.friendPending === true),
 			},
-			facets: { routes: [], parallels: [], classes: [], stops: [], times: [] },
+			facets: { routes: [], parallels: [], classes: [], megamas: [], stops: [], times: [] },
 		}
 	}, [meta, students])
 

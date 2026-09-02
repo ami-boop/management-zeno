@@ -19,7 +19,10 @@ const mockedGetRouteStops = jest.mocked(getRouteStops)
 const mockedGetClassSchedule = jest.mocked(getClassSchedule)
 const mockedGetCalendarException = jest.mocked(getCalendarException)
 
-const classes = [{ id: 'yud_alef_1', label: 'י"א 1' }]
+const classGroups = {
+	classes: [{ id: 'yud_alef_1', label: 'י"א 1' }],
+	megamas: [{ id: 'physics_adv', label: 'פיזיקה מוגבר' }],
+}
 const routes = [{ id: 'route_B', name: 'Route B' }]
 const today = { date: '2026-09-02', dayIndex: 3 }
 
@@ -55,7 +58,7 @@ describe('<RouteTimeline />', () => {
 
 	it('computes afternoon arrivals from class end time', async () => {
 		const user = userEvent.setup()
-		render(<RouteTimeline classes={classes} routes={routes} today={today} />)
+		render(<RouteTimeline classGroups={classGroups} routes={routes} today={today} />)
 
 		await user.selectOptions(screen.getByLabelText(/selectRoute/), 'route_B')
 		await user.selectOptions(screen.getByLabelText(/selectClass/), 'yud_alef_1')
@@ -80,7 +83,7 @@ describe('<RouteTimeline />', () => {
 			},
 		})
 		const user = userEvent.setup()
-		render(<RouteTimeline classes={classes} routes={routes} today={today} />)
+		render(<RouteTimeline classGroups={classGroups} routes={routes} today={today} />)
 
 		await user.selectOptions(screen.getByLabelText(/selectRoute/), 'route_B')
 		await user.selectOptions(screen.getByLabelText(/selectClass/), 'yud_alef_1')
@@ -91,9 +94,45 @@ describe('<RouteTimeline />', () => {
 		})
 	})
 
+	it('uses later of class and megama end times for departure', async () => {
+		mockedGetClassSchedule.mockImplementation((async (id: string) =>
+			id === 'physics_adv'
+				? {
+						ok: true as const,
+						schedule: {
+							id: 'physics_adv',
+							type: 'megama' as const,
+							name: 'פיזיקה מוגבר',
+							endTimes: { '3': '16:20' },
+						},
+					}
+				: {
+						ok: true as const,
+						schedule: {
+							id: 'yud_alef_1',
+							type: 'base_class' as const,
+							name: 'י"א 1',
+							endTimes: { '3': '15:35' },
+						},
+					}) as never)
+		const user = userEvent.setup()
+		render(<RouteTimeline classGroups={classGroups} routes={routes} today={today} />)
+
+		await user.selectOptions(screen.getByLabelText(/selectRoute/), 'route_B')
+		await user.selectOptions(screen.getByLabelText(/selectClass/), 'yud_alef_1')
+		await user.selectOptions(screen.getByLabelText(/megamaLabel/), 'physics_adv')
+
+		await waitFor(() => {
+			expect(mockedGetClassSchedule).toHaveBeenCalledWith('physics_adv')
+		})
+
+		expect(screen.getAllByText('16:20').length).toBeGreaterThan(0)
+		expect(screen.getAllByText('16:30').length).toBeGreaterThan(0)
+	})
+
 	it('shows morning offsets', async () => {
 		const user = userEvent.setup()
-		render(<RouteTimeline classes={classes} routes={routes} today={today} />)
+		render(<RouteTimeline classGroups={classGroups} routes={routes} today={today} />)
 
 		await user.selectOptions(screen.getByLabelText(/selectRoute/), 'route_B')
 
@@ -106,7 +145,7 @@ describe('<RouteTimeline />', () => {
 	it('shows not-found for missing route', async () => {
 		mockedGetRouteStops.mockResolvedValue({ ok: false, error: 'not_found' })
 		const user = userEvent.setup()
-		render(<RouteTimeline classes={classes} routes={routes} today={today} />)
+		render(<RouteTimeline classGroups={classGroups} routes={routes} today={today} />)
 
 		await user.selectOptions(screen.getByLabelText(/selectRoute/), 'route_B')
 

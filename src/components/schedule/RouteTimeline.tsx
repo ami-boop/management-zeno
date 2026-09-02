@@ -10,9 +10,10 @@ import type { CalendarException, LessonsSchedule, RouteStopsData } from '@/lib/a
 import {
 	buildAfternoonTimeline,
 	buildMorningTimeline,
-	effectiveEndTime,
+	resolveManagementEndTime,
 } from '@/lib/schedule-times'
-import type { ClassOption, RouteOption, TodayInfo } from './Client'
+import type { GroupedClassOptions } from './ClassEndTimes'
+import type { RouteOption, TodayInfo } from './Client'
 
 const DAY_KEYS = ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday'] as const
 
@@ -21,20 +22,22 @@ const selectClass = 'w-full px-3 py-2 border border-gray-300 rounded-xl text-sm 
 const humanizeStopId = (stopId: string) => stopId.replace(/_/g, ' ')
 
 export default function RouteTimeline({
-	classes,
+	classGroups,
 	routes,
 	today,
 }: {
-	classes: ClassOption[]
+	classGroups: GroupedClassOptions
 	routes: RouteOption[]
 	today: TodayInfo
 }) {
 	const t = useTranslations('Schedule')
 	const [routeId, setRouteId] = useState('')
 	const [classId, setClassId] = useState('')
+	const [megamaId, setMegamaId] = useState('')
 	const [dayIndex, setDayIndex] = useState(today.dayIndex)
 	const [stops, setStops] = useState<RouteStopsData | null>(null)
 	const [schedule, setSchedule] = useState<LessonsSchedule | null>(null)
+	const [megamaSchedule, setMegamaSchedule] = useState<LessonsSchedule | null>(null)
 	const [exception, setException] = useState<CalendarException | null>(null)
 	const [stopsError, setStopsError] = useState<string | null>(null)
 	const [scheduleError, setScheduleError] = useState<string | null>(null)
@@ -76,9 +79,19 @@ export default function RouteTimeline({
 		}
 	}
 
+	const handleMegamaChange = async (value: string) => {
+		setMegamaId(value)
+		setMegamaSchedule(null)
+		if (!value) return
+		const res = await getClassSchedule(value)
+		if (res.ok) setMegamaSchedule(res.schedule)
+	}
+
 	const useException = dayIndex === today.dayIndex ? exception : null
 	const departureTime =
-		schedule && classId ? effectiveEndTime(schedule, classId, dayIndex, useException) : null
+		classId || megamaId
+			? resolveManagementEndTime(dayIndex, schedule, megamaSchedule, useException, classId, megamaId || null).time
+			: null
 	const afternoon = buildAfternoonTimeline(stops?.stopsAfternoon ?? [], departureTime)
 	const morning = buildMorningTimeline(stops?.stopsMorning ?? [])
 
@@ -89,7 +102,7 @@ export default function RouteTimeline({
 				<h2 className='text-lg font-semibold text-gray-900'>{t('timeline')}</h2>
 			</div>
 
-			<div className='grid gap-4 sm:grid-cols-3'>
+			<div className='grid gap-4 sm:grid-cols-4'>
 				<div>
 					<label htmlFor='timeline-route' className='mb-2 block text-sm font-medium text-gray-700'>
 						{t('selectRoute')}
@@ -119,7 +132,25 @@ export default function RouteTimeline({
 						className={selectClass}
 					>
 						<option value=''>{t('selectClassPlaceholder')}</option>
-						{classes.map(option => (
+						{classGroups.classes.map(option => (
+							<option key={option.id} value={option.id}>
+								{option.label}
+							</option>
+						))}
+					</select>
+				</div>
+				<div>
+					<label htmlFor='timeline-megama' className='mb-2 block text-sm font-medium text-gray-700'>
+						{t('megamaLabel')}
+					</label>
+					<select
+						id='timeline-megama'
+						value={megamaId}
+						onChange={e => void handleMegamaChange(e.target.value)}
+						className={selectClass}
+					>
+						<option value=''>{t('noMegama')}</option>
+						{classGroups.megamas.map(option => (
 							<option key={option.id} value={option.id}>
 								{option.label}
 							</option>

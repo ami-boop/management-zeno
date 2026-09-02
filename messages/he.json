@@ -232,7 +232,11 @@
     "errorLoading": "טעינת הנתונים נכשלה. נסו שוב.",
     "exceptionHoliday": "חג — אין לימודים היום",
     "exceptionHalfDay": "יום מקוצר",
-    "exceptionSpecial": "מערכת שעות מיוחדת"
+    "exceptionSpecial": "מערכת שעות מיוחדת",
+    "classesGroup": "כיתות",
+    "megamasGroup": "מגמות",
+    "megamaLabel": "מגמה",
+    "noMegama": "ללא מגמה"
   },
   "SearchBar": {
     "searchPlaceholder": "חפש..."

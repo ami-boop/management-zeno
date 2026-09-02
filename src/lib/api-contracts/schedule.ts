@@ -45,7 +45,12 @@ export function parseLessonsManagementResponse(value: unknown): LessonsSchedule 
 	return { id: schedule.id, type: schedule.type, name: schedule.name, endTimes }
 }
 
-export type CalendarExceptionType = 'holiday' | 'half_day' | 'special_schedule'
+export type CalendarExceptionType =
+	| 'holiday'
+	| 'exam_day'
+	| 'half_day'
+	| 'no_transport'
+	| 'special_schedule'
 
 export interface CalendarException {
 	id: string
@@ -59,7 +64,7 @@ export interface CalendarException {
 	}
 }
 
-const EXCEPTION_TYPES: CalendarExceptionType[] = ['holiday', 'half_day', 'special_schedule']
+const EXCEPTION_TYPES: CalendarExceptionType[] = ['holiday', 'exam_day', 'half_day', 'no_transport', 'special_schedule']
 
 export function parseCalendarExceptionResponse(value: unknown): CalendarException | null {
 	if (!isRecord(value)) return null

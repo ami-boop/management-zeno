@@ -1,7 +1,7 @@
 import {
 	buildAfternoonTimeline,
 	buildMorningTimeline,
-	effectiveEndTime,
+	resolveManagementEndTime,
 	minutesToHHMM,
 	parseHHMM,
 	todayInIsrael,
@@ -39,38 +39,55 @@ describe('parseHHMM / minutesToHHMM', () => {
 	})
 })
 
-describe('effectiveEndTime', () => {
-	it('returns base time without exception', () => {
-		expect(effectiveEndTime(schedule, 'yud_alef_1', 2, null)).toBe('13:15')
+describe('resolveManagementEndTime', () => {
+	const megama: LessonsSchedule = {
+		id: 'physics_adv',
+		type: 'megama',
+		name: 'פיזיקה מוגבר',
+		endTimes: { '2': '16:20', '3': '16:20' },
+	}
+
+	it('returns class time without megama', () => {
+		expect(resolveManagementEndTime(2, schedule, null, null, 'yud_alef_1', null).time).toBe('13:15')
 	})
 
-	it('returns null on holiday', () => {
-		const ex: CalendarException = { id: 'x', type: 'holiday' }
-		expect(effectiveEndTime(schedule, 'yud_alef_1', 2, ex)).toBeNull()
+	it('returns the later of class and megama end times', () => {
+		expect(resolveManagementEndTime(2, schedule, megama, null, 'yud_alef_1', 'physics_adv').time).toBe('16:20')
+		expect(resolveManagementEndTime(3, schedule, megama, null, 'yud_alef_1', 'physics_adv').time).toBe('16:20')
 	})
 
-	it('applies half-day override only to listed class', () => {
+	it('falls back to megama time when class missing', () => {
+		expect(resolveManagementEndTime(2, null, megama, null, 'yud_alef_1', 'physics_adv').time).toBe('16:20')
+	})
+
+	it('Friday and Saturday are no_school', () => {
+		expect(resolveManagementEndTime(5, schedule, null, null, 'yud_alef_1', null).reason).toBe('no_school')
+		expect(resolveManagementEndTime(6, schedule, megama, null, 'yud_alef_1', 'physics_adv').time).toBeNull()
+	})
+
+	it('holiday and no_transport return null', () => {
+		expect(resolveManagementEndTime(2, schedule, megama, { id: 'x', type: 'holiday' }, 'yud_alef_1', 'physics_adv').time).toBeNull()
+		expect(resolveManagementEndTime(2, schedule, megama, { id: 'x', type: 'no_transport' }, 'yud_alef_1', 'physics_adv').reason).toBe('no_transport')
+	})
+
+	it('applies half-day override by class or megama', () => {
 		const ex: CalendarException = {
 			id: 'x',
 			type: 'half_day',
-			overrideEndTimes: { yud_alef_1: '11:00' },
+			overrideEndTimes: { yud_alef_1: '11:00', physics_adv: '11:30' },
 		}
-		expect(effectiveEndTime(schedule, 'yud_alef_1', 2, ex)).toBe('11:00')
-		expect(effectiveEndTime(schedule, 'other_1', 2, ex)).toBe('13:15')
+		expect(resolveManagementEndTime(2, schedule, megama, ex, 'yud_alef_1', 'physics_adv').time).toBe('11:00')
+		expect(resolveManagementEndTime(2, schedule, megama, ex, 'other_1', 'physics_adv').time).toBe('11:30')
 	})
 
-	it('applies special-schedule departure only to scoped class', () => {
+	it('applies special-schedule departure when class or megama in scope', () => {
 		const ex: CalendarException = {
 			id: 'x',
 			type: 'special_schedule',
-			specialSchedule: { scope: ['yud_alef_1'], departureTime: '16:00' },
+			specialSchedule: { scope: ['physics_adv'], departureTime: '16:00' },
 		}
-		expect(effectiveEndTime(schedule, 'yud_alef_1', 2, ex)).toBe('16:00')
-		expect(effectiveEndTime(schedule, 'other_1', 2, ex)).toBe('13:15')
-	})
-
-	it('returns null for missing day key', () => {
-		expect(effectiveEndTime(schedule, 'yud_alef_1', 6, null)).toBeNull()
+		expect(resolveManagementEndTime(2, schedule, megama, ex, 'yud_alef_1', 'physics_adv').time).toBe('16:00')
+		expect(resolveManagementEndTime(2, schedule, megama, ex, 'other_1', null).time).toBe('16:20')
 	})
 })
 

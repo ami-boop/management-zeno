@@ -6,18 +6,23 @@ import { CalendarDays, Info } from 'lucide-react'
 import getClassSchedule from '@/app/actions/getClassSchedule'
 import getCalendarException from '@/app/actions/getCalendarException'
 import type { CalendarException, LessonsSchedule } from '@/lib/api-contracts'
-import { effectiveEndTime } from '@/lib/schedule-times'
+import { resolveManagementEndTime } from '@/lib/schedule-times'
 import type { ClassOption, TodayInfo } from './Client'
+
+export interface GroupedClassOptions {
+	classes: ClassOption[]
+	megamas: ClassOption[]
+}
 
 const DAY_KEYS = ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday'] as const
 
 const selectClass = 'w-full px-3 py-2 border border-gray-300 rounded-xl text-sm focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500'
 
 export default function ClassEndTimes({
-	classes,
+	classGroups,
 	today,
 }: {
-	classes: ClassOption[]
+	classGroups: GroupedClassOptions
 	today: TodayInfo
 }) {
 	const t = useTranslations('Schedule')
@@ -73,11 +78,20 @@ export default function ClassEndTimes({
 					className={selectClass}
 				>
 					<option value=''>{t('selectClassPlaceholder')}</option>
-					{classes.map(option => (
-						<option key={option.id} value={option.id}>
-							{option.label}
-						</option>
-					))}
+					<optgroup label={t('classesGroup')}>
+						{classGroups.classes.map(option => (
+							<option key={option.id} value={option.id}>
+								{option.label}
+							</option>
+						))}
+					</optgroup>
+					<optgroup label={t('megamasGroup')}>
+						{classGroups.megamas.map(option => (
+							<option key={option.id} value={option.id}>
+								{option.label}
+							</option>
+						))}
+					</optgroup>
 				</select>
 			</div>
 
@@ -106,7 +120,12 @@ export default function ClassEndTimes({
 						<tbody className='divide-y divide-gray-100'>
 							{DAY_KEYS.map((key, index) => {
 								const isToday = index === today.dayIndex
-								const effective = effectiveEndTime(schedule, classId, index, isToday ? exception : null)
+								// Зеркало resolveEndTime: базовый класс — только его расписание,
+								// мегама — расписание мегамы (override half_day ищется по выбранному id).
+								const resolved =
+									schedule.type === 'megama'
+										? resolveManagementEndTime(index, null, schedule, isToday ? exception : null, schedule.id, schedule.id)
+										: resolveManagementEndTime(index, schedule, null, isToday ? exception : null, schedule.id, null)
 								return (
 									<tr key={key} className={isToday ? 'bg-blue-50/60' : undefined}>
 										<td className='px-4 py-2.5 font-medium text-gray-700'>
@@ -118,7 +137,7 @@ export default function ClassEndTimes({
 											)}
 										</td>
 										<td className='px-4 py-2.5 text-gray-900'>
-											{effective ?? <span className='text-gray-400'>{t('noSchool')}</span>}
+											{resolved.time ?? <span className='text-gray-400'>{t('noSchool')}</span>}
 										</td>
 									</tr>
 								)

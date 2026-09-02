@@ -232,7 +232,11 @@
     "errorLoading": "Не удалось загрузить данные. Попробуйте ещё раз.",
     "exceptionHoliday": "Выходной — занятий нет",
     "exceptionHalfDay": "Сокращённый день",
-    "exceptionSpecial": "Особое расписание"
+    "exceptionSpecial": "Особое расписание",
+    "classesGroup": "Классы",
+    "megamasGroup": "Мегамы",
+    "megamaLabel": "Мегама",
+    "noMegama": "Без мегамы"
   },
   "SearchBar": {
     "searchPlaceholder": "Поиск..."

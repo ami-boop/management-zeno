@@ -19,13 +19,20 @@ export default async function SchedulePage() {
 		apiGet('routes/names', token),
 	])
 
-	const classFacets = parseManagementStudentsResponse(studentsData).meta?.facets.classes ?? []
-	const classes = classFacets.map(facet => ({ id: facet.id, label: facet.label }))
+	const facets = parseManagementStudentsResponse(studentsData).meta?.facets
+	const classGroups = {
+		classes: (facets?.classes ?? [])
+			.filter(facet => facet.id !== 'none')
+			.map(facet => ({ id: facet.id, label: facet.label })),
+		megamas: (facets?.megamas ?? [])
+			.filter(facet => facet.id !== 'none')
+			.map(facet => ({ id: facet.id, label: facet.label })),
+	}
 	const routes = parseRouteNames(routeNamesData).map(route => ({
 		id: route.routeId,
 		name: route.name,
 	}))
 	const today = todayInIsrael()
 
-	return <Client classes={classes} routes={routes} today={today} />
+	return <Client classGroups={classGroups} routes={routes} today={today} />
 }

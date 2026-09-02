@@ -16,26 +16,70 @@ export function minutesToHHMM(total: number): string {
 	return `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}`
 }
 
-export function effectiveEndTime(
-	schedule: LessonsSchedule,
-	classId: string,
-	dayIndex: number,
-	exception: CalendarException | null
-): string | null {
-	const base = schedule.endTimes[String(dayIndex)] ?? null
-	if (!exception) return base
+export type ResolvedEndReason =
+	| 'normal'
+	| 'half_day'
+	| 'special_schedule'
+	| 'holiday'
+	| 'no_transport'
+	| 'no_school'
 
-	if (exception.type === 'holiday') return null
-	if (exception.type === 'half_day') {
-		return exception.overrideEndTimes?.[classId] ?? base
+export interface ResolvedEnd {
+	time: string | null
+	reason: ResolvedEndReason
+}
+
+/**
+ * Точное зеркало backend utils/resolve-end-time.ts: пт/сб — нет занятий,
+ * holiday/no_transport — нет занятий, half_day — override по классу или мегаме,
+ * special_schedule — departureTime для scope, иначе max(класс, мегама).
+ */
+export function resolveManagementEndTime(
+	dayIndex: number,
+	classSchedule: LessonsSchedule | null,
+	megamaSchedule: LessonsSchedule | null,
+	exception: CalendarException | null,
+	classId: string,
+	megamaId: string | null
+): ResolvedEnd {
+	if (dayIndex === 5 || dayIndex === 6) {
+		return { time: null, reason: 'no_school' }
 	}
-	if (
-		exception.type === 'special_schedule' &&
-		exception.specialSchedule?.scope?.includes(classId)
-	) {
-		return exception.specialSchedule.departureTime ?? base
+
+	if (exception) {
+		if (exception.type === 'holiday' || exception.type === 'no_transport') {
+			return { time: null, reason: exception.type }
+		}
+
+		if (exception.type === 'half_day' && exception.overrideEndTimes) {
+			const override =
+				exception.overrideEndTimes[classId] ??
+				(megamaId ? exception.overrideEndTimes[megamaId] : undefined)
+			if (override) {
+				return { time: override, reason: 'half_day' }
+			}
+		}
+
+		if (exception.type === 'special_schedule' && exception.specialSchedule) {
+			const scope = exception.specialSchedule.scope ?? []
+			if (scope.includes(classId) || (megamaId !== null && scope.includes(megamaId))) {
+				return { time: exception.specialSchedule.departureTime ?? null, reason: 'special_schedule' }
+			}
+		}
 	}
-	return base
+
+	const classEndTime = classSchedule?.endTimes[String(dayIndex)] ?? null
+	const megamaEndTime = megamaSchedule?.endTimes[String(dayIndex)] ?? null
+
+	if (!classEndTime && !megamaEndTime) {
+		return { time: null, reason: 'no_school' }
+	}
+
+	if (classEndTime && megamaEndTime) {
+		return { time: classEndTime > megamaEndTime ? classEndTime : megamaEndTime, reason: 'normal' }
+	}
+
+	return { time: classEndTime ?? megamaEndTime, reason: 'normal' }
 }
 
 export interface TimelineEntry {

@@ -117,6 +117,7 @@ export interface ManagementStudentsMeta {
 		routes: ManagementFacetEntry[]
 		parallels: ManagementFacetEntry[]
 		classes: ManagementFacetEntry[]
+		megamas: ManagementFacetEntry[]
 		stops: ManagementFacetEntry[]
 		times: ManagementFacetEntry[]
 	}
@@ -162,6 +163,7 @@ export function parseManagementStudentsMeta(value: unknown): ManagementStudentsM
 			routes: parseFacet(facets.routes),
 			parallels: parseFacet(facets.parallels),
 			classes: parseFacet(facets.classes),
+			megamas: parseFacet(facets.megamas),
 			stops: parseFacet(facets.stops),
 			times: parseFacet(facets.times),
 		},

@@ -16,10 +16,10 @@ jest.mock('next-intl', () => ({
 const mockedGetClassSchedule = jest.mocked(getClassSchedule)
 const mockedGetCalendarException = jest.mocked(getCalendarException)
 
-const classes = [
-	{ id: 'yud_alef_1', label: 'י"א 1' },
-	{ id: 'bio_adv', label: 'ביולוגיה מוגבר' },
-]
+const classGroups = {
+	classes: [{ id: 'yud_alef_1', label: 'י"א 1' }],
+	megamas: [{ id: 'bio_adv', label: 'ביולוגיה מוגבר' }],
+}
 
 const today = { date: '2026-09-02', dayIndex: 3 }
 
@@ -39,7 +39,7 @@ describe('<ClassEndTimes />', () => {
 
 	it('loads schedule and shows day rows for a selected class', async () => {
 		const user = userEvent.setup()
-		render(<ClassEndTimes classes={classes} today={today} />)
+		render(<ClassEndTimes classGroups={classGroups} today={today} />)
 
 		await user.selectOptions(screen.getByLabelText(/selectClass/), 'yud_alef_1')
 
@@ -56,7 +56,7 @@ describe('<ClassEndTimes />', () => {
 			exception: { id: today.date, type: 'holiday', note: 'Rosh Hashanah' },
 		})
 		const user = userEvent.setup()
-		render(<ClassEndTimes classes={classes} today={today} />)
+		render(<ClassEndTimes classGroups={classGroups} today={today} />)
 
 		await user.selectOptions(screen.getByLabelText(/selectClass/), 'yud_alef_1')
 
@@ -70,12 +70,23 @@ describe('<ClassEndTimes />', () => {
 	it('shows not-found message when class has no schedule', async () => {
 		mockedGetClassSchedule.mockResolvedValue({ ok: false, error: 'not_found' })
 		const user = userEvent.setup()
-		render(<ClassEndTimes classes={classes} today={today} />)
+		render(<ClassEndTimes classGroups={classGroups} today={today} />)
 
 		await user.selectOptions(screen.getByLabelText(/selectClass/), 'bio_adv')
 
 		await waitFor(() => {
 			expect(screen.getByText('noSchedule')).toBeInTheDocument()
+		})
+	})
+
+	it('Friday row shows noSchool even with a schedule', async () => {
+		const user = userEvent.setup()
+		render(<ClassEndTimes classGroups={classGroups} today={today} />)
+
+		await user.selectOptions(screen.getByLabelText(/selectClass/), 'yud_alef_1')
+
+		await waitFor(() => {
+			expect(screen.getAllByText(/noSchool/).length).toBeGreaterThan(0)
 		})
 	})
 })

@@ -232,7 +232,11 @@
     "errorLoading": "Failed to load data. Please try again.",
     "exceptionHoliday": "Holiday — no school today",
     "exceptionHalfDay": "Shortened day",
-    "exceptionSpecial": "Special schedule"
+    "exceptionSpecial": "Special schedule",
+    "classesGroup": "Classes",
+    "megamasGroup": "Megamas",
+    "megamaLabel": "Megama",
+    "noMegama": "No megama"
   },
   "SearchBar": {
     "searchPlaceholder": "Search..."

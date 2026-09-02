@@ -1,7 +1,7 @@
 'use client'
 
 import { useTranslations } from 'next-intl'
-import ClassEndTimes from './ClassEndTimes'
+import ClassEndTimes, { type GroupedClassOptions } from './ClassEndTimes'
 import RouteTimeline from './RouteTimeline'
 
 export interface ClassOption {
@@ -20,11 +20,11 @@ export interface TodayInfo {
 }
 
 export default function Client({
-	classes,
+	classGroups,
 	routes,
 	today,
 }: {
-	classes: ClassOption[]
+	classGroups: GroupedClassOptions
 	routes: RouteOption[]
 	today: TodayInfo
 }) {
@@ -33,8 +33,8 @@ export default function Client({
 	return (
 		<div className='mx-auto max-w-[1600px] px-4 sm:px-6 lg:px-8 py-8 space-y-8'>
 			<h1 className='text-2xl font-bold text-gray-900'>{t('title')}</h1>
-			<ClassEndTimes classes={classes} today={today} />
-			<RouteTimeline classes={classes} routes={routes} today={today} />
+			<ClassEndTimes classGroups={classGroups} today={today} />
+			<RouteTimeline classGroups={classGroups} routes={routes} today={today} />
 		</div>
 	)
 }

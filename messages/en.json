@@ -233,10 +233,15 @@
     "exceptionHoliday": "Holiday — no school today",
     "exceptionHalfDay": "Shortened day",
     "exceptionSpecial": "Special schedule",
-    "classesGroup": "Classes",
-    "megamasGroup": "Megamas",
     "megamaLabel": "Megama",
-    "noMegama": "No megama"
+    "noMegama": "No megama",
+    "pageHint": "Class end times and bus timelines",
+    "whoFinishesHint": "End times for the selected class, megama considered",
+    "timelineHint": "Bus departure and stop arrivals from end time",
+    "megamaOfParallel": "Megama of the parallel",
+    "megamaHint": "The megama applies to the whole parallel — the later end time is used",
+    "megamaColumn": "Megama",
+    "exceptionNoTransport": "No transport today"
   },
   "SearchBar": {
     "searchPlaceholder": "Search..."

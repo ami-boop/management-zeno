@@ -18,8 +18,9 @@ const mockedGetCalendarException = jest.mocked(getCalendarException)
 
 const classGroups = {
 	classes: [{ id: 'yud_alef_1', label: 'י"א 1' }],
-	megamas: [{ id: 'bio_adv', label: 'ביולוגיה מוגבר' }],
+	megamasByParallel: [{ parallel: 'yud_alef', megamaIds: ['bio_adv'] }],
 }
+const megamaNames = { bio_adv: 'ביולוגיה מוגבר' }
 
 const today = { date: '2026-09-02', dayIndex: 3 }
 
@@ -39,7 +40,7 @@ describe('<ClassEndTimes />', () => {
 
 	it('loads schedule and shows day rows for a selected class', async () => {
 		const user = userEvent.setup()
-		render(<ClassEndTimes classGroups={classGroups} today={today} />)
+		render(<ClassEndTimes classGroups={classGroups} megamaNames={megamaNames} today={today} />)
 
 		await user.selectOptions(screen.getByLabelText(/selectClass/), 'yud_alef_1')
 
@@ -56,7 +57,7 @@ describe('<ClassEndTimes />', () => {
 			exception: { id: today.date, type: 'holiday', note: 'Rosh Hashanah' },
 		})
 		const user = userEvent.setup()
-		render(<ClassEndTimes classGroups={classGroups} today={today} />)
+		render(<ClassEndTimes classGroups={classGroups} megamaNames={megamaNames} today={today} />)
 
 		await user.selectOptions(screen.getByLabelText(/selectClass/), 'yud_alef_1')
 
@@ -70,9 +71,9 @@ describe('<ClassEndTimes />', () => {
 	it('shows not-found message when class has no schedule', async () => {
 		mockedGetClassSchedule.mockResolvedValue({ ok: false, error: 'not_found' })
 		const user = userEvent.setup()
-		render(<ClassEndTimes classGroups={classGroups} today={today} />)
+		render(<ClassEndTimes classGroups={classGroups} megamaNames={megamaNames} today={today} />)
 
-		await user.selectOptions(screen.getByLabelText(/selectClass/), 'bio_adv')
+		await user.selectOptions(screen.getByLabelText(/selectClass/), 'yud_alef_1')
 
 		await waitFor(() => {
 			expect(screen.getByText('noSchedule')).toBeInTheDocument()
@@ -81,12 +82,46 @@ describe('<ClassEndTimes />', () => {
 
 	it('Friday row shows noSchool even with a schedule', async () => {
 		const user = userEvent.setup()
-		render(<ClassEndTimes classGroups={classGroups} today={today} />)
+		render(<ClassEndTimes classGroups={classGroups} megamaNames={megamaNames} today={today} />)
 
 		await user.selectOptions(screen.getByLabelText(/selectClass/), 'yud_alef_1')
 
 		await waitFor(() => {
 			expect(screen.getAllByText(/noSchool/).length).toBeGreaterThan(0)
 		})
+	})
+
+	it('shows megama select with parallel megamas and combined later time', async () => {
+		mockedGetClassSchedule.mockImplementation((async (id: string) =>
+			id === 'bio_adv'
+				? {
+						ok: true as const,
+						schedule: { id: 'bio_adv', type: 'megama' as const, name: 'ביולוגיה מוגבר', endTimes: { '3': '16:20' } },
+					}
+				: {
+						ok: true as const,
+						schedule: { id: 'yud_alef_1', type: 'base_class' as const, name: 'י"א 1', endTimes: { '3': '15:35' } },
+					}) as never)
+		const user = userEvent.setup()
+		render(<ClassEndTimes classGroups={classGroups} megamaNames={megamaNames} today={today} />)
+
+		await user.selectOptions(screen.getByLabelText(/selectClass/), 'yud_alef_1')
+
+		expect(screen.getByLabelText(/megamaOfParallel/)).toBeInTheDocument()
+
+		await user.selectOptions(screen.getByLabelText(/megamaOfParallel/), 'bio_adv')
+
+		await waitFor(() => {
+			expect(screen.getAllByText('16:20').length).toBeGreaterThan(0)
+		})
+	})
+
+	it('hides megama select for a parallel without megamas', () => {
+		const noMegamaGroups = {
+			classes: [{ id: 'alef_1', label: 'א׳ 1' }],
+			megamasByParallel: [{ parallel: 'yud_alef', megamaIds: ['bio_adv'] }],
+		}
+		render(<ClassEndTimes classGroups={noMegamaGroups} megamaNames={megamaNames} today={today} />)
+		expect(screen.queryByLabelText(/megamaOfParallel/)).not.toBeInTheDocument()
 	})
 })

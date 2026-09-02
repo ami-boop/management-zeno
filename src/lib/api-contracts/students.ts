@@ -121,6 +121,7 @@ export interface ManagementStudentsMeta {
 		stops: ManagementFacetEntry[]
 		times: ManagementFacetEntry[]
 	}
+	megamasByParallel: { parallel: string; megamaIds: string[] }[]
 }
 
 export interface ManagementStudentsResponse {
@@ -167,6 +168,12 @@ export function parseManagementStudentsMeta(value: unknown): ManagementStudentsM
 			stops: parseFacet(facets.stops),
 			times: parseFacet(facets.times),
 		},
+		megamasByParallel: Array.isArray(value.megamasByParallel)
+			? value.megamasByParallel.flatMap((item): { parallel: string; megamaIds: string[] }[] => {
+					if (!isRecord(item) || !isString(item.parallel) || !Array.isArray(item.megamaIds)) return []
+					return [{ parallel: item.parallel, megamaIds: item.megamaIds.filter(isString) }]
+				})
+			: [],
 	}
 }
 

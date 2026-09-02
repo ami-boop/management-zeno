@@ -21,8 +21,9 @@ const mockedGetCalendarException = jest.mocked(getCalendarException)
 
 const classGroups = {
 	classes: [{ id: 'yud_alef_1', label: 'י"א 1' }],
-	megamas: [{ id: 'physics_adv', label: 'פיזיקה מוגבר' }],
+	megamasByParallel: [{ parallel: 'yud_alef', megamaIds: ['physics_adv'] }],
 }
+const megamaNames = { physics_adv: 'פיזיקה מוגבר' }
 const routes = [{ id: 'route_B', name: 'Route B' }]
 const today = { date: '2026-09-02', dayIndex: 3 }
 
@@ -58,7 +59,7 @@ describe('<RouteTimeline />', () => {
 
 	it('computes afternoon arrivals from class end time', async () => {
 		const user = userEvent.setup()
-		render(<RouteTimeline classGroups={classGroups} routes={routes} today={today} />)
+		render(<RouteTimeline classGroups={classGroups} megamaNames={megamaNames} routes={routes} today={today} />)
 
 		await user.selectOptions(screen.getByLabelText(/selectRoute/), 'route_B')
 		await user.selectOptions(screen.getByLabelText(/selectClass/), 'yud_alef_1')
@@ -83,7 +84,7 @@ describe('<RouteTimeline />', () => {
 			},
 		})
 		const user = userEvent.setup()
-		render(<RouteTimeline classGroups={classGroups} routes={routes} today={today} />)
+		render(<RouteTimeline classGroups={classGroups} megamaNames={megamaNames} routes={routes} today={today} />)
 
 		await user.selectOptions(screen.getByLabelText(/selectRoute/), 'route_B')
 		await user.selectOptions(screen.getByLabelText(/selectClass/), 'yud_alef_1')
@@ -116,11 +117,11 @@ describe('<RouteTimeline />', () => {
 						},
 					}) as never)
 		const user = userEvent.setup()
-		render(<RouteTimeline classGroups={classGroups} routes={routes} today={today} />)
+		render(<RouteTimeline classGroups={classGroups} megamaNames={megamaNames} routes={routes} today={today} />)
 
 		await user.selectOptions(screen.getByLabelText(/selectRoute/), 'route_B')
 		await user.selectOptions(screen.getByLabelText(/selectClass/), 'yud_alef_1')
-		await user.selectOptions(screen.getByLabelText(/megamaLabel/), 'physics_adv')
+		await user.selectOptions(screen.getByLabelText(/megamaOfParallel/), 'physics_adv')
 
 		await waitFor(() => {
 			expect(mockedGetClassSchedule).toHaveBeenCalledWith('physics_adv')
@@ -132,7 +133,7 @@ describe('<RouteTimeline />', () => {
 
 	it('shows morning offsets', async () => {
 		const user = userEvent.setup()
-		render(<RouteTimeline classGroups={classGroups} routes={routes} today={today} />)
+		render(<RouteTimeline classGroups={classGroups} megamaNames={megamaNames} routes={routes} today={today} />)
 
 		await user.selectOptions(screen.getByLabelText(/selectRoute/), 'route_B')
 
@@ -145,7 +146,7 @@ describe('<RouteTimeline />', () => {
 	it('shows not-found for missing route', async () => {
 		mockedGetRouteStops.mockResolvedValue({ ok: false, error: 'not_found' })
 		const user = userEvent.setup()
-		render(<RouteTimeline classGroups={classGroups} routes={routes} today={today} />)
+		render(<RouteTimeline classGroups={classGroups} megamaNames={megamaNames} routes={routes} today={today} />)
 
 		await user.selectOptions(screen.getByLabelText(/selectRoute/), 'route_B')
 

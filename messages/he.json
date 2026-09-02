@@ -233,10 +233,15 @@
     "exceptionHoliday": "חג — אין לימודים היום",
     "exceptionHalfDay": "יום מקוצר",
     "exceptionSpecial": "מערכת שעות מיוחדת",
-    "classesGroup": "כיתות",
-    "megamasGroup": "מגמות",
     "megamaLabel": "מגמה",
-    "noMegama": "ללא מגמה"
+    "noMegama": "ללא מגמה",
+    "pageHint": "שעות סיום הלימודים וצירי הזמן של האוטובוסים",
+    "whoFinishesHint": "שעות סיום עבור הכיתה שנבחרה, כולל המגמה",
+    "timelineHint": "יציאת האוטובוס וזמני ההגעה לתחנות",
+    "megamaOfParallel": "מגמת השכבה",
+    "megamaHint": "המגמה משותפת לכל השכבה — נלקחת שעת הסיום המאוחרת יותר",
+    "megamaColumn": "מגמה",
+    "exceptionNoTransport": "אין הסעות היום"
   },
   "SearchBar": {
     "searchPlaceholder": "חפש..."

@@ -1,5 +1,9 @@
 import type { CalendarException, LessonsSchedule, StopEntry } from '@/lib/api-contracts'
 
+export function parallelOfClassId(classId: string): string {
+	return classId.replace(/_\d+$/, '')
+}
+
 export function parseHHMM(value: string): number | null {
 	const match = /^(\d{1,2}):(\d{2})$/.exec(value)
 	if (!match) return null

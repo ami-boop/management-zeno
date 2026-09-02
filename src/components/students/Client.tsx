@@ -130,6 +130,7 @@ export default function StudentsClient({ initial, routeNameMap }: StudentsClient
 				friendPending: count(s => s.today?.friendPending === true),
 			},
 			facets: { routes: [], parallels: [], classes: [], megamas: [], stops: [], times: [] },
+			megamasByParallel: [],
 		}
 	}, [meta, students])
 

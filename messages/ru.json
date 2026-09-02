@@ -233,10 +233,15 @@
     "exceptionHoliday": "Выходной — занятий нет",
     "exceptionHalfDay": "Сокращённый день",
     "exceptionSpecial": "Особое расписание",
-    "classesGroup": "Классы",
-    "megamasGroup": "Мегамы",
     "megamaLabel": "Мегама",
-    "noMegama": "Без мегамы"
+    "noMegama": "Без мегамы",
+    "pageHint": "Время окончания занятий и таймлайны автобусов",
+    "whoFinishesHint": "Время окончания для выбранного класса, с учётом мегамы",
+    "timelineHint": "Выезд автобуса и время прибытия на остановки",
+    "megamaOfParallel": "Мегама параллели",
+    "megamaHint": "Мегама общая для всей параллели — учитывается более позднее время окончания",
+    "megamaColumn": "Мегама",
+    "exceptionNoTransport": "Сегодня транспорт не ходит"
   },
   "SearchBar": {
     "searchPlaceholder": "Поиск..."

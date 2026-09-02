@@ -1,8 +1,8 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { useTranslations } from 'next-intl'
-import { Bus, MapPin, School } from 'lucide-react'
+import { MapPin, School } from 'lucide-react'
 import getClassSchedule from '@/app/actions/getClassSchedule'
 import getRouteStops from '@/app/actions/getRouteStops'
 import getCalendarException from '@/app/actions/getCalendarException'
@@ -10,6 +10,7 @@ import type { CalendarException, LessonsSchedule, RouteStopsData } from '@/lib/a
 import {
 	buildAfternoonTimeline,
 	buildMorningTimeline,
+	parallelOfClassId,
 	resolveManagementEndTime,
 } from '@/lib/schedule-times'
 import type { GroupedClassOptions } from './ClassEndTimes'
@@ -23,10 +24,12 @@ const humanizeStopId = (stopId: string) => stopId.replace(/_/g, ' ')
 
 export default function RouteTimeline({
 	classGroups,
+	megamaNames,
 	routes,
 	today,
 }: {
 	classGroups: GroupedClassOptions
+	megamaNames: Record<string, string>
 	routes: RouteOption[]
 	today: TodayInfo
 }) {
@@ -41,6 +44,13 @@ export default function RouteTimeline({
 	const [exception, setException] = useState<CalendarException | null>(null)
 	const [stopsError, setStopsError] = useState<string | null>(null)
 	const [scheduleError, setScheduleError] = useState<string | null>(null)
+
+	const megamaOptions = useMemo(() => {
+		if (!classId) return []
+		const parallel = parallelOfClassId(classId)
+		const ids = classGroups.megamasByParallel.find(m => m.parallel === parallel)?.megamaIds ?? []
+		return ids.map(id => ({ id, label: megamaNames[id] ?? id }))
+	}, [classId, classGroups, megamaNames])
 
 	useEffect(() => {
 		let cancelled = false
@@ -68,6 +78,8 @@ export default function RouteTimeline({
 
 	const handleClassChange = async (value: string) => {
 		setClassId(value)
+		setMegamaId('')
+		setMegamaSchedule(null)
 		setSchedule(null)
 		setScheduleError(null)
 		if (!value) return
@@ -90,19 +102,21 @@ export default function RouteTimeline({
 	const useException = dayIndex === today.dayIndex ? exception : null
 	const departureTime =
 		classId || megamaId
-			? resolveManagementEndTime(dayIndex, schedule, megamaSchedule, useException, classId, megamaId || null).time
+			? resolveManagementEndTime(
+					dayIndex,
+					schedule,
+					megamaSchedule,
+					useException,
+					classId,
+					megamaId || null
+				).time
 			: null
 	const afternoon = buildAfternoonTimeline(stops?.stopsAfternoon ?? [], departureTime)
 	const morning = buildMorningTimeline(stops?.stopsMorning ?? [])
 
 	return (
-		<section className='rounded-2xl border border-gray-200 bg-white p-5 shadow-sm'>
-			<div className='mb-4 flex items-center gap-2'>
-				<Bus className='h-5 w-5 text-blue-600' />
-				<h2 className='text-lg font-semibold text-gray-900'>{t('timeline')}</h2>
-			</div>
-
-			<div className='grid gap-4 sm:grid-cols-4'>
+		<div>
+			<div className='grid gap-4 sm:grid-cols-2 lg:grid-cols-4'>
 				<div>
 					<label htmlFor='timeline-route' className='mb-2 block text-sm font-medium text-gray-700'>
 						{t('selectRoute')}
@@ -139,24 +153,26 @@ export default function RouteTimeline({
 						))}
 					</select>
 				</div>
-				<div>
-					<label htmlFor='timeline-megama' className='mb-2 block text-sm font-medium text-gray-700'>
-						{t('megamaLabel')}
-					</label>
-					<select
-						id='timeline-megama'
-						value={megamaId}
-						onChange={e => void handleMegamaChange(e.target.value)}
-						className={selectClass}
-					>
-						<option value=''>{t('noMegama')}</option>
-						{classGroups.megamas.map(option => (
-							<option key={option.id} value={option.id}>
-								{option.label}
-							</option>
-						))}
-					</select>
-				</div>
+				{megamaOptions.length > 0 && (
+					<div>
+						<label htmlFor='timeline-megama' className='mb-2 block text-sm font-medium text-gray-700'>
+							{t('megamaOfParallel')}
+						</label>
+						<select
+							id='timeline-megama'
+							value={megamaId}
+							onChange={e => void handleMegamaChange(e.target.value)}
+							className={selectClass}
+						>
+							<option value=''>{t('noMegama')}</option>
+							{megamaOptions.map(option => (
+								<option key={option.id} value={option.id}>
+									{option.label}
+								</option>
+							))}
+						</select>
+					</div>
+				)}
 				<div>
 					<label htmlFor='timeline-day' className='mb-2 block text-sm font-medium text-gray-700'>
 						{t('selectDay')}
@@ -240,6 +256,6 @@ export default function RouteTimeline({
 					</div>
 				</div>
 			)}
-		</section>
+		</div>
 	)
 }

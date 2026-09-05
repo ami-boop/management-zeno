@@ -22,6 +22,8 @@ declare module 'maplibre-gl' {
 		constructor(options: {
 			container: HTMLElement
 			style: string
+			center?: [number, number]
+			zoom?: number
 			bounds?: LngLatBounds
 			fitBoundsOptions?: { padding?: number }
 			attributionControl?: { compact?: boolean } | false
@@ -32,5 +34,10 @@ declare module 'maplibre-gl' {
 		addControl(control: unknown, position?: string): void
 		remove(): void
 		resize(): void
+		easeTo(options: { center?: [number, number]; zoom?: number; duration?: number }): void
+		fitBounds(
+			bounds: [LngLatLike, LngLatLike],
+			options?: { padding?: number; maxZoom?: number; duration?: number }
+		): void
 	}
 }

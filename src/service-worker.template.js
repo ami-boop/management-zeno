@@ -15,19 +15,60 @@ const ID_TOKEN = 'ID_TOKEN'
 
 const isSecureOrigin = () => self.location.protocol === 'https:' || self.location.hostname === 'localhost'
 
-let authReady = new Promise(resolve => {
-  const unsubscribe = firebase.auth().onAuthStateChanged(() => {
-    resolve()
-    unsubscribe()
+// A token is considered stale this many milliseconds before its `exp` claim.
+// Sending an expired token makes the API reject the request outright, so we
+// treat near-expiry tokens as stale and force-refresh instead.
+const TOKEN_STALE_LEEWAY_MS = 120000
+
+// The Firebase SDK restores the persisted user and can hand back its cached
+// accessToken even when the stored expirationTime has already passed (e.g.
+// the device slept through the refresh window and the silent refresh failed).
+// We therefore verify the `exp` claim ourselves before trusting any token.
+function decodeJwtExpMs(idToken) {
+  try {
+    const payload = idToken.split('.')[1]
+    const json = atob(payload.replace(/-/g, '+').replace(/_/g, '/'))
+    const parsed = JSON.parse(json)
+    return typeof parsed.exp === 'number' ? parsed.exp * 1000 : null
+  } catch {
+    return null
+  }
+}
+
+function isTokenStale(idToken) {
+  const expMs = decodeJwtExpMs(idToken)
+  if (expMs === null) return true
+  return Date.now() >= expMs - TOKEN_STALE_LEEWAY_MS
+}
+// The SW's compat auth instance may lag behind a sign-in that happened on a
+// page (IDB sync), so wait for the user to appear instead of trusting a
+// one-shot snapshot.
+function waitForUser(timeoutMs = 5000) {
+  const existing = firebase.auth().currentUser
+  if (existing) return Promise.resolve(existing)
+  return new Promise(resolve => {
+    const timeout = setTimeout(() => {
+      unsubscribe()
+      resolve(firebase.auth().currentUser)
+    }, timeoutMs)
+    const unsubscribe = firebase.auth().onAuthStateChanged(user => {
+      if (user) {
+        clearTimeout(timeout)
+        unsubscribe()
+        resolve(user)
+      }
+    })
   })
-})
+}
 
 async function getFreshIdToken() {
-  await authReady
-  const user = firebase.auth().currentUser
+  const user = await waitForUser()
   if (!user) return null
   try {
-    return await user.getIdToken()
+    const token = await user.getIdToken()
+    if (!isTokenStale(token)) return token
+    // Cached token is (about to be) expired — force a real refresh.
+    return await user.getIdToken(true)
   } catch {
     return null
   }
@@ -62,7 +103,15 @@ async function askClientsForToken() {
 }
 
 async function resolveIdToken() {
-  return (await askClientsForToken()) || (await getFreshIdToken())
+  const clientToken = await askClientsForToken()
+  if (clientToken && !isTokenStale(clientToken)) return clientToken
+  // Client answered with a stale/undecodable token — fall back to our own
+  // auth instance, which force-refreshes in getFreshIdToken().
+  const ownToken = await getFreshIdToken()
+  if (ownToken) return ownToken
+  // Nothing fresh available: send the request WITHOUT auth rather than with
+  // a known-expired token (the app will show its signed-out flow).
+  return null
 }
 
 async function getBodyContent(request) {

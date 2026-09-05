@@ -1,12 +1,12 @@
 'use client'
 
-import { useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import Header from './Header'
 import EmailField from './EmailField'
 import PasswordField from './PasswordField'
 import SubmitButton from './SubmitButton'
 import { useLocale, useTranslations } from 'next-intl'
-import { signInWithEmailAndPassword } from 'firebase/auth'
+import { onAuthStateChanged, signInWithEmailAndPassword } from 'firebase/auth'
 import { auth } from '@/lib/firebase'
 import { ensureServiceWorkerReady } from '@/lib/service-worker'
 import { navigate } from '@/utils/navigate'
@@ -37,6 +37,45 @@ export default function Form() {
   const [error, setError] = useState<string | null>(null)
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
+  const autoRedirected = useRef(false)
+
+  // Cold-open healing: the service worker cannot refresh an expired token by
+  // itself, so an idle admin session can land here while still signed in.
+  // Refresh through the page SDK (requests carry Referer → allowed) and bounce
+  // the signed-in admin straight to the dashboard.
+  useEffect(() => {
+    let cancelled = false
+    const goHome = async () => {
+      if (autoRedirected.current || cancelled) return
+      autoRedirected.current = true
+      try {
+        const swReady = await ensureServiceWorkerReady()
+        if (cancelled || !swReady || !auth.currentUser) {
+          autoRedirected.current = false
+          return
+        }
+        const tokenResult = await auth.currentUser.getIdTokenResult()
+        if (cancelled || !auth.currentUser) {
+          autoRedirected.current = false
+          return
+        }
+        if (tokenResult.claims.role !== 'admin') {
+          autoRedirected.current = false
+          return
+        }
+        navigate(`/${locale}/dashboard`)
+      } catch {
+        autoRedirected.current = false
+      }
+    }
+    const unsubscribe = onAuthStateChanged(auth, user => {
+      if (user) void goHome()
+    })
+    return () => {
+      cancelled = true
+      unsubscribe()
+    }
+  }, [locale])
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()

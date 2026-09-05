@@ -24,6 +24,7 @@ jest.mock('@/utils/navigate', () => ({
 jest.mock('firebase/auth', () => ({
   signInWithEmailAndPassword: jest.fn(),
   getAuth: jest.fn(),
+  onAuthStateChanged: jest.fn(() => jest.fn()),
 }));
 
 jest.mock('@/lib/firebase', () => ({

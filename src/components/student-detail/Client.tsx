@@ -19,9 +19,11 @@ import type { ManagementStudentDetail } from '@/lib/api-contracts'
 
 interface StudentDetailProps {
 	detail: ManagementStudentDetail
+	routeNameMap: Record<string, string>
+	stopNameMap: Record<string, string>
 }
 
-export default function Client({ detail }: StudentDetailProps) {
+export default function Client({ detail, routeNameMap, stopNameMap }: StudentDetailProps) {
 	const t = useTranslations('Students')
 	const { student, parents, friendRoute } = detail
 	const fullName = `${student.firstName} ${student.lastName}`.trim() || student.uid
@@ -33,11 +35,21 @@ export default function Client({ detail }: StudentDetailProps) {
 				? t('parentStatusRejected')
 				: t('parentStatusPending')
 
-	const infoRows: { label: string; value: string | null; icon: React.ReactNode }[] = [
+	const infoRows: { label: string; value: string | null; icon: React.ReactNode; href?: string }[] = [
 		{ label: t('grade'), value: student.grade || null, icon: <Users className='h-4 w-4' /> },
 		{ label: t('megama'), value: student.megamaId, icon: <Baby className='h-4 w-4' /> },
-		{ label: t('route'), value: student.routeId, icon: <RouteIcon className='h-4 w-4' /> },
-		{ label: t('stop'), value: student.stopId, icon: <MapPin className='h-4 w-4' /> },
+		{
+			label: t('route'),
+			value: student.routeId ? routeNameMap[student.routeId] ?? student.routeId : null,
+			icon: <RouteIcon className='h-4 w-4' />,
+			href: student.routeId ? `/routes/${student.routeId}` : undefined,
+		},
+		{
+			label: t('stop'),
+			value: student.stopId ? stopNameMap[student.stopId] ?? student.stopId : null,
+			icon: <MapPin className='h-4 w-4' />,
+			href: student.stopId ? `/stops/${student.stopId}` : undefined,
+		},
 		{
 			label: t('departure'),
 			value: student.departureTime,
@@ -84,8 +96,16 @@ export default function Client({ detail }: StudentDetailProps) {
 										<span className='text-gray-400'>{row.icon}</span>
 										{row.label}
 									</dt>
-									<dd className='font-medium text-gray-900 text-end'>
-										{row.value ?? <span className='text-gray-300'>—</span>}
+									<dd className='text-end font-medium text-gray-900'>
+										{row.value == null ? (
+											<span className='text-gray-300'>—</span>
+										) : row.href ? (
+											<Link href={row.href} className='hover:text-blue-700'>
+												{row.value}
+											</Link>
+										) : (
+											row.value
+										)}
 									</dd>
 								</div>
 							))}
@@ -176,8 +196,12 @@ export default function Client({ detail }: StudentDetailProps) {
 									{t('toRoute')}
 								</dt>
 								<dd className='font-medium text-gray-900'>
-									{friendRoute.toRouteId ?? '—'}
-									{friendRoute.toStopId ? ` · ${friendRoute.toStopId}` : ''}
+									{friendRoute.toRouteId
+										? routeNameMap[friendRoute.toRouteId] ?? friendRoute.toRouteId
+										: '—'}
+									{friendRoute.toStopId
+										? ` · ${stopNameMap[friendRoute.toStopId] ?? friendRoute.toStopId}`
+										: ''}
 								</dd>
 							</div>
 							<div>
@@ -186,8 +210,12 @@ export default function Client({ detail }: StudentDetailProps) {
 									{t('defaultRoute')}
 								</dt>
 								<dd className='font-medium text-gray-900'>
-									{friendRoute.fromRouteId ?? '—'}
-									{friendRoute.fromStopId ? ` · ${friendRoute.fromStopId}` : ''}
+									{friendRoute.fromRouteId
+										? routeNameMap[friendRoute.fromRouteId] ?? friendRoute.fromRouteId
+										: '—'}
+									{friendRoute.fromStopId
+										? ` · ${stopNameMap[friendRoute.fromStopId] ?? friendRoute.fromStopId}`
+										: ''}
 								</dd>
 							</div>
 							<div>

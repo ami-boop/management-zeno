@@ -50,8 +50,17 @@ export default function Header() {
       <Link className='text-sm font-medium text-[#111518]' href='/routes'>
         {t('menu.routes')}
       </Link>
+      <Link className='text-sm font-medium text-[#111518]' href='/buses'>
+        {t('menu.busses')}
+      </Link>
       <Link className='text-sm font-medium text-[#111518]' href='/students'>
         {t('menu.students')}
+      </Link>
+      <Link className='text-sm font-medium text-[#111518]' href='/calendar'>
+        {t('menu.calendar')}
+      </Link>
+      <Link className='text-sm font-medium text-[#111518]' href='/friend-trips'>
+        {t('menu.friendTrips')}
       </Link>
       <Link className='text-sm font-medium text-[#111518]' href='/report'>
         {t('menu.report')}

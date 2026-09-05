@@ -88,7 +88,9 @@
       "profile": "Профиль",
       "help": "Помощь",
       "students": "Ученики",
-      "report": "Отмена"
+      "report": "Отмена",
+      "friendTrips": "Поездки к друзьям",
+      "calendar": "Календарь"
     },
     "theme": "Тема",
     "themeSystem": "Системная",
@@ -122,41 +124,66 @@
     }
   },
   "Fleet": {
-    "title": "Управление автопарком",
-    "addBus": "Добавить транспорт",
-    "exportData": "Экспорт",
-    "vehicleCount": "транспортных средств",
-    "totalCapacity": "Общая вместимость",
-    "averageCapacity": "Средняя вместимость",
-    "searchPlaceholder": "Поиск по номеру, модели, статусу...",
-    "filterAll": "Все",
-    "filterInService": "В эксплуатации",
-    "filterMaintenance": "На обслуживании",
-    "filterOutOfService": "Не в эксплуатации",
-    "sortBy": "Сортировка",
-    "sortByNumber": "Номер транспорта",
-    "sortByModel": "Модель",
-    "sortByCapacity": "Вместимость",
-    "sortByStatus": "Статус",
-    "noResults": "Не найдено транспорта по вашему запросу",
-    "noBuses": "Нет доступного транспорта",
-    "emptyState": {
-      "searchMessage": "Попробуйте изменить параметры поиска или фильтры.",
-      "noDataMessage": "Добавьте первое транспортное средство в автопарк."
+    "title": "Автобусы",
+    "stats": {
+      "active": "{active} из {total} активны",
+      "capacity": "Общая вместимость: {capacity}"
     },
-    "headers": {
-      "busNumber": "ID транспорта",
-      "model": "Модель",
+    "searchPlaceholder": "Поиск по номеру, водителю или заметкам…",
+    "fields": {
+      "licensePlate": "Номер",
       "capacity": "Вместимость",
-      "status": "Статус",
-      "location": "Текущее местоположение",
-      "maintenance": "Следующее ТО",
-      "driver": "Водитель"
+      "driverName": "Водитель",
+      "driverPhone": "Телефон водителя",
+      "notes": "Заметки"
     },
     "status": {
-      "inService": "В эксплуатации",
-      "maintenance": "На обслуживании",
-      "outOfService": "Не в эксплуатации"
+      "label": "Статус",
+      "active": "Активен",
+      "inactive": "Неактивен",
+      "onRoute": "На маршруте"
+    },
+    "actions": {
+      "label": "Действия",
+      "add": "Добавить автобус",
+      "edit": "Изменить",
+      "save": "Сохранить",
+      "cancel": "Отмена",
+      "activate": "Включить",
+      "deactivate": "Отключить"
+    },
+    "dialog": {
+      "createTitle": "Добавить автобус",
+      "editTitle": "Изменить автобус",
+      "description": "Данные автобуса для назначения на маршруты."
+    },
+    "errors": {
+      "loadFailed": "Не удалось загрузить автобусы",
+      "actionFailed": "Действие не удалось, попробуйте ещё раз",
+      "saveFailed": "Не удалось сохранить (HTTP {status})",
+      "licensePlateRequired": "Укажите номер автобуса",
+      "capacityInvalid": "Вместимость должна быть целым числом больше нуля"
+    },
+    "noBuses": "Автобусов пока нет",
+    "noResults": "Ничего не найдено по запросу",
+    "detail": {
+      "backToList": "К списку автобусов",
+      "onRouteNow": "Сейчас на маршруте",
+      "notOnRoute": "Не на маршруте",
+      "noTripsToday": "Сегодня рейсов нет",
+      "tripsToday": "Рейсы на сегодня",
+      "mapTitle": "Местоположение",
+      "departure": "Выезд {time}",
+      "speed": "{speed} км/ч",
+      "lastUpdate": "Обновлено {time}",
+      "etaShort": "{minutes} мин",
+      "tripStatus": {
+        "scheduled": "Запланирован",
+        "boarding": "Посадка",
+        "in_transit": "В пути",
+        "completed": "Завершён",
+        "cancelled": "Отменён"
+      }
     }
   },
   "Routes": {
@@ -312,7 +339,6 @@
     "statusSubmitted": "Отметились",
     "statusNotMarked": "Не отметились",
     "statusFriendPending": "Поездка к другу (ожидает)",
-    "friendBadge": "К другу",
     "noRoute": "Без маршрута",
     "notMarked": "Не отметились",
     "friendPendingCount": "Ожидают одобрения",
@@ -444,5 +470,120 @@
       "accessDenied": "Доступ запрещен."
     },
     "kicker": "Портал управления"
+  },
+  "FriendTrips": {
+    "title": "Поездки к друзьям",
+    "empty": "На сегодня заявок нет",
+    "pendingSection": "Ожидают решения",
+    "noPending": "Нет заявок в ожидании",
+    "decidedSection": "Решённые",
+    "approve": "Одобрить",
+    "reject": "Отклонить",
+    "actionFailed": "Не удалось, попробуйте ещё раз",
+    "statusPending": "Ожидает родителя",
+    "statusApproved": "Одобрено родителем",
+    "statusRejected": "Отклонено родителем",
+    "statusManagerApproved": "Одобрено менеджментом",
+    "statusManagerRejected": "Отклонено менеджментом",
+    "sleepover": "С ночёвкой",
+    "defaultRoute": "Обычный маршрут"
+  },
+  "Stops": {
+    "routesServing": "Маршруты через остановку",
+    "noRoutes": "Нет маршрутов через эту остановку",
+    "morningColumn": "Утро",
+    "afternoonColumn": "После полудня",
+    "minutesShort": "мин",
+    "mapFailed": "Не удалось загрузить карту",
+    "noCoordinates": "У остановки нет координат",
+    "title": "Остановки",
+    "stats": {
+      "active": "{active} из {total} активны"
+    },
+    "searchPlaceholder": "Поиск остановок…",
+    "actions": {
+      "add": "Добавить остановку",
+      "edit": "Изменить",
+      "save": "Сохранить",
+      "cancel": "Отмена",
+      "activate": "Включить",
+      "deactivate": "Отключить"
+    },
+    "dialog": {
+      "createTitle": "Добавить остановку",
+      "editTitle": "Изменить остановку",
+      "description": "Расположение и детали остановки."
+    },
+    "fields": {
+      "name": "Название",
+      "address": "Адрес",
+      "lat": "Широта",
+      "lng": "Долгота",
+      "notes": "Заметки"
+    },
+    "status": {
+      "active": "Активна",
+      "inactive": "Неактивна"
+    },
+    "errors": {
+      "loadFailed": "Не удалось загрузить остановки",
+      "actionFailed": "Действие не удалось, попробуйте ещё раз",
+      "saveFailed": "Не удалось сохранить (HTTP {status})",
+      "nameRequired": "Укажите название",
+      "latInvalid": "Широта — число от -90 до 90",
+      "lngInvalid": "Долгота — число от -180 до 180"
+    },
+    "noStops": "Остановок пока нет",
+    "noResults": "Ничего не найдено по запросу"
+  },
+  "Calendar": {
+    "title": "Исключения календаря",
+    "stats": {
+      "active": "{active} из {total} активны"
+    },
+    "actions": {
+      "add": "Добавить исключение",
+      "edit": "Изменить",
+      "save": "Сохранить",
+      "cancel": "Отмена",
+      "activate": "Включить",
+      "deactivate": "Отключить",
+      "addRow": "Добавить класс",
+      "removeRow": "Удалить"
+    },
+    "dialog": {
+      "createTitle": "Добавить исключение",
+      "editTitle": "Изменить исключение",
+      "description": "Особый день заменяет обычное расписание."
+    },
+    "fields": {
+      "date": "Дата",
+      "type": "Тип",
+      "note": "Заметка",
+      "overrideEndTimes": "Время окончания по классам",
+      "scope": "Классы (охват)",
+      "departureTime": "Время выезда",
+      "classPlaceholder": "Выберите класс"
+    },
+    "types": {
+      "holiday": "Каникулы",
+      "exam_day": "Экзаменационный день",
+      "half_day": "Сокращённый день",
+      "no_transport": "Без транспорта",
+      "special_schedule": "Особое расписание"
+    },
+    "status": {
+      "active": "Активно",
+      "inactive": "Неактивно"
+    },
+    "errors": {
+      "loadFailed": "Не удалось загрузить исключения",
+      "actionFailed": "Действие не удалось, попробуйте ещё раз",
+      "saveFailed": "Не удалось сохранить (HTTP {status})",
+      "dateInvalid": "Выберите корректную дату",
+      "endTimesRequired": "Добавьте хотя бы одно время окончания для сокращённого дня",
+      "specialScheduleRequired": "Для особого расписания нужны классы и время выезда"
+    },
+    "noExceptions": "Исключений пока нет"
   }
 }

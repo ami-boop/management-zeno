@@ -56,10 +56,34 @@ export async function apiPost<TBody>(
 	token: string,
 	body: TBody,
 ): Promise<{ ok: boolean; status: number; data: unknown | null }> {
+	return apiSend('POST', endpoint, token, body)
+}
+
+export async function apiPut<TBody>(
+	endpoint: string,
+	token: string,
+	body: TBody,
+): Promise<{ ok: boolean; status: number; data: unknown | null }> {
+	return apiSend('PUT', endpoint, token, body)
+}
+
+export async function apiDelete(
+	endpoint: string,
+	token: string,
+): Promise<{ ok: boolean; status: number; data: unknown | null }> {
+	return apiSend('DELETE', endpoint, token)
+}
+
+async function apiSend<TBody>(
+	method: 'POST' | 'PUT' | 'DELETE',
+	endpoint: string,
+	token: string,
+	body?: TBody,
+): Promise<{ ok: boolean; status: number; data: unknown | null }> {
 	const response = await fetch(`${API_URL}/${endpoint.replace(/^\/+/, '')}`, {
-		method: 'POST',
+		method,
 		headers: authHeaders(token),
-		body: JSON.stringify(body),
+		body: body === undefined ? undefined : JSON.stringify(body),
 		cache: 'no-store',
 	})
 	let data: unknown = null

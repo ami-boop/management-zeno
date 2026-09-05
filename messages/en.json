@@ -84,11 +84,13 @@
       "dashboard": "Dashboard",
       "schedule": "Schedule",
       "routes": "Routes",
-      "busses": "Busses",
+      "busses": "Buses",
       "profile": "Profile",
       "help": "Help",
       "students": "Students",
-      "report": "Report"
+      "report": "Report",
+      "friendTrips": "Friend trips",
+      "calendar": "Calendar"
     },
     "theme": "Theme",
     "themeSystem": "System",
@@ -122,41 +124,66 @@
     }
   },
   "Fleet": {
-    "title": "Fleet Management",
-    "addBus": "Add Vehicle",
-    "exportData": "Export",
-    "vehicleCount": "vehicles",
-    "totalCapacity": "Total Capacity",
-    "averageCapacity": "Avg. Capacity",
-    "searchPlaceholder": "Search vehicles by number, model, status...",
-    "filterAll": "All Vehicles",
-    "filterInService": "In Service",
-    "filterMaintenance": "Maintenance",
-    "filterOutOfService": "Out of Service",
-    "sortBy": "Sort by",
-    "sortByNumber": "Vehicle Number",
-    "sortByModel": "Model",
-    "sortByCapacity": "Capacity",
-    "sortByStatus": "Status",
-    "noResults": "No vehicles found matching your search criteria",
-    "noBuses": "No vehicles available",
-    "emptyState": {
-      "searchMessage": "Try adjusting your search criteria or filters.",
-      "noDataMessage": "Get started by adding your first vehicle to the fleet."
+    "title": "Buses",
+    "stats": {
+      "active": "{active} of {total} active",
+      "capacity": "Total capacity: {capacity}"
     },
-    "headers": {
-      "busNumber": "Vehicle ID",
-      "model": "Model",
+    "searchPlaceholder": "Search by plate, driver or notes…",
+    "fields": {
+      "licensePlate": "License plate",
       "capacity": "Capacity",
-      "status": "Status",
-      "location": "Current Location",
-      "maintenance": "Next Maintenance",
-      "driver": "Assigned Driver"
+      "driverName": "Driver",
+      "driverPhone": "Driver phone",
+      "notes": "Notes"
     },
     "status": {
-      "inService": "In Service",
-      "maintenance": "Maintenance",
-      "outOfService": "Out of Service"
+      "label": "Status",
+      "active": "Active",
+      "inactive": "Inactive",
+      "onRoute": "On route"
+    },
+    "actions": {
+      "label": "Actions",
+      "add": "Add bus",
+      "edit": "Edit",
+      "save": "Save",
+      "cancel": "Cancel",
+      "activate": "Activate",
+      "deactivate": "Deactivate"
+    },
+    "dialog": {
+      "createTitle": "Add bus",
+      "editTitle": "Edit bus",
+      "description": "Vehicle details for route assignment."
+    },
+    "errors": {
+      "loadFailed": "Failed to load buses",
+      "actionFailed": "Action failed, please try again",
+      "saveFailed": "Failed to save (HTTP {status})",
+      "licensePlateRequired": "License plate is required",
+      "capacityInvalid": "Capacity must be a positive integer"
+    },
+    "noBuses": "No buses yet",
+    "noResults": "No buses match your search",
+    "detail": {
+      "backToList": "Back to buses",
+      "onRouteNow": "On route now",
+      "notOnRoute": "Not on route",
+      "noTripsToday": "No bus trips today",
+      "tripsToday": "Today's trips",
+      "mapTitle": "Live position",
+      "departure": "Departure {time}",
+      "speed": "{speed} km/h",
+      "lastUpdate": "Updated {time}",
+      "etaShort": "{minutes} min",
+      "tripStatus": {
+        "scheduled": "Scheduled",
+        "boarding": "Boarding",
+        "in_transit": "In transit",
+        "completed": "Completed",
+        "cancelled": "Cancelled"
+      }
     }
   },
   "Routes": {
@@ -312,7 +339,6 @@
     "statusSubmitted": "Submitted",
     "statusNotMarked": "Not marked",
     "statusFriendPending": "Friend trip pending",
-    "friendBadge": "Friend",
     "noRoute": "No route",
     "notMarked": "Not Marked",
     "friendPendingCount": "Friend Trips Pending",
@@ -444,5 +470,120 @@
       "accessDenied": "Access denied."
     },
     "kicker": "Admin Portal"
+  },
+  "FriendTrips": {
+    "title": "Friend trips",
+    "empty": "No friend trip requests today",
+    "pendingSection": "Waiting for decision",
+    "noPending": "No pending requests",
+    "decidedSection": "Decided",
+    "approve": "Approve",
+    "reject": "Reject",
+    "actionFailed": "Action failed, try again",
+    "statusPending": "Waiting for parent",
+    "statusApproved": "Approved by parent",
+    "statusRejected": "Rejected by parent",
+    "statusManagerApproved": "Approved by management",
+    "statusManagerRejected": "Rejected by management",
+    "sleepover": "Sleepover",
+    "defaultRoute": "Default route"
+  },
+  "Stops": {
+    "routesServing": "Routes serving this stop",
+    "noRoutes": "No routes serve this stop",
+    "morningColumn": "Morning",
+    "afternoonColumn": "Afternoon",
+    "minutesShort": "min",
+    "mapFailed": "Failed to load the map",
+    "noCoordinates": "No coordinates for this stop",
+    "title": "Stops",
+    "stats": {
+      "active": "{active} of {total} active"
+    },
+    "searchPlaceholder": "Search stops…",
+    "actions": {
+      "add": "Add stop",
+      "edit": "Edit",
+      "save": "Save",
+      "cancel": "Cancel",
+      "activate": "Activate",
+      "deactivate": "Deactivate"
+    },
+    "dialog": {
+      "createTitle": "Add stop",
+      "editTitle": "Edit stop",
+      "description": "Stop location and details."
+    },
+    "fields": {
+      "name": "Name",
+      "address": "Address",
+      "lat": "Latitude",
+      "lng": "Longitude",
+      "notes": "Notes"
+    },
+    "status": {
+      "active": "Active",
+      "inactive": "Inactive"
+    },
+    "errors": {
+      "loadFailed": "Failed to load stops",
+      "actionFailed": "Action failed, please try again",
+      "saveFailed": "Failed to save (HTTP {status})",
+      "nameRequired": "Name is required",
+      "latInvalid": "Latitude must be a number between -90 and 90",
+      "lngInvalid": "Longitude must be a number between -180 and 180"
+    },
+    "noStops": "No stops yet",
+    "noResults": "No stops match your search"
+  },
+  "Calendar": {
+    "title": "Calendar exceptions",
+    "stats": {
+      "active": "{active} of {total} active"
+    },
+    "actions": {
+      "add": "Add exception",
+      "edit": "Edit",
+      "save": "Save",
+      "cancel": "Cancel",
+      "activate": "Activate",
+      "deactivate": "Deactivate",
+      "addRow": "Add class",
+      "removeRow": "Remove"
+    },
+    "dialog": {
+      "createTitle": "Add exception",
+      "editTitle": "Edit exception",
+      "description": "A special day replaces the regular schedule."
+    },
+    "fields": {
+      "date": "Date",
+      "type": "Type",
+      "note": "Note",
+      "overrideEndTimes": "End times by class",
+      "scope": "Classes (scope)",
+      "departureTime": "Departure time",
+      "classPlaceholder": "Select class"
+    },
+    "types": {
+      "holiday": "Holiday",
+      "exam_day": "Exam day",
+      "half_day": "Half day",
+      "no_transport": "No transport",
+      "special_schedule": "Special schedule"
+    },
+    "status": {
+      "active": "Active",
+      "inactive": "Inactive"
+    },
+    "errors": {
+      "loadFailed": "Failed to load exceptions",
+      "actionFailed": "Action failed, please try again",
+      "saveFailed": "Failed to save (HTTP {status})",
+      "dateInvalid": "Pick a valid date",
+      "endTimesRequired": "Add at least one class end time for a half day",
+      "specialScheduleRequired": "Classes and departure time are required for a special schedule"
+    },
+    "noExceptions": "No calendar exceptions yet"
   }
 }

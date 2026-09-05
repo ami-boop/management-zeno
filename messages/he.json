@@ -88,7 +88,9 @@
       "profile": "פרופיל",
       "help": "עזרה",
       "students": "תלמידים",
-      "report": "דיווח"
+      "report": "דיווח",
+      "friendTrips": "נסיעות לחברים",
+      "calendar": "יומן"
     },
     "theme": "ערכת נושא",
     "themeSystem": "מערכת",
@@ -122,41 +124,66 @@
     }
   },
   "Fleet": {
-    "title": "ניהול צי רכבים",
-    "addBus": "הוסף רכב",
-    "exportData": "ייצוא",
-    "vehicleCount": "רכבים",
-    "totalCapacity": "קיבולת כוללת",
-    "averageCapacity": "קיבולת ממוצעת",
-    "searchPlaceholder": "חפש רכב לפי מספר, דגם, סטטוס...",
-    "filterAll": "כל הרכבים",
-    "filterInService": "בשירות",
-    "filterMaintenance": "בטיפול",
-    "filterOutOfService": "לא בשירות",
-    "sortBy": "מיין לפי",
-    "sortByNumber": "מספר רכב",
-    "sortByModel": "דגם",
-    "sortByCapacity": "קיבולת",
-    "sortByStatus": "סטטוס",
-    "noResults": "לא נמצאו רכבים התואמים לחיפוש",
-    "noBuses": "אין רכבים זמינים",
-    "emptyState": {
-      "searchMessage": "נסה לשנות את החיפוש או את המסננים.",
-      "noDataMessage": "הוסף את הרכב הראשון שלך לצי."
+    "title": "אוטובוסים",
+    "stats": {
+      "active": "{active} מתוך {total} פעילים",
+      "capacity": "סה״כ מקומות: {capacity}"
     },
-    "headers": {
-      "busNumber": "מספר רכב",
-      "model": "דגם",
+    "searchPlaceholder": "חיפוש לפי מספר, נהג או הערות…",
+    "fields": {
+      "licensePlate": "מספר רישוי",
       "capacity": "קיבולת",
-      "status": "סטטוס",
-      "location": "מיקום נוכחי",
-      "maintenance": "טיפול הבא",
-      "driver": "נהג"
+      "driverName": "נהג",
+      "driverPhone": "טלפון נהג",
+      "notes": "הערות"
     },
     "status": {
-      "inService": "בשירות",
-      "maintenance": "בטיפול",
-      "outOfService": "לא בשירות"
+      "label": "סטטוס",
+      "active": "פעיל",
+      "inactive": "לא פעיל",
+      "onRoute": "במסלול"
+    },
+    "actions": {
+      "label": "פעולות",
+      "add": "הוסף אוטובוס",
+      "edit": "עריכה",
+      "save": "שמור",
+      "cancel": "ביטול",
+      "activate": "הפעלה",
+      "deactivate": "השבתה"
+    },
+    "dialog": {
+      "createTitle": "הוסף אוטובוס",
+      "editTitle": "ערוך אוטובוס",
+      "description": "פרטי הרכב לשיבוץ במסלולים."
+    },
+    "errors": {
+      "loadFailed": "טעינת האוטובוסים נכשלה",
+      "actionFailed": "הפעולה נכשלה, נסו שוב",
+      "saveFailed": "השמירה נכשלה (HTTP {status})",
+      "licensePlateRequired": "נדרש מספר רישוי",
+      "capacityInvalid": "הקיבולת חייבת להיות מספר שלם חיובי"
+    },
+    "noBuses": "אין עדיין אוטובוסים",
+    "noResults": "לא נמצאו אוטובוסים מתאימים",
+    "detail": {
+      "backToList": "חזרה לאוטובוסים",
+      "onRouteNow": "כרגע במסלול",
+      "notOnRoute": "לא במסלול",
+      "noTripsToday": "אין נסיעות היום",
+      "tripsToday": "נסיעות להיום",
+      "mapTitle": "מיקום חי",
+      "departure": "יציאה {time}",
+      "speed": "{speed} קמ\"ש",
+      "lastUpdate": "עודכן {time}",
+      "etaShort": "{minutes} דק'",
+      "tripStatus": {
+        "scheduled": "מתוכנן",
+        "boarding": "עלייה לאוטובוס",
+        "in_transit": "בדרך",
+        "completed": "הסתיים",
+        "cancelled": "בוטל"
+      }
     }
   },
   "Routes": {
@@ -312,7 +339,6 @@
     "statusSubmitted": "דיווחו",
     "statusNotMarked": "לא דיווחו",
     "statusFriendPending": "נסיעה לחבר (ממתין)",
-    "friendBadge": "לחבר",
     "noRoute": "ללא מסלול",
     "notMarked": "לא דיווחו",
     "friendPendingCount": "ממתינות לאישור",
@@ -457,5 +483,120 @@
     "genericError": "אירעה שגיאה. אנא נסה שוב",
     "networkError": "שגיאת רשת. בדוק את החיבור ונסה שוב",
     "accessDenied": "הגישה נדחתה."
+  },
+  "FriendTrips": {
+    "title": "נסיעות לחברים",
+    "empty": "אין בקשות נסיעה לחבר היום",
+    "pendingSection": "ממתין להחלטה",
+    "noPending": "אין בקשות ממתינות",
+    "decidedSection": "הוכרעו",
+    "approve": "אישור",
+    "reject": "דחייה",
+    "actionFailed": "הפעולה נכשלה, נסה שוב",
+    "statusPending": "ממתין להורה",
+    "statusApproved": "אושר על ידי ההורה",
+    "statusRejected": "נדחה על ידי ההורה",
+    "statusManagerApproved": "אושר על ידי הניהול",
+    "statusManagerRejected": "נדחה על ידי הניהול",
+    "sleepover": "שינה אצל החבר",
+    "defaultRoute": "קו רגיל"
+  },
+  "Stops": {
+    "routesServing": "קווים בתחנה זו",
+    "noRoutes": "אין קווים בתחנה זו",
+    "morningColumn": "בוקר",
+    "afternoonColumn": "צהריים",
+    "minutesShort": "דק'",
+    "mapFailed": "טעינת המפה נכשלה",
+    "noCoordinates": "אין קואורדינטות לתחנה",
+    "title": "תחנות",
+    "stats": {
+      "active": "{active} מתוך {total} פעילות"
+    },
+    "searchPlaceholder": "חיפוש תחנות…",
+    "actions": {
+      "add": "הוסף תחנה",
+      "edit": "עריכה",
+      "save": "שמור",
+      "cancel": "ביטול",
+      "activate": "הפעלה",
+      "deactivate": "השבתה"
+    },
+    "dialog": {
+      "createTitle": "הוסף תחנה",
+      "editTitle": "ערוך תחנה",
+      "description": "מיקום ופרטי התחנה."
+    },
+    "fields": {
+      "name": "שם",
+      "address": "כתובת",
+      "lat": "קו רוחב",
+      "lng": "קו אורך",
+      "notes": "הערות"
+    },
+    "status": {
+      "active": "פעילה",
+      "inactive": "לא פעילה"
+    },
+    "errors": {
+      "loadFailed": "טעינת התחנות נכשלה",
+      "actionFailed": "הפעולה נכשלה, נסו שוב",
+      "saveFailed": "השמירה נכשלה (HTTP {status})",
+      "nameRequired": "נדרש שם",
+      "latInvalid": "קו הרוחב חייב להיות בין -90 ל-90",
+      "lngInvalid": "קו האורך חייב להיות בין -180 ל-180"
+    },
+    "noStops": "אין עדיין תחנות",
+    "noResults": "לא נמצאו תחנות מתאימות"
+  },
+  "Calendar": {
+    "title": "חריגות יומן",
+    "stats": {
+      "active": "{active} מתוך {total} פעילות"
+    },
+    "actions": {
+      "add": "הוסף חריגה",
+      "edit": "עריכה",
+      "save": "שמור",
+      "cancel": "ביטול",
+      "activate": "הפעלה",
+      "deactivate": "השבתה",
+      "addRow": "הוסף כיתה",
+      "removeRow": "הסר"
+    },
+    "dialog": {
+      "createTitle": "הוסף חריגה",
+      "editTitle": "ערוך חריגה",
+      "description": "יום מיוחד מחליף את מערכת השעות הרגילה."
+    },
+    "fields": {
+      "date": "תאריך",
+      "type": "סוג",
+      "note": "הערה",
+      "overrideEndTimes": "שעות סיום לפי כיתה",
+      "scope": "כיתות (היקף)",
+      "departureTime": "שעת יציאה",
+      "classPlaceholder": "בחר כיתה"
+    },
+    "types": {
+      "holiday": "חופשה",
+      "exam_day": "יום מבחנים",
+      "half_day": "יום מקוצר",
+      "no_transport": "ללא הסעה",
+      "special_schedule": "מערכת מיוחדת"
+    },
+    "status": {
+      "active": "פעיל",
+      "inactive": "לא פעיל"
+    },
+    "errors": {
+      "loadFailed": "טעינת החריגות נכשלה",
+      "actionFailed": "הפעולה נכשלה, נסו שוב",
+      "saveFailed": "השמירה נכשלה (HTTP {status})",
+      "dateInvalid": "בחרו תאריך תקין",
+      "endTimesRequired": "הוסיפו לפחות שעת סיום אחת ליום מקוצר",
+      "specialScheduleRequired": "למערכת מיוחדת נדרשות כיתות ושעת יציאה"
+    },
+    "noExceptions": "אין עדיין חריגות"
   }
 }

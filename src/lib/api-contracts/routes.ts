@@ -132,6 +132,8 @@ export interface StopDetail {
 	lat: number | null
 	lng: number | null
 	type: string | null
+	notes: string | null
+	isActive: boolean
 }
 
 export function parseStops(value: unknown): StopDetail[] {
@@ -149,6 +151,8 @@ export function parseStops(value: unknown): StopDetail[] {
 			lat: typeof item.lat === 'number' ? item.lat : null,
 			lng: typeof item.lng === 'number' ? item.lng : null,
 			type: isString(item.type) ? item.type : null,
+			notes: isString(item.notes) ? item.notes : null,
+			isActive: item.isActive !== false,
 		})
 	}
 	return stops

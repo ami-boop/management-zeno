@@ -1,0 +1,32 @@
+import { redirect } from 'next/navigation'
+import Client from '@/components/buses/Client'
+import { getSessionToken } from '@/utils/getSessionToken'
+import { apiGet } from '@/lib/api/client'
+import { parseBuses, parseBusLive } from '@/lib/api-contracts'
+
+export const dynamic = 'force-dynamic'
+
+export default async function BusesPage() {
+	const token = await getSessionToken()
+	if (!token) redirect('/login')
+
+	let buses = null
+	const liveByBus: Record<string, { onRoute: boolean; routeName: string | null }> = {}
+	try {
+		const [busesValue, liveValue] = await Promise.all([
+			apiGet('buses', token),
+			apiGet('dashboard/bus-live', token).catch(() => null),
+		])
+		buses = parseBuses(busesValue)
+		const live = parseBusLive(liveValue)
+		if (live) {
+			for (const [busId, trip] of live.byBus) {
+				liveByBus[busId] = { onRoute: trip.isOnRouteNow, routeName: trip.routeName }
+			}
+		}
+	} catch {
+		buses = null
+	}
+
+	return <Client initialBuses={buses} initialLiveByBus={liveByBus} />
+}

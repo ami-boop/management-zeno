@@ -3,37 +3,8 @@
 import { useEffect, useRef, useState } from 'react'
 import { useTranslations } from 'next-intl'
 import type { LngLatBounds, Map as MapLibreMap } from 'maplibre-gl'
+import { loadMaplibre, STYLE_URL } from '@/lib/maplibre-loader'
 import type { RouteDetailStop } from './Client'
-
-const STYLE_URL = 'https://tiles.openfreemap.org/styles/liberty'
-const MAPLIBRE_VERSION = '6.6.0'
-const MAPLIBRE_CSS_URL = `https://cdn.jsdelivr.net/npm/maplibre-gl@${MAPLIBRE_VERSION}/dist/maplibre-gl.css`
-const MAPLIBRE_JS_URL = `https://cdn.jsdelivr.net/npm/maplibre-gl@${MAPLIBRE_VERSION}/dist/maplibre-gl.mjs`
-
-type MapLibreNamespace = typeof import('maplibre-gl')
-
-let maplibrePromise: Promise<MapLibreNamespace> | null = null
-
-function loadMaplibre(): Promise<MapLibreNamespace> {
-	if (!maplibrePromise) {
-		maplibrePromise = import(
-			/* webpackIgnore: true */
-			/* turbopackIgnore: true */
-			MAPLIBRE_JS_URL
-		) as Promise<MapLibreNamespace>
-		maplibrePromise.catch(() => {
-			maplibrePromise = null
-		})
-		if (!document.querySelector(`link[data-maplibre="true"]`)) {
-			const link = document.createElement('link')
-			link.rel = 'stylesheet'
-			link.href = MAPLIBRE_CSS_URL
-			link.dataset.maplibre = 'true'
-			document.head.appendChild(link)
-		}
-	}
-	return maplibrePromise
-}
 
 const COLOR_AFTERNOON = '#2563eb'
 const COLOR_MORNING = '#f59e0b'

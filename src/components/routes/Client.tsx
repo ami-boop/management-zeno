@@ -1,8 +1,8 @@
 'use client'
 
-import { useState, useMemo } from 'react'
 import { useTranslations } from 'next-intl'
-import { AlertCircle, Search, ListChecks, Info, RefreshCw } from 'lucide-react'
+import { useSearchFilter } from '@/hooks/useSearchFilter'
+import { AlertCircle, Info, ListChecks, RefreshCw, Search } from 'lucide-react'
 import type { RouteItem } from '@/lib/api-contracts'
 import Table from './Table'
 import MobileCards from './MobileCards'
@@ -13,32 +13,31 @@ interface RoutesClientProps {
 
 export default function Client({ routes }: RoutesClientProps) {
 	const t = useTranslations('Routes')
-	const [searchQuery, setSearchQuery] = useState('')
-	const safeRoutes = useMemo(() => routes ?? [], [routes])
 
-	const filteredRoutes = useMemo(() => {
-		const query = searchQuery.toLowerCase()
-		return safeRoutes.filter(route =>
-			route.name.toLowerCase().includes(query) || route.routeId.toLowerCase().includes(query)
-		)
-	}, [safeRoutes, searchQuery])
+	const { filtered, search, setSearch } = useSearchFilter(routes, {
+		searchFields: ['name', 'routeId'],
+	})
+
+	const filteredRoutes = filtered ?? []
 
 	if (routes === null) {
 		return (
 			<div className='bg-gray-50'>
 				<div className='max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8 py-8'>
 					<div className='flex flex-col items-center justify-center py-24 text-center'>
-						<AlertCircle className='h-10 w-10 text-red-400 mb-4' />
-						<h2 className='text-lg font-semibold text-gray-900 mb-1'>{t('loadError')}</h2>
-						<p className='text-sm text-gray-500 mb-6'>{t('loadErrorHint')}</p>
-						<button
-							type='button'
-							onClick={() => window.location.reload()}
-							className='inline-flex items-center gap-2 px-4 py-2 border border-gray-300 rounded-xl shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50'
-						>
-							<RefreshCw className='h-4 w-4' />
-							{t('retry')}
-						</button>
+						<div className='text-center'>
+							<AlertCircle className='h-10 w-10 text-red-400 mb-4' />
+							<h2 className='text-lg font-semibold text-gray-900 mb-1'>{t('loadError')}</h2>
+							<p className='text-sm text-gray-500 mb-6'>{t('loadErrorHint')}</p>
+							<button
+								type='button'
+								onClick={() => window.location.reload()}
+								className='inline-flex items-center gap-2 px-4 py-2 border border-gray-300 rounded-xl shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50'
+							>
+								<RefreshCw className='h-4 w-4' />
+								{t('retry')}
+							</button>
+						</div>
 					</div>
 				</div>
 			</div>
@@ -70,8 +69,8 @@ export default function Client({ routes }: RoutesClientProps) {
 								<input
 									type='text'
 									placeholder={t('searchPlaceholder')}
-									value={searchQuery}
-									onChange={e => setSearchQuery(e.target.value)}
+									value={search}
+									onChange={e => setSearch(e.target.value)}
 									className='block w-full ps-9 pe-3 py-2 border border-gray-300 rounded-xl text-sm placeholder-gray-500 focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500'
 								/>
 							</div>

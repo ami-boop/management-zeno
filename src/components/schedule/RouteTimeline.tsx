@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { useTranslations } from 'next-intl'
 import { MapPin, School } from 'lucide-react'
 import getClassSchedule from '@/app/actions/getClassSchedule'
@@ -44,6 +44,8 @@ export default function RouteTimeline({
 	const [exception, setException] = useState<CalendarException | null>(null)
 	const [stopsError, setStopsError] = useState<string | null>(null)
 	const [scheduleError, setScheduleError] = useState<string | null>(null)
+	// Latest-interaction-wins: any newer selector change invalidates in-flight responses.
+	const seqRef = useRef(0)
 
 	const megamaOptions = useMemo(() => {
 		if (!classId) return []
@@ -64,11 +66,13 @@ export default function RouteTimeline({
 	}, [today.date])
 
 	const handleRouteChange = async (value: string) => {
+		const seq = ++seqRef.current
 		setRouteId(value)
 		setStops(null)
 		setStopsError(null)
 		if (!value) return
 		const res = await getRouteStops(value)
+		if (seq !== seqRef.current) return
 		if (res.ok) {
 			setStops(res.stops)
 		} else {
@@ -77,6 +81,7 @@ export default function RouteTimeline({
 	}
 
 	const handleClassChange = async (value: string) => {
+		const seq = ++seqRef.current
 		setClassId(value)
 		setMegamaId('')
 		setMegamaSchedule(null)
@@ -84,6 +89,7 @@ export default function RouteTimeline({
 		setScheduleError(null)
 		if (!value) return
 		const res = await getClassSchedule(value)
+		if (seq !== seqRef.current) return
 		if (res.ok) {
 			setSchedule(res.schedule)
 		} else {
@@ -92,11 +98,18 @@ export default function RouteTimeline({
 	}
 
 	const handleMegamaChange = async (value: string) => {
+		const seq = ++seqRef.current
 		setMegamaId(value)
 		setMegamaSchedule(null)
+		setScheduleError(null)
 		if (!value) return
 		const res = await getClassSchedule(value)
-		if (res.ok) setMegamaSchedule(res.schedule)
+		if (seq !== seqRef.current) return
+		if (res.ok) {
+			setMegamaSchedule(res.schedule)
+		} else {
+			setScheduleError(res.error === 'not_found' ? t('noSchedule') : t('errorLoading'))
+		}
 	}
 
 	const useException = dayIndex === today.dayIndex ? exception : null

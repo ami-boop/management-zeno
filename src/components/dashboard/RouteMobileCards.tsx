@@ -11,6 +11,7 @@ interface DashboardRouteMobileCardsProps {
   onOrderBuses: (routeId: string, count: number) => void
   getStatusColor: (status: DashboardRoute['status']) => string
   getStatusText: (status: DashboardRoute['status']) => string
+  busyRouteIds?: ReadonlySet<string>
 }
 
 const RouteMobileCards = ({
@@ -19,6 +20,7 @@ const RouteMobileCards = ({
   onOrderBuses,
   getStatusColor,
   getStatusText,
+  busyRouteIds,
 }: DashboardRouteMobileCardsProps) => {
   const t = useTranslations('Dashboard')
 
@@ -38,15 +40,19 @@ const RouteMobileCards = ({
   return (
     <div className="lg:hidden divide-y divide-gray-200">
       {routes.map((route) => {
-        const busPercent = Math.round(
-          (route.studentsOnBus / route.totalStudents) * 100
-        )
-        const otherPercent = Math.round(
-          (route.studentsNotMarked / route.totalStudents) * 100
-        )
-        const busesPercent = Math.round(
-          (route.busesOrdered / route.busesNeeded) * 100
-        )
+        const isBusy = busyRouteIds?.has(route.id) ?? false
+        const busPercent =
+          route.totalStudents > 0
+            ? Math.round((route.studentsOnBus / route.totalStudents) * 100)
+            : 0
+        const otherPercent =
+          route.totalStudents > 0
+            ? Math.round((route.studentsNotMarked / route.totalStudents) * 100)
+            : 0
+        const busesPercent =
+          route.busesNeeded > 0
+            ? Math.round((route.busesOrdered / route.busesNeeded) * 100)
+            : 0
 
         return (
           <div
@@ -174,13 +180,14 @@ const RouteMobileCards = ({
               {route.busesOrdered < route.busesNeeded && (
                 <>
                   <button
-                    onClick={() => onOrderBuses(route.id, 1)}
+                    disabled={isBusy}
+                     onClick={() => onOrderBuses(route.id, 1)}
                     title={t('tooltips.addBus')}
                     className="flex-1 inline-flex justify-center items-center px-3 py-2 border border-transparent text-sm font-medium rounded-lg text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors duration-200"
                   >
-                    +1 <Bus className="w-4 h-4 ml-1" />
+                    +1 <Bus className="w-4 h-4 ms-1" />
                   </button>
-                  {route.busesOrdered + 2 <= route.busesNeeded && (
+                  {route.busesOrdered < route.busesNeeded && (
                     <button
                       onClick={() =>
                         onOrderBuses(
@@ -204,11 +211,12 @@ const RouteMobileCards = ({
                 )}
               {route.busesOrdered > 0 && (
                 <button
-                  onClick={() => onOrderBuses(route.id, -1)}
+                  disabled={isBusy}
+                     onClick={() => onOrderBuses(route.id, -1)}
                   title={t('tooltips.removeBus')}
                   className="flex-1 inline-flex justify-center items-center px-3 py-2 border border-gray-300 text-sm font-medium rounded-lg text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-400 transition-colors duration-200"
                 >
-                  -1 <Bus className="w-4 h-4 ml-1" />
+                  -1 <Bus className="w-4 h-4 ms-1" />
                 </button>
               )}
             </div>

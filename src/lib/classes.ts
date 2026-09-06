@@ -26,7 +26,14 @@ const GRADE_ORDER = [
 	'alef', 'bet', 'gimel', 'dalet', 'heh', 'vav', 'zayin', 'het', 'tet', 'yud', 'yud_alef', 'yud_bet',
 ]
 
+export { GRADE_ORDER }
+
 export interface ClassOption {
+	id: string
+	label: string
+}
+
+export interface GradeOption {
 	id: string
 	label: string
 }
@@ -42,10 +49,28 @@ export const ALL_CLASS_OPTIONS: ClassOption[] = Object.entries(CLASS_MAP)
 		return numA - numB
 	})
 
-function splitClassId(id: string): [string, number] {
+/** All known grades, ordered 1st..12th; labels derived from the class map. */
+export const GRADE_OPTIONS: GradeOption[] = GRADE_ORDER.map(id => ({
+	id,
+	label: classToHebrew(`${id}_1`).replace(/\s+\d+$/, ''),
+}))
+
+/** Split a class id into its grade and class number, e.g. alef_1 -> ['alef', 1]. */
+export function splitClassId(id: string): [string, number] {
 	const match = id.match(/^(.*)_(\d+)$/)
 	if (!match) return [id, 0]
 	return [match[1], Number(match[2])]
+}
+
+/** Grade of a class id, or null when the id is not a known class. */
+export function gradeOfClass(classId: string): string | null {
+	const [grade] = splitClassId(classId)
+	return GRADE_ORDER.includes(grade) ? grade : null
+}
+
+/** Classes of one grade, ordered by class number. */
+export function classesOfGrade(grade: string): ClassOption[] {
+	return ALL_CLASS_OPTIONS.filter(option => gradeOfClass(option.id) === grade)
 }
 
 /** Hebrew display label for a raw class id; falls back to the id itself. */

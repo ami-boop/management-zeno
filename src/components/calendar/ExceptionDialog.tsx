@@ -13,7 +13,16 @@ import {
 } from '@/components/ui/dialog'
 import { Button } from '@/components/ui/button'
 import { createException, updateException } from '@/app/actions/calendar'
-import { ALL_CLASS_OPTIONS, classToHebrew } from '@/lib/classes'
+import {
+	ALL_CLASS_OPTIONS,
+	GRADE_ORDER,
+	GRADE_OPTIONS,
+	classToHebrew,
+	classesOfGrade,
+	gradeOfClass,
+	splitClassId,
+} from '@/lib/classes'
+import { todayInIsrael } from '@/lib/schedule-times'
 import {
 	CALENDAR_EXCEPTION_TYPES,
 	type CalendarExceptionDetail,
@@ -24,6 +33,9 @@ import {
 interface ExceptionDialogProps {
 	open: boolean
 	exception: CalendarExceptionDetail | null
+	megamas?: { id: string; label: string }[]
+	classLabels?: Record<string, string>
+	parallelLabels?: Record<string, string>
 	onClose: () => void
 	onCreated: (date: string, values: ExceptionFormValues) => void
 	onEdited: (date: string, values: ExceptionFormValues) => void
@@ -41,15 +53,15 @@ const TYPE_LABELS: Record<CalendarExceptionType, string> = {
 }
 
 function today(): string {
-	const now = new Date()
-	const month = String(now.getMonth() + 1).padStart(2, '0')
-	const day = String(now.getDate()).padStart(2, '0')
-	return `${now.getFullYear()}-${month}-${day}`
+	return todayInIsrael().date
 }
 
 export default function ExceptionDialog({
 	open,
 	exception,
+	megamas = [],
+	classLabels = {},
+	parallelLabels = {},
 	onClose,
 	onCreated,
 	onEdited,
@@ -60,9 +72,18 @@ export default function ExceptionDialog({
 	const [note, setNote] = useState('')
 	const [endTimes, setEndTimes] = useState<{ classId: string; time: string }[]>([])
 	const [scope, setScope] = useState<string[]>([])
+	const [scopeGrade, setScopeGrade] = useState<string>('')
 	const [departureTime, setDepartureTime] = useState('')
 	const [saving, setSaving] = useState(false)
 	const [error, setError] = useState<string | null>(null)
+
+	// Hebrew labels: backend facets first, static fallback for ids without students.
+	const labelOf = (id: string): string =>
+		classLabels[id] ?? megamas.find(megama => megama.id === id)?.label ?? classToHebrew(id)
+	const gradeOptions = GRADE_OPTIONS.map(option => ({
+		...option,
+		label: parallelLabels[option.id] ?? option.label,
+	}))
 
 	useEffect(() => {
 		if (!open) return
@@ -75,7 +96,10 @@ export default function ExceptionDialog({
 				time,
 			}))
 		)
-		setScope(exception?.specialSchedule?.scope ?? [])
+		const initialScope = exception?.specialSchedule?.scope ?? []
+		setScope(initialScope)
+		const firstKnown = initialScope.find(id => gradeOfClass(id))
+		setScopeGrade(firstKnown ? splitClassId(firstKnown)[0] : 'alef')
 		setDepartureTime(exception?.specialSchedule?.departureTime ?? '')
 		setError(null)
 	}, [open, exception])
@@ -172,65 +196,131 @@ export default function ExceptionDialog({
 							<span className='text-xs font-medium text-gray-500'>
 								{t('fields.overrideEndTimes')} *
 							</span>
-							{endTimes.map((row, index) => (
-								<div key={index} className='flex items-center gap-2'>
-									<select
-										className={`${inputClass} flex-1`}
-										value={row.classId}
-										onChange={event =>
-											setEndTimes(prev =>
-												prev.map((item, i) =>
-													i === index ? { ...item, classId: event.target.value } : item
-												)
-											)
-										}
-									>
-										<option value=''>{t('fields.classPlaceholder')}</option>
-										{ALL_CLASS_OPTIONS.some(option => option.id === row.classId) ? (
-											ALL_CLASS_OPTIONS.map(option => (
-												<option key={option.id} value={option.id}>
-													{option.label}
-												</option>
-											))
-										) : (
-											<>
-												{row.classId && <option value={row.classId}>{classToHebrew(row.classId)}</option>}
+							{endTimes.map((row, index) => {
+								const grade = row.classId ? gradeOfClass(row.classId) : null
+								return (
+									<div key={index} className='flex items-center gap-2'>
+										{row.classId && !grade ? (
+											<select
+												className={`${inputClass} flex-1`}
+												value={row.classId}
+												onChange={event =>
+													setEndTimes(prev =>
+														prev.map((item, i) =>
+															i === index ? { ...item, classId: event.target.value } : item
+														)
+													)
+												}
+											>
+												<option value={row.classId}>{labelOf(row.classId)}</option>
 												{ALL_CLASS_OPTIONS.map(option => (
 													<option key={option.id} value={option.id}>
 														{option.label}
 													</option>
 												))}
+												{megamas.length > 0 && (
+													<optgroup label={t('fields.megamas')}>
+														{megamas.map(option => (
+															<option key={option.id} value={option.id}>
+																{option.label}
+															</option>
+														))}
+													</optgroup>
+												)}
+											</select>
+										) : (
+											<>
+												<select
+													className={`${inputClass} w-28`}
+													value={grade ?? ''}
+													onChange={event => {
+														const first = classesOfGrade(event.target.value)[0]
+														setEndTimes(prev =>
+															prev.map((item, i) =>
+																i === index
+																	? { ...item, classId: first?.id ?? '' }
+																	: item
+															)
+														)
+													}}
+												>
+													<option value='' disabled>
+														{t('fields.grade')}
+													</option>
+													{gradeOptions.map(option => (
+														<option key={option.id} value={option.id}>
+															{option.label}
+														</option>
+													))}
+												</select>
+												<select
+													className={`${inputClass} flex-1`}
+													value={grade ? row.classId : ''}
+													disabled={!grade}
+													onChange={event =>
+														setEndTimes(prev =>
+															prev.map((item, i) =>
+																i === index ? { ...item, classId: event.target.value } : item
+															)
+														)
+													}
+												>
+													<option value='' disabled>
+														{t('fields.class')}
+													</option>
+													{(grade ? classesOfGrade(grade) : []).map(option => (
+														<option key={option.id} value={option.id}>
+															{splitClassId(option.id)[1]}
+														</option>
+													))}
+												</select>
 											</>
 										)}
-									</select>
-									<input
-										className={`${inputClass} w-24`}
-										type='time'
-										value={row.time}
-										onChange={event =>
-											setEndTimes(prev =>
-												prev.map((item, i) =>
-													i === index ? { ...item, time: event.target.value } : item
+										<input
+											className={`${inputClass} w-24`}
+											type='time'
+											value={row.time}
+											onChange={event =>
+												setEndTimes(prev =>
+													prev.map((item, i) =>
+														i === index ? { ...item, time: event.target.value } : item
+													)
 												)
-											)
-										}
-									/>
+											}
+										/>
+										<button
+											className='rounded-lg p-2 text-gray-400 hover:bg-red-50 hover:text-red-600'
+											title={t('actions.removeRow')}
+											onClick={() => setEndTimes(prev => prev.filter((_, i) => i !== index))}
+										>
+											<Trash2 className='h-4 w-4' />
+										</button>
+									</div>
+								)
+							})}
+							<div className='flex flex-wrap gap-2'>
+								<button
+									className='inline-flex w-fit items-center gap-1.5 rounded-lg border border-dashed border-gray-300 px-3 py-1.5 text-xs font-medium text-gray-600 hover:bg-gray-50'
+									onClick={() => setEndTimes(prev => [...prev, { classId: '', time: '' }])}
+								>
+									<Plus className='h-3.5 w-3.5' />
+									{t('actions.addRow')}
+								</button>
+								{megamas.length > 0 && (
 									<button
-										className='rounded-lg p-2 text-gray-400 hover:bg-red-50 hover:text-red-600'
-										title={t('actions.removeRow')}
-										onClick={() => setEndTimes(prev => prev.filter((_, i) => i !== index))}
+										className='inline-flex w-fit items-center gap-1.5 rounded-lg border border-dashed border-gray-300 px-3 py-1.5 text-xs font-medium text-gray-600 hover:bg-gray-50'
+										onClick={() =>
+											setEndTimes(prev => [
+												...prev,
+												{ classId: megamas.find(option => !prev.some(row => row.classId === option.id))?.id ?? megamas[0].id, time: '' },
+											])
+										}
 									>
-										<Trash2 className='h-4 w-4' />
+										<Plus className='h-3.5 w-3.5' />
+										{t('actions.addMegama')}
 									</button>
-								</div>
-							))}
-							<button
-								className='inline-flex w-fit items-center gap-1.5 rounded-lg border border-dashed border-gray-300 px-3 py-1.5 text-xs font-medium text-gray-600 hover:bg-gray-50'
-								onClick={() => setEndTimes(prev => [...prev, { classId: '', time: '' }])}
-							>
-								<Plus className='h-3.5 w-3.5' />
-								{t('actions.addRow')}
-							</button>
+								)}
+							</div>
 						</div>
 					)}
 
@@ -239,36 +329,95 @@ export default function ExceptionDialog({
 							<div className='grid gap-2'>
 								<span className='text-xs font-medium text-gray-500'>{t('fields.scope')} *</span>
 								{scope.length > 0 && (
-									<p className='text-xs text-gray-600'>
-										{scope.map(classToHebrew).join(', ')}
-									</p>
+									<div className='flex flex-wrap gap-1.5'>
+										{[...scope]
+											.sort(
+												(a, b) =>
+													GRADE_ORDER.indexOf(splitClassId(a)[0]) -
+														GRADE_ORDER.indexOf(splitClassId(b)[0]) || a.localeCompare(b)
+											)
+											.map(classId => (
+												<button
+													key={classId}
+													type='button'
+													className='inline-flex items-center gap-1 rounded-full bg-blue-50 px-2.5 py-0.5 text-xs font-medium text-blue-700 hover:bg-blue-100'
+													title={t('actions.removeRow')}
+													onClick={() => setScope(prev => prev.filter(id => id !== classId))}
+												>
+													{labelOf(classId)}
+													<span aria-hidden='true'>×</span>
+												</button>
+											))}
+									</div>
 								)}
-								<div className='grid max-h-56 grid-cols-3 gap-1.5 overflow-y-auto rounded-xl border border-gray-200 p-2 sm:grid-cols-5'>
-									{ALL_CLASS_OPTIONS.map(option => {
+								<div className='flex items-center gap-2'>
+									<select
+										className={`${inputClass} w-28`}
+										value={scopeGrade}
+										onChange={event => setScopeGrade(event.target.value)}
+									>
+										{gradeOptions.map(option => (
+											<option key={option.id} value={option.id}>
+												{option.label}
+											</option>
+										))}
+									</select>
+									<button
+										className='rounded-lg px-2 py-1.5 text-xs font-medium text-blue-600 hover:bg-blue-50'
+										onClick={() =>
+											setScope(prev => [
+												...new Set([...prev, ...classesOfGrade(scopeGrade).map(o => o.id)]),
+											])
+										}
+									>
+										{t('fields.selectAll')}
+									</button>
+								</div>
+								{megamas.length > 0 && (
+									<div className='flex items-center gap-2'>
+										<select
+											className={`${inputClass} flex-1`}
+											defaultValue=''
+											onChange={event => {
+												if (!event.target.value) return
+												setScope(prev =>
+													prev.includes(event.target.value) ? prev : [...prev, event.target.value]
+												)
+												event.target.value = ''
+											}}
+										>
+											<option value=''>{t('fields.addMegamaScope')}</option>
+											{megamas.map(option => (
+												<option key={option.id} value={option.id}>
+													{option.label}
+												</option>
+											))}
+										</select>
+									</div>
+								)}
+								<div className='flex flex-wrap gap-1.5'>
+									{classesOfGrade(scopeGrade).map(option => {
 										const checked = scope.includes(option.id)
 										return (
-											<label
+											<button
 												key={option.id}
-												className={`flex cursor-pointer items-center justify-center rounded-lg border px-2 py-1.5 text-xs font-medium ${
+												type='button'
+												aria-pressed={checked}
+												className={`inline-flex h-8 min-w-8 items-center justify-center rounded-lg border px-2 text-sm font-medium ${
 													checked
 														? 'border-blue-500 bg-blue-50 text-blue-700'
 														: 'border-gray-200 text-gray-600 hover:bg-gray-50'
 												}`}
+												onClick={() =>
+													setScope(prev =>
+														prev.includes(option.id)
+															? prev.filter(id => id !== option.id)
+															: [...prev, option.id]
+													)
+												}
 											>
-												<input
-													type='checkbox'
-													className='sr-only'
-													checked={checked}
-													onChange={() =>
-														setScope(prev =>
-															prev.includes(option.id)
-																? prev.filter(id => id !== option.id)
-																: [...prev, option.id]
-														)
-													}
-												/>
-												{option.label}
-											</label>
+												{splitClassId(option.id)[1]}
+											</button>
 										)
 									})}
 								</div>

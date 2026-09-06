@@ -11,6 +11,7 @@ export interface StudentsQuery {
 	routeId?: string
 	parallel?: string
 	classId?: string
+	megamaId?: string
 	stopId?: string
 	status?: string
 	search?: string
@@ -30,6 +31,7 @@ export default async function getManagementStudents(
 				routeId: query.routeId && query.routeId !== 'all' ? query.routeId : undefined,
 				parallel: query.parallel && query.parallel !== 'all' ? query.parallel : undefined,
 				classId: query.classId && query.classId !== 'all' ? query.classId : undefined,
+				megamaId: query.megamaId && query.megamaId !== 'all' ? query.megamaId : undefined,
 				stopId: query.stopId && query.stopId !== 'all' ? query.stopId : undefined,
 				status: query.status && query.status !== 'all' ? query.status : undefined,
 				search: query.search || undefined,

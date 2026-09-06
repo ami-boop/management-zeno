@@ -10,6 +10,7 @@ interface DashboardRouteTableProps {
   onOrderBuses: (routeId: string, count: number) => void
   getStatusColor: (status: DashboardRoute['status']) => string
   getStatusText: (status: DashboardRoute['status']) => string
+  busyRouteIds?: ReadonlySet<string>
 }
 
 const RouteTable = ({
@@ -18,6 +19,7 @@ const RouteTable = ({
   onOrderBuses,
   getStatusColor,
   getStatusText,
+  busyRouteIds,
 }: DashboardRouteTableProps) => {
   const t = useTranslations('Dashboard')
 
@@ -39,13 +41,13 @@ const RouteTable = ({
       <table className="min-w-full divide-y divide-gray-200">
         <thead className="bg-gray-50">
           <tr>
-            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+            <th className="px-6 py-3 text-start text-xs font-medium text-gray-500 uppercase tracking-wider">
               {t('columns.route')}
             </th>
-            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+            <th className="px-6 py-3 text-start text-xs font-medium text-gray-500 uppercase tracking-wider">
               {t('columns.totalStudents')}
             </th>
-            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+            <th className="px-6 py-3 text-start text-xs font-medium text-gray-500 uppercase tracking-wider">
               <div className="flex items-center gap-1.5">
                 <Bus className="w-4 h-4 text-emerald-600" />
                 <span title={t('tooltips.goingByBus')} className="cursor-help">
@@ -53,7 +55,7 @@ const RouteTable = ({
                 </span>
               </div>
             </th>
-            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+            <th className="px-6 py-3 text-start text-xs font-medium text-gray-500 uppercase tracking-wider">
               <div className="flex items-center gap-1.5">
                 <Car className="w-4 h-4 text-amber-600" />
                 <span title={t('tooltips.goingOtherWay')} className="cursor-help">
@@ -61,7 +63,7 @@ const RouteTable = ({
                 </span>
               </div>
             </th>
-            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+            <th className="px-6 py-3 text-start text-xs font-medium text-gray-500 uppercase tracking-wider">
               <div className="flex items-center gap-1.5">
                 <Bus className="w-4 h-4 text-blue-600" />
                 <span
@@ -72,28 +74,32 @@ const RouteTable = ({
                 </span>
               </div>
             </th>
-            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+            <th className="px-6 py-3 text-start text-xs font-medium text-gray-500 uppercase tracking-wider">
               {t('columns.status')}
             </th>
-            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+            <th className="px-6 py-3 text-start text-xs font-medium text-gray-500 uppercase tracking-wider">
               {t('columns.friends')}
             </th>
-            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+            <th className="px-6 py-3 text-start text-xs font-medium text-gray-500 uppercase tracking-wider">
               {t('columns.actions')}
             </th>
           </tr>
         </thead>
         <tbody className="bg-white divide-y divide-gray-200">
           {routes.map((route) => {
-            const busPercent = Math.round(
-              (route.studentsOnBus / route.totalStudents) * 100
-            )
-            const otherPercent = Math.round(
-              (route.studentsNotMarked / route.totalStudents) * 100
-            )
-            const busesPercent = Math.round(
-              (route.busesOrdered / route.busesNeeded) * 100
-            )
+            const isBusy = busyRouteIds?.has(route.id) ?? false
+            const busPercent =
+              route.totalStudents > 0
+                ? Math.round((route.studentsOnBus / route.totalStudents) * 100)
+                : 0
+            const otherPercent =
+              route.totalStudents > 0
+                ? Math.round((route.studentsNotMarked / route.totalStudents) * 100)
+                : 0
+            const busesPercent =
+              route.busesNeeded > 0
+                ? Math.round((route.busesOrdered / route.busesNeeded) * 100)
+                : 0
 
             return (
               <tr
@@ -210,15 +216,17 @@ const RouteTable = ({
                     {route.busesOrdered < route.busesNeeded && (
                       <>
                         <button
+                          disabled={isBusy}
                           onClick={() => onOrderBuses(route.id, 1)}
                           title={t('tooltips.addBus')}
                           className="inline-flex items-center px-3 py-1.5 border border-transparent text-xs font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors duration-200"
                         >
-                          +1 <Bus className="w-3 h-3 ml-1" />
+                          +1 <Bus className="w-3 h-3 ms-1" />
                         </button>
-                        {route.busesOrdered + 2 <= route.busesNeeded && (
+                        {route.busesOrdered < route.busesNeeded && (
                           <button
-                            onClick={() =>
+                            disabled={isBusy}
+                             onClick={() =>
                               onOrderBuses(
                                 route.id,
                                 route.busesNeeded - route.busesOrdered
@@ -240,11 +248,12 @@ const RouteTable = ({
                       )}
                     {route.busesOrdered > 0 && (
                       <button
-                        onClick={() => onOrderBuses(route.id, -1)}
+                        disabled={isBusy}
+                          onClick={() => onOrderBuses(route.id, -1)}
                         title={t('tooltips.removeBus')}
                         className="inline-flex items-center px-3 py-1.5 border border-gray-300 text-xs font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-400 transition-colors duration-200"
                       >
-                        -1 <Bus className="w-3 h-3 ml-1" />
+                        -1 <Bus className="w-3 h-3 ms-1" />
                       </button>
                     )}
                   </div>

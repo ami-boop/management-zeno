@@ -5,7 +5,7 @@ import { useTranslations } from 'next-intl'
 import { CalendarClock, Users } from 'lucide-react'
 import ClassEndTimes, { type GroupedClassOptions } from './ClassEndTimes'
 import RouteTimeline from './RouteTimeline'
-import getClassSchedule from '@/app/actions/getClassSchedule'
+import getMegamaNames from '@/app/actions/getMegamaNames'
 
 export interface ClassOption {
 	id: string
@@ -38,13 +38,9 @@ export default function Client({
 		const ids = [...new Set(classGroups.megamasByParallel.flatMap(m => m.megamaIds))]
 		if (ids.length === 0) return
 		let cancelled = false
-		void Promise.all(
-			ids.map(async id => {
-				const res = await getClassSchedule(id)
-				return [id, res.ok ? res.schedule.name : id] as const
-			})
-		).then(entries => {
-			if (!cancelled) setMegamaNames(Object.fromEntries(entries))
+		// One server-action round-trip; parallel backend fetches happen server-side.
+		void getMegamaNames(ids).then(names => {
+			if (!cancelled) setMegamaNames(names)
 		})
 		return () => {
 			cancelled = true

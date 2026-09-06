@@ -1,9 +1,10 @@
 'use client'
 
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { useTranslations } from 'next-intl'
-import { Bus, Search } from 'lucide-react'
+import { useSearchFilter } from '@/hooks/useSearchFilter'
+import { AlertCircle, Bus, Search } from 'lucide-react'
 import type { FleetBus } from '@/lib/api-contracts'
 import { updateBus } from '@/app/actions/buses'
 import BusDialog, { type BusFormValues } from './BusDialog'
@@ -24,12 +25,15 @@ export default function Client({ initialBuses, initialLiveByBus }: BusesClientPr
 	const t = useTranslations('Fleet')
 	const router = useRouter()
 	const [buses, setBuses] = useState<FleetBus[] | null>(initialBuses)
-	const [liveByBus] = useState<Record<string, BusLiveBadge>>(initialLiveByBus)
-	const [search, setSearch] = useState('')
+	const [liveByBus, setLiveByBus] = useState<Record<string, BusLiveBadge>>(initialLiveByBus)
 	const [dialogOpen, setDialogOpen] = useState(false)
 	const [editingBus, setEditingBus] = useState<FleetBus | null>(null)
 	const [busyBusId, setBusyBusId] = useState<string | null>(null)
 	const [actionError, setActionError] = useState(false)
+
+	const { filtered, search, setSearch } = useSearchFilter(buses, {
+		searchFields: ['licensePlate', 'driverName', 'notes'],
+	})
 
 	// Live "on route" badges refresh with the RSC tree.
 	useEffect(() => {
@@ -37,16 +41,10 @@ export default function Client({ initialBuses, initialLiveByBus }: BusesClientPr
 		return () => clearInterval(interval)
 	}, [router])
 
-	const filtered = useMemo(() => {
-		if (!buses) return null
-		const query = search.trim().toLowerCase()
-		if (!query) return buses
-		return buses.filter(bus =>
-			[bus.licensePlate, bus.driverName, bus.notes]
-				.filter(Boolean)
-				.some(field => (field as string).toLowerCase().includes(query))
-		)
-	}, [buses, search])
+	// Sync badges with refreshed server props (initialLiveByBus changes every refresh).
+	useEffect(() => {
+		setLiveByBus(initialLiveByBus)
+	}, [initialLiveByBus])
 
 	function applyCreated(busId: string, values: BusFormValues) {
 		setBuses(prev =>
@@ -112,9 +110,9 @@ export default function Client({ initialBuses, initialLiveByBus }: BusesClientPr
 			</div>
 
 			<div className='relative mb-4'>
-				<Search className='pointer-events-none absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-gray-400' />
+				<Search className='pointer-events-none absolute start-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400' />
 				<input
-					className='w-full rounded-xl border border-gray-300 bg-white py-2 pr-3 pl-9 text-sm text-gray-900 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-none'
+					className='w-full rounded-xl border border-gray-300 bg-white py-2 pe-3 ps-9 text-sm text-gray-900 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-none'
 					placeholder={t('searchPlaceholder')}
 					value={search}
 					onChange={event => setSearch(event.target.value)}
@@ -123,42 +121,41 @@ export default function Client({ initialBuses, initialLiveByBus }: BusesClientPr
 
 			{actionError && <p className='mb-3 text-sm text-red-600'>{t('errors.actionFailed')}</p>}
 
-			{!filtered ? (
-				<p className='rounded-xl border border-red-200 bg-red-50 p-4 text-sm text-red-700'>
+			{filtered === null ? (
+				<div className='mb-3 flex items-center gap-2 rounded-xl border border-red-200 bg-red-50 p-4 text-sm text-red-700'>
+					<AlertCircle className='h-4 w-4 shrink-0' />
 					{t('errors.loadFailed')}
-				</p>
+				</div>
 			) : filtered.length === 0 ? (
 				<p className='rounded-xl border border-gray-200 bg-white p-8 text-center text-sm text-gray-500'>
 					{search ? t('noResults') : t('noBuses')}
 				</p>
-			) : (
-				<>
-					<div className='hidden rounded-xl border border-gray-200 bg-white md:block'>
-						<Table
-							buses={filtered}
-							liveByBus={liveByBus}
-							busyBusId={busyBusId}
-							onEdit={bus => {
-								setEditingBus(bus)
-								setDialogOpen(true)
-							}}
-							onToggleActive={toggleActive}
-						/>
-					</div>
-					<div className='grid gap-3 md:hidden'>
-						<MobileCards
-							buses={filtered}
-							liveByBus={liveByBus}
-							busyBusId={busyBusId}
-							onEdit={bus => {
-								setEditingBus(bus)
-								setDialogOpen(true)
-							}}
-							onToggleActive={toggleActive}
-						/>
-					</div>
-				</>
-			)}
+			) : null}
+
+			<div className='hidden rounded-xl border border-gray-200 bg-white md:block'>
+				<Table
+					buses={filtered ?? []}
+					liveByBus={liveByBus}
+					busyBusId={busyBusId}
+					onEdit={bus => {
+						setEditingBus(bus)
+						setDialogOpen(true)
+					}}
+					onToggleActive={toggleActive}
+				/>
+			</div>
+			<div className='grid gap-3 md:hidden'>
+				<MobileCards
+					buses={filtered ?? []}
+					liveByBus={liveByBus}
+					busyBusId={busyBusId}
+					onEdit={bus => {
+						setEditingBus(bus)
+						setDialogOpen(true)
+					}}
+					onToggleActive={toggleActive}
+				/>
+			</div>
 
 			<BusDialog
 				open={dialogOpen}

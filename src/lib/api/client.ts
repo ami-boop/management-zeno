@@ -1,4 +1,4 @@
-import { API_URL } from '@/constants'
+import { buildApiUrl, authHeaders } from '@/utils/api'
 
 type ApiGetOptions = {
 	params?: Record<string, string | number | undefined>
@@ -13,29 +13,12 @@ export class ApiError extends Error {
 	}
 }
 
-function buildUrl(endpoint: string, params?: Record<string, string | number | undefined>): string {
-	const url = new URL(`${API_URL}/${endpoint.replace(/^\/+/, '')}`)
-	if (params) {
-		for (const [key, value] of Object.entries(params)) {
-			if (value !== undefined && value !== '') url.searchParams.set(key, String(value))
-		}
-	}
-	return url.toString()
-}
-
-function authHeaders(token: string): HeadersInit {
-	return {
-		'Content-Type': 'application/json',
-		Authorization: `Bearer ${token}`,
-	}
-}
-
 export async function apiGet(
 	endpoint: string,
 	token: string,
 	options?: ApiGetOptions,
 ): Promise<unknown> {
-	const response = await fetch(buildUrl(endpoint, options?.params), {
+	const response = await fetch(buildApiUrl(endpoint, options?.params), {
 		headers: authHeaders(token),
 		cache: 'no-store',
 	})
@@ -80,7 +63,7 @@ async function apiSend<TBody>(
 	token: string,
 	body?: TBody,
 ): Promise<{ ok: boolean; status: number; data: unknown | null }> {
-	const response = await fetch(`${API_URL}/${endpoint.replace(/^\/+/, '')}`, {
+	const response = await fetch(buildApiUrl(endpoint), {
 		method,
 		headers: authHeaders(token),
 		body: body === undefined ? undefined : JSON.stringify(body),

@@ -1,9 +1,10 @@
 'use client'
 
-import { useCallback, useEffect, useState, useTransition } from 'react'
+import { useCallback, useEffect, useRef, useState, useTransition } from 'react'
 import { useRouter } from 'next/navigation'
 import { useTranslations } from 'next-intl'
-import { Check, MoonStar, Phone, StickyNote, UserPlus, X } from 'lucide-react'
+import { toast } from 'sonner'
+import { AlertCircle, Check, MoonStar, Phone, StickyNote, UserPlus, X } from 'lucide-react'
 import {
 	Dialog,
 	DialogContent,
@@ -32,17 +33,28 @@ export default function FriendPendingDialog({
 	const router = useRouter()
 	const [students, setStudents] = useState<TripStudent[]>([])
 	const [loading, setLoading] = useState(false)
+	const [loadFailed, setLoadFailed] = useState(false)
 	const [actingUid, setActingUid] = useState<string | null>(null)
 	const [, startTransition] = useTransition()
+	const seqRef = useRef(0)
 
 	const pending = students.filter((s) => s.friendPending)
 
 	const load = useCallback(async () => {
+		const seq = ++seqRef.current
 		setLoading(true)
 		try {
-			setStudents(await getTripStudents(tripId))
+			const result = await getTripStudents(tripId)
+			if (seq !== seqRef.current) return
+			if (result === null) {
+				setStudents([])
+				setLoadFailed(true)
+				return
+			}
+			setStudents(result)
+			setLoadFailed(false)
 		} finally {
-			setLoading(false)
+			if (seq === seqRef.current) setLoading(false)
 		}
 	}, [tripId])
 
@@ -55,7 +67,11 @@ export default function FriendPendingDialog({
 		startTransition(async () => {
 			setActingUid(uid)
 			try {
-				await overrideFriendRequest(uid, action)
+				const res = await overrideFriendRequest(uid, action)
+				if (!res.ok) {
+					toast.error(t('actionFailed'))
+					return
+				}
 				await load()
 				router.refresh()
 			} finally {
@@ -75,9 +91,14 @@ export default function FriendPendingDialog({
 					<DialogDescription>{t('friendDialogDescription')}</DialogDescription>
 				</DialogHeader>
 
-				{loading ? (
-					<div className='py-8 text-center text-sm text-zeno-muted'>{t('friendDialogLoading')}</div>
-				) : pending.length === 0 ? (
+			{loading ? (
+				<div className='py-8 text-center text-sm text-zeno-muted'>{t('friendDialogLoading')}</div>
+			) : loadFailed ? (
+				<div className='flex flex-col items-center gap-2 py-8 text-center text-sm text-zeno-danger'>
+					<AlertCircle className='h-5 w-5' />
+					{t('actionFailed')}
+				</div>
+			) : pending.length === 0 ? (
 					<div className='py-8 text-center text-sm text-zeno-muted'>{t('friendDialogEmpty')}</div>
 				) : (
 					<ul className='max-h-80 space-y-3 overflow-y-auto pr-1'>

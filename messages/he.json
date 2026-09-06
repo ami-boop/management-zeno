@@ -76,7 +76,8 @@
     "friendDialogParent": "הורה",
     "approve": "אשר",
     "reject": "דחה",
-    "friendSleepover": "לינה"
+    "friendSleepover": "לינה",
+    "actionFailed": "הפעולה נכשלה, נסה שוב"
   },
   "Header": {
     "menu": {
@@ -96,7 +97,8 @@
     "themeSystem": "מערכת",
     "themeLight": "בהיר",
     "themeDark": "כהה",
-    "notifications": "התראות"
+    "notifications": "התראות",
+    "signOut": "התנתקות"
   },
   "Notifications": {
     "title": "התראות",
@@ -215,7 +217,8 @@
     "minutesShort": "דק׳",
     "mapFailed": "טעינת המפה נכשלה",
     "mapNoCoordinates": "תחנות ללא קואורדינטות אינן מוצגות במפה",
-    "routeInfo": "מידע על המסלול"
+    "routeInfo": "מידע על המסלול",
+    "retry": "נסה שוב"
   },
   "Schedule": {
     "title": "לוח זמני אוטובוסים",
@@ -376,7 +379,9 @@
     "parentStatusPending": "ממתין לאישור",
     "parentStatusApproved": "אושר על ידי ההורה",
     "parentStatusRejected": "נדחה על ידי ההורה",
-    "sleepover": "שינה אצל החבר"
+    "sleepover": "שינה אצל החבר",
+    "filterMegama": "סנן לפי מגמה",
+    "megamaAll": "כל המגמות"
   },
   "managementReport": {
     "title": "דיווח על ביטול שיעור (ניהול)",
@@ -416,7 +421,8 @@
     "submitError": "השליחה נכשלה. נסה שוב.",
     "successCount": "עודכנו {count} תלמידים",
     "operationLabel": "היקף: {operation}",
-    "loadMore": "טען עוד"
+    "loadMore": "טען עוד",
+    "noTimeOptions": "אין אפשרויות זמן זמינות"
   },
   "managementLessons": {
     "viewClassSchedule": "צפייה במערכת שיעורים",
@@ -562,7 +568,8 @@
       "activate": "הפעלה",
       "deactivate": "השבתה",
       "addRow": "הוסף כיתה",
-      "removeRow": "הסר"
+      "removeRow": "הסר",
+      "addMegama": "הוסף מגמה"
     },
     "dialog": {
       "createTitle": "הוסף חריגה",
@@ -576,7 +583,11 @@
       "overrideEndTimes": "שעות סיום לפי כיתה",
       "scope": "כיתות (היקף)",
       "departureTime": "שעת יציאה",
-      "classPlaceholder": "בחר כיתה"
+      "grade": "שכבה",
+      "class": "כיתה",
+      "selectAll": "בחר הכל",
+      "megamas": "מגמות",
+      "addMegamaScope": "הוסף מגמה להיקף…"
     },
     "types": {
       "holiday": "חופשה",
@@ -598,5 +609,16 @@
       "specialScheduleRequired": "למערכת מיוחדת נדרשות כיתות ושעת יציאה"
     },
     "noExceptions": "אין עדיין חריגות"
+  },
+  "Common": {
+    "status": {
+      "pending": "ממתין",
+      "approved": "אושר",
+      "manager_approved": "אושר על ידי ההנהלה",
+      "rejected": "נדחה",
+      "manager_rejected": "נדחה על ידי ההנהלה",
+      "active": "פעיל",
+      "inactive": "לא פעיל"
+    }
   }
 }

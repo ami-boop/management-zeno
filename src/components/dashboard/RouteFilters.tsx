@@ -33,7 +33,7 @@ const RouteFilters = ({
     <>
       {/* Search */}
       <div className='relative max-w-md mb-4'>
-        <div className='absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none'>
+        <div className='absolute inset-y-0 start-0 ps-3 flex items-center pointer-events-none'>
           <Search className='h-4 w-4 text-gray-400' />
         </div>
         <input
@@ -41,13 +41,13 @@ const RouteFilters = ({
           placeholder={t('searchPlaceholder')}
           value={searchQuery}
           onChange={e => setSearchQuery(e.target.value)}
-          className='block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md text-sm placeholder-gray-500 focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500'
+          className='block w-full ps-10 pe-3 py-2 border border-gray-300 rounded-md text-sm placeholder-gray-500 focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500'
         />
       </div>
       {/* Status Filters */}
       <div className='mb-4'>
         <div className='flex items-center mb-2'>
-          <span className='text-sm font-medium text-gray-700 mr-3'>
+          <span className='text-sm font-medium text-gray-700 me-3'>
             {t('filterByStatus')}
           </span>
         </div>
@@ -64,7 +64,7 @@ const RouteFilters = ({
             >
               {filter.label}
               <span
-                className={`ml-2 px-2 py-0.5 rounded-full text-xs ${selectedFilter === filter.key
+                className={`ms-2 px-2 py-0.5 rounded-full text-xs ${selectedFilter === filter.key
                   ? 'bg-blue-200 text-blue-800'
                   : 'bg-gray-100 text-gray-600'
                   }`}
@@ -78,7 +78,7 @@ const RouteFilters = ({
       {/* Route Filters */}
       <div className='mb-4'>
         <div className='flex items-center mb-2'>
-          <span className='text-sm font-medium text-gray-700 mr-3'>
+          <span className='text-sm font-medium text-gray-700 me-3'>
             {t('filterByRoute')}
           </span>
         </div>
@@ -95,7 +95,7 @@ const RouteFilters = ({
             >
               {filter.label}
               <span
-                className={`ml-2 px-2 py-0.5 rounded-full text-xs ${selectedRoute === filter.key
+                className={`ms-2 px-2 py-0.5 rounded-full text-xs ${selectedRoute === filter.key
                   ? 'bg-emerald-200 text-emerald-800'
                   : 'bg-gray-100 text-gray-600'
                   }`}

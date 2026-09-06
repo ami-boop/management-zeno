@@ -3,6 +3,7 @@
 import { useState, useMemo } from 'react'
 import { useRouter } from 'next/navigation'
 import { useTranslations } from 'next-intl'
+import { toast } from 'sonner'
 import Header from './Header'
 import Stats from './Stats'
 import RouteFilters from './RouteFilters'
@@ -66,6 +67,8 @@ const Client = ({
   const [localRoutes, setRoutes] = useState<DashboardRoute[]>(() =>
     (data?.trips ?? []).map((trip) => adaptTrip(trip, routeNameMap))
   )
+  // Routes with an in-flight order action — guards against double submits.
+  const [busyRouteIds, setBusyRouteIds] = useState<ReadonlySet<string>>(new Set())
 
   const dashboardStats: DashboardStat[] = useMemo(() => {
     const totalStudentsOnBus = localRoutes.reduce(
@@ -140,7 +143,7 @@ const Client = ({
 
   const handleOrderBuses = async (routeId: string, busesToOrder: number) => {
     const current = localRoutes.find((route: DashboardRoute) => route.id === routeId)
-    if (!current) return
+    if (!current || busyRouteIds.has(routeId)) return
 
     const newOrdered = Math.min(
       Math.max(current.busesOrdered + busesToOrder, 0),
@@ -150,6 +153,7 @@ const Client = ({
       newOrdered === 0 ? 'pending' : newOrdered >= current.busesNeeded ? 'completed' : 'partial'
     const now = { _seconds: dayjs().unix(), _nanoseconds: 0 }
 
+    setBusyRouteIds(prev => new Set(prev).add(routeId))
     setRoutes((prevRoutes: DashboardRoute[]) =>
       prevRoutes.map((route: DashboardRoute) =>
         route.id === routeId
@@ -158,12 +162,29 @@ const Client = ({
       )
     )
 
-    const res = await setTripBuses(routeId, { buses: newOrdered })
-    if (!res || !res.ok) {
-      setRoutes(localRoutes)
-      return
+    try {
+      const res = await setTripBuses(routeId, { buses: newOrdered })
+      if (!res || !res.ok) {
+        // Roll back only this route to its pre-action values, leaving any
+        // concurrent optimistic changes to other routes untouched.
+        setRoutes((prevRoutes: DashboardRoute[]) =>
+          prevRoutes.map((route: DashboardRoute) =>
+            route.id === routeId
+              ? { ...route, busesOrdered: current.busesOrdered, status: current.status }
+              : route
+          )
+        )
+        toast.error(t('actionFailed'))
+        return
+      }
+      router.refresh()
+    } finally {
+      setBusyRouteIds((prev) => {
+        const next = new Set(prev)
+        next.delete(routeId)
+        return next
+      })
     }
-    router.refresh()
   }
 
   const getStatusColor = (status: DashboardRoute['status']) => {
@@ -242,6 +263,7 @@ const Client = ({
               onOrderBuses={handleOrderBuses}
               getStatusColor={getStatusColor}
               getStatusText={getStatusText}
+              busyRouteIds={busyRouteIds}
             />
           </div>
           <RouteMobileCards
@@ -250,6 +272,7 @@ const Client = ({
             onOrderBuses={handleOrderBuses}
             getStatusColor={getStatusColor}
             getStatusText={getStatusText}
+            busyRouteIds={busyRouteIds}
           />
           {filteredRoutes.length === 0 && (
             <div className='text-center py-12'>

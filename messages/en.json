@@ -76,7 +76,8 @@
     "friendDialogParent": "Parent",
     "approve": "Approve",
     "reject": "Reject",
-    "friendSleepover": "Sleepover"
+    "friendSleepover": "Sleepover",
+    "actionFailed": "Action failed, please try again"
   },
   "Header": {
     "menu": {
@@ -96,7 +97,8 @@
     "themeSystem": "System",
     "themeLight": "Light",
     "themeDark": "Dark",
-    "notifications": "Notifications"
+    "notifications": "Notifications",
+    "signOut": "Sign out"
   },
   "Notifications": {
     "title": "Notifications",
@@ -215,7 +217,8 @@
     "minutesShort": "min",
     "mapFailed": "Failed to load the map",
     "mapNoCoordinates": "Stops without coordinates are not shown on the map",
-    "routeInfo": "Route info"
+    "routeInfo": "Route info",
+    "retry": "Try again"
   },
   "Schedule": {
     "title": "Bus Schedule",
@@ -376,7 +379,9 @@
     "parentStatusPending": "Waiting for approval",
     "parentStatusApproved": "Approved by parent",
     "parentStatusRejected": "Rejected by parent",
-    "sleepover": "Sleepover"
+    "sleepover": "Sleepover",
+    "filterMegama": "Filter by megama",
+    "megamaAll": "All megamas"
   },
   "managementReport": {
     "title": "Report Class Cancellation (Management)",
@@ -415,7 +420,8 @@
     "submitError": "Failed to submit. Please try again.",
     "successCount": "{count} student(s) were updated",
     "operationLabel": "Scope: {operation}",
-    "loadMore": "Load more"
+    "loadMore": "Load more",
+    "noTimeOptions": "No time options available"
   },
   "managementLessons": {
     "viewClassSchedule": "View Class Schedule",
@@ -549,7 +555,8 @@
       "activate": "Activate",
       "deactivate": "Deactivate",
       "addRow": "Add class",
-      "removeRow": "Remove"
+      "removeRow": "Remove",
+      "addMegama": "Add megama"
     },
     "dialog": {
       "createTitle": "Add exception",
@@ -563,7 +570,11 @@
       "overrideEndTimes": "End times by class",
       "scope": "Classes (scope)",
       "departureTime": "Departure time",
-      "classPlaceholder": "Select class"
+      "grade": "Grade",
+      "class": "Class",
+      "selectAll": "Select all",
+      "megamas": "Megamas",
+      "addMegamaScope": "Add megama to scope…"
     },
     "types": {
       "holiday": "Holiday",
@@ -585,5 +596,16 @@
       "specialScheduleRequired": "Classes and departure time are required for a special schedule"
     },
     "noExceptions": "No calendar exceptions yet"
+  },
+  "Common": {
+    "status": {
+      "pending": "Pending",
+      "approved": "Approved",
+      "manager_approved": "Approved by management",
+      "rejected": "Rejected",
+      "manager_rejected": "Rejected by management",
+      "active": "Active",
+      "inactive": "Inactive"
+    }
   }
 }

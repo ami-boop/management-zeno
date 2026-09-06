@@ -3,40 +3,24 @@
 import { useMemo, useState } from 'react'
 import { useTranslations } from 'next-intl'
 import { CalendarPlus, Pencil, PowerOff, RotateCcw } from 'lucide-react'
-import { classToHebrew } from '@/lib/classes'
+import { GRADE_ORDER, classToHebrew, gradeOfClass, splitClassId } from '@/lib/classes'
 import type { CalendarExceptionDetail, ExceptionFormValues } from '@/lib/api-contracts'
 import { updateException } from '@/app/actions/calendar'
 import ExceptionDialog from './ExceptionDialog'
 
 interface CalendarClientProps {
 	initialExceptions: CalendarExceptionDetail[] | null
+	megamas?: { id: string; label: string }[]
+	classLabels?: Record<string, string>
+	parallelLabels?: Record<string, string>
 }
 
-function formatDate(date: string): string {
-	const [year, month, day] = date.split('-')
-	if (!year || !month || !day) return date
-	return `${day}.${month}.${year}`
-}
-
-function describe(exception: CalendarExceptionDetail): string | null {
-	const parts: string[] = []
-	if (exception.type === 'half_day' && exception.overrideEndTimes) {
-		parts.push(
-			Object.entries(exception.overrideEndTimes)
-				.map(([classId, time]) => `${classToHebrew(classId)} → ${time}`)
-				.join(', ')
-		)
-	}
-	if (exception.type === 'special_schedule' && exception.specialSchedule) {
-		parts.push(
-			`${exception.specialSchedule.scope.map(classToHebrew).join(', ')} → ${exception.specialSchedule.departureTime}`
-		)
-	}
-	if (exception.note) parts.push(exception.note)
-	return parts.length > 0 ? parts.join(' · ') : null
-}
-
-export default function Client({ initialExceptions }: CalendarClientProps) {
+export default function Client({
+	initialExceptions,
+	megamas = [],
+	classLabels = {},
+	parallelLabels = {},
+}: CalendarClientProps) {
 	const t = useTranslations('Calendar')
 	const [exceptions, setExceptions] = useState<CalendarExceptionDetail[] | null>(initialExceptions)
 	const [dialogOpen, setDialogOpen] = useState(false)
@@ -44,10 +28,27 @@ export default function Client({ initialExceptions }: CalendarClientProps) {
 	const [busyId, setBusyId] = useState<string | null>(null)
 	const [actionError, setActionError] = useState(false)
 
+	// Hebrew labels come from the backend facets; static fallback covers ids
+	// missing from facets (e.g. classes without students).
+	const labelOf = (id: string): string =>
+		classLabels[id] ?? megamas.find(megama => megama.id === id)?.label ?? classToHebrew(id)
+
+	const classRank = (id: string): number => {
+		const grade = gradeOfClass(id)
+		if (!grade) return GRADE_ORDER.length
+		return GRADE_ORDER.indexOf(grade) * 100 + Number(splitClassId(id)[1] ?? 0)
+	}
+
 	const sorted = useMemo(() => {
 		if (!exceptions) return null
 		return [...exceptions].sort((a, b) => b.id.localeCompare(a.id))
 	}, [exceptions])
+
+	function formatDate(date: string): string {
+		const [year, month, day] = date.split('-')
+		if (!year || !month || !day) return date
+		return `${day}.${month}.${year}`
+	}
 
 	function applyCreated(date: string, values: ExceptionFormValues) {
 		setExceptions(prev =>
@@ -79,6 +80,59 @@ export default function Client({ initialExceptions }: CalendarClientProps) {
 					)
 				: prev
 		)
+	}
+
+	// Exception details: half-day times grouped with class chips, special-schedule
+	// departure time with scope chips — no raw arrows/ids.
+	function ExceptionDetail({ exception }: { exception: CalendarExceptionDetail }) {
+		const chip = (id: string) => (
+			<span
+				key={id}
+				className='inline-flex items-center rounded-md bg-blue-50 px-1.5 py-0.5 text-xs font-medium text-blue-700'
+			>
+				{labelOf(id)}
+			</span>
+		)
+
+		if (exception.type === 'half_day' && exception.overrideEndTimes) {
+			const byTime = new Map<string, string[]>()
+			for (const [id, time] of Object.entries(exception.overrideEndTimes)) {
+				if (!time) continue
+				const list = byTime.get(time) ?? []
+				list.push(id)
+				byTime.set(time, list)
+			}
+			const times = [...byTime.keys()].sort((a, b) => a.localeCompare(b))
+			return (
+				<div className='mb-3 grid gap-1'>
+					{times.map(time => (
+						<div key={time} className='flex flex-wrap items-center gap-1.5'>
+							<span className='text-xs font-semibold text-gray-500 tabular-nums'>{time}</span>
+							{byTime
+								.get(time)!
+								.sort((a, b) => classRank(a) - classRank(b))
+								.map(chip)}
+						</div>
+					))}
+				</div>
+			)
+		}
+
+		if (exception.type === 'special_schedule' && exception.specialSchedule) {
+			const scope = [...(exception.specialSchedule.scope ?? [])].sort(
+				(a, b) => classRank(a) - classRank(b)
+			)
+			return (
+				<div className='mb-3 flex flex-wrap items-center gap-1.5'>
+					<span className='text-xs font-semibold text-gray-500'>
+						{t('fields.departureTime')} {exception.specialSchedule.departureTime}
+					</span>
+					{scope.map(chip)}
+				</div>
+			)
+		}
+
+		return null
 	}
 
 	const activeCount = exceptions?.filter(item => item.isActive).length ?? 0
@@ -140,8 +194,9 @@ export default function Client({ initialExceptions }: CalendarClientProps) {
 									{exception.isActive ? t('status.active') : t('status.inactive')}
 								</span>
 							</div>
-							{describe(exception) && (
-								<div className='mb-3 text-sm text-gray-700'>{describe(exception)}</div>
+						<ExceptionDetail exception={exception} />
+							{exception.note && (
+								<div className='mb-3 text-xs text-gray-500'>{exception.note}</div>
 							)}
 							<div className='flex items-center gap-1 border-t border-gray-100 pt-2'>
 								<button
@@ -180,6 +235,9 @@ export default function Client({ initialExceptions }: CalendarClientProps) {
 			<ExceptionDialog
 				open={dialogOpen}
 				exception={editing}
+				megamas={megamas}
+				classLabels={classLabels}
+				parallelLabels={parallelLabels}
 				onClose={() => setDialogOpen(false)}
 				onCreated={applyCreated}
 				onEdited={applyEdited}

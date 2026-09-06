@@ -1,6 +1,6 @@
 'use client'
 
-import { useMemo, useState } from 'react'
+import { useMemo, useRef, useState } from 'react'
 import { useTranslations } from 'next-intl'
 import { Info } from 'lucide-react'
 import getClassSchedule from '@/app/actions/getClassSchedule'
@@ -38,6 +38,8 @@ export default function ClassEndTimes({
 	const [exception, setException] = useState<CalendarException | null>(null)
 	const [loading, setLoading] = useState(false)
 	const [error, setError] = useState<string | null>(null)
+	// Latest-interaction-wins: any newer selector change invalidates in-flight responses.
+	const seqRef = useRef(0)
 
 	const megamaOptions = useMemo(() => {
 		if (!classId) return []
@@ -47,6 +49,7 @@ export default function ClassEndTimes({
 	}, [classId, classGroups, megamaNames])
 
 	const handleClassChange = async (value: string) => {
+		const seq = ++seqRef.current
 		setClassId(value)
 		setMegamaId('')
 		setMegamaSchedule(null)
@@ -59,6 +62,7 @@ export default function ClassEndTimes({
 			getClassSchedule(value),
 			getCalendarException(today.date),
 		])
+		if (seq !== seqRef.current) return
 		if (scheduleRes.ok) {
 			setSchedule(scheduleRes.schedule)
 		} else {
@@ -69,11 +73,18 @@ export default function ClassEndTimes({
 	}
 
 	const handleMegamaChange = async (value: string) => {
+		const seq = ++seqRef.current
 		setMegamaId(value)
 		setMegamaSchedule(null)
+		setError(null)
 		if (!value) return
 		const res = await getClassSchedule(value)
-		if (res.ok) setMegamaSchedule(res.schedule)
+		if (seq !== seqRef.current) return
+		if (res.ok) {
+			setMegamaSchedule(res.schedule)
+		} else {
+			setError(res.error === 'not_found' ? t('noSchedule') : t('errorLoading'))
+		}
 	}
 
 	const exceptionText = exception

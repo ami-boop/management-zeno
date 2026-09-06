@@ -12,10 +12,10 @@ const Header = ({
           <h1 className='text-3xl font-bold text-gray-900 mb-2'>{t('title')}</h1>
           <p className='text-gray-600 text-base'>{t('description')}</p>
         </div>
-        <div className='flex items-center space-x-4'>
+        <div className='flex items-center gap-4'>
           {lastUpdated && (
             <div className='text-sm text-gray-500 flex items-center'>
-              <Clock className='w-4 h-4 mr-1' data-testid='clock-icon' />
+              <Clock className='w-4 h-4 me-1' data-testid='clock-icon' />
               {t('lastUpdated')}: {lastUpdated}
             </div>
           )}

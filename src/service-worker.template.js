@@ -137,6 +137,20 @@ self.addEventListener('message', event => {
   }
 })
 
+// The admin ID token is sensitive: attach it only to the request types that
+// actually need it on the Next.js side —
+//   1. document navigations (middleware session check),
+//   2. RSC payload fetches (server components read the header),
+//   3. server action POSTs (actions read the header via headers()).
+// Everything else (images, assets, third-party paths, downloads) goes out
+// unauthenticated so the token never leaks into logs of unrelated endpoints.
+function needsAuthToken(request) {
+  if (request.mode === 'navigate') return true
+  if (request.headers.get('RSC') === '1') return true
+  if (request.headers.has('Next-Action')) return true
+  return false
+}
+
 self.addEventListener('fetch', event => {
   const request = event.request
   const url = new URL(request.url)
@@ -144,6 +158,7 @@ self.addEventListener('fetch', event => {
   if (url.origin !== self.location.origin) return
   if (!isSecureOrigin()) return
   if (PASS_THROUGH_PATTERNS.some(pattern => pattern.test(url.pathname + url.search))) return
+  if (!needsAuthToken(request)) return
 
   event.respondWith(
     (async () => {

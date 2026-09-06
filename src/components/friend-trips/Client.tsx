@@ -1,6 +1,6 @@
 'use client'
 
-import Link from 'next/link'
+import { Link } from '@/i18n/navigation'
 import { useState } from 'react'
 import { useTranslations } from 'next-intl'
 import {
@@ -9,9 +9,10 @@ import {
 	CircleX,
 	Clock,
 	Home,
-	Route as RouteIcon,
+	Route,
 	UserPlus,
 } from 'lucide-react'
+import { StatusBadge } from '@/components/ui/StatusBadge'
 import { overrideFriendRequest } from '@/app/actions/friend-requests'
 import type { FriendTripRequest, FriendTripsData } from '@/lib/api-contracts'
 
@@ -43,30 +44,6 @@ export default function Client({ initial }: FriendTripsProps) {
 		setBusyUid(null)
 	}
 
-	const statusBadge = (status: string) => {
-		const styles: Record<string, string> = {
-			pending: 'bg-amber-50 text-amber-700 border-amber-200',
-			approved: 'bg-emerald-50 text-emerald-700 border-emerald-200',
-			manager_approved: 'bg-emerald-50 text-emerald-700 border-emerald-200',
-			rejected: 'bg-red-50 text-red-700 border-red-200',
-			manager_rejected: 'bg-red-50 text-red-700 border-red-200',
-		}
-		const labels: Record<string, string> = {
-			pending: t('statusPending'),
-			approved: t('statusApproved'),
-			manager_approved: t('statusManagerApproved'),
-			rejected: t('statusRejected'),
-			manager_rejected: t('statusManagerRejected'),
-		}
-		return (
-			<span
-				className={`inline-flex items-center gap-1 rounded-full border px-2 py-0.5 text-[11px] font-semibold ${styles[status] ?? styles.pending}`}
-			>
-				{labels[status] ?? status}
-			</span>
-		)
-	}
-
 	const card = (request: FriendTripRequest, showActions: boolean) => (
 		<div
 			key={request.uid}
@@ -82,7 +59,7 @@ export default function Client({ initial }: FriendTripsProps) {
 					</Link>
 					<div className='mt-1 flex flex-wrap items-center gap-x-4 gap-y-1 text-sm text-gray-600'>
 						<span className='inline-flex items-center gap-1.5'>
-							<RouteIcon className='h-3.5 w-3.5 text-gray-400' />
+							<Route className='h-3.5 w-3.5 text-gray-400' />
 							{request.toRouteName ?? request.toRouteId ?? '—'}
 							{request.toStopName ?? request.toStopId ? ` · ${request.toStopName ?? request.toStopId}` : ''}
 						</span>
@@ -118,7 +95,7 @@ export default function Client({ initial }: FriendTripsProps) {
 					{request.note && <p className='mt-2 text-sm text-gray-600'>{request.note}</p>}
 				</div>
 				<div className='flex flex-col items-end gap-2'>
-					{statusBadge(request.parentStatus)}
+					<StatusBadge status={request.parentStatus} />
 					{showActions && (
 						<div className='flex items-center gap-2'>
 							<button

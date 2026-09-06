@@ -1,6 +1,6 @@
 'use client'
 
-import Link from 'next/link'
+import { Link } from '@/i18n/navigation'
 import { useTranslations } from 'next-intl'
 import { MapPin, Route as RouteIcon } from 'lucide-react'
 import type { StopUsage } from '@/lib/api-contracts'

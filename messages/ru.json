@@ -76,7 +76,8 @@
     "friendDialogParent": "Родитель",
     "approve": "Одобрить",
     "reject": "Отклонить",
-    "friendSleepover": "С ночёвкой"
+    "friendSleepover": "С ночёвкой",
+    "actionFailed": "Не удалось выполнить действие, попробуйте ещё раз"
   },
   "Header": {
     "menu": {
@@ -96,7 +97,8 @@
     "themeSystem": "Системная",
     "themeLight": "Светлая",
     "themeDark": "Тёмная",
-    "notifications": "Уведомления"
+    "notifications": "Уведомления",
+    "signOut": "Выйти"
   },
   "Notifications": {
     "title": "Уведомления",
@@ -215,7 +217,8 @@
     "minutesShort": "мин",
     "mapFailed": "Не удалось загрузить карту",
     "mapNoCoordinates": "Остановки без координат не отображаются на карте",
-    "routeInfo": "О маршруте"
+    "routeInfo": "О маршруте",
+    "retry": "Повторить"
   },
   "Schedule": {
     "title": "Расписание автобусов",
@@ -376,7 +379,9 @@
     "parentStatusPending": "Ожидает подтверждения",
     "parentStatusApproved": "Одобрено родителем",
     "parentStatusRejected": "Отклонено родителем",
-    "sleepover": "С ночёвкой"
+    "sleepover": "С ночёвкой",
+    "filterMegama": "Фильтр по мегаме",
+    "megamaAll": "Все мегамы"
   },
   "managementReport": {
     "title": "Сообщить об отмене урока (Администрирование)",
@@ -415,7 +420,8 @@
     "submitError": "Не удалось отправить. Попробуйте ещё раз.",
     "successCount": "Обновлено учеников: {count}",
     "operationLabel": "Область: {operation}",
-    "loadMore": "Показать ещё"
+    "loadMore": "Показать ещё",
+    "noTimeOptions": "Нет доступных вариантов времени"
   },
   "managementLessons": {
     "viewClassSchedule": "Просмотр расписания класса",
@@ -549,7 +555,8 @@
       "activate": "Включить",
       "deactivate": "Отключить",
       "addRow": "Добавить класс",
-      "removeRow": "Удалить"
+      "removeRow": "Удалить",
+      "addMegama": "Добавить мегаму"
     },
     "dialog": {
       "createTitle": "Добавить исключение",
@@ -563,7 +570,11 @@
       "overrideEndTimes": "Время окончания по классам",
       "scope": "Классы (охват)",
       "departureTime": "Время выезда",
-      "classPlaceholder": "Выберите класс"
+      "grade": "Параллель",
+      "class": "Класс",
+      "selectAll": "Выбрать все",
+      "megamas": "Мегамы",
+      "addMegamaScope": "Добавить мегаму в охват…"
     },
     "types": {
       "holiday": "Каникулы",
@@ -585,5 +596,16 @@
       "specialScheduleRequired": "Для особого расписания нужны классы и время выезда"
     },
     "noExceptions": "Исключений пока нет"
+  },
+  "Common": {
+    "status": {
+      "pending": "Ожидает",
+      "approved": "Одобрено",
+      "manager_approved": "Одобрено управлением",
+      "rejected": "Отклонено",
+      "manager_rejected": "Отклонено управлением",
+      "active": "Активен",
+      "inactive": "Неактивен"
+    }
   }
 }

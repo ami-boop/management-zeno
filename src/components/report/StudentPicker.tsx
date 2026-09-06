@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { useTranslations } from 'next-intl'
 import { Check, Search } from 'lucide-react'
 import getManagementStudents from '@/app/actions/getManagementStudents'
@@ -30,10 +30,14 @@ export default function StudentPicker({ selectedUids, onChange, onStopChange }: 
 	const [loadingMore, setLoadingMore] = useState(false)
 	const [hasMore, setHasMore] = useState(false)
 	const [error, setError] = useState(false)
+	// Bumped by every search reload: in-flight loadMore responses from a stale
+	// search must not append into the fresh list.
+	const epochRef = useRef(0)
 
 	useEffect(() => {
 		let cancelled = false
 		const timer = setTimeout(async () => {
+			++epochRef.current
 			setLoading(true)
 			setError(false)
 			setHasMore(false)
@@ -55,12 +59,14 @@ export default function StudentPicker({ selectedUids, onChange, onStopChange }: 
 	}, [search])
 
 	const loadMore = async () => {
+		const epoch = epochRef.current
 		setLoadingMore(true)
 		const result = await getManagementStudents({
 			search,
 			limit: PAGE_SIZE,
 			offset: students.length,
 		})
+		if (epoch !== epochRef.current) return
 		if (result.error) {
 			setError(true)
 		} else {
@@ -93,6 +99,20 @@ export default function StudentPicker({ selectedUids, onChange, onStopChange }: 
 		),
 	]
 
+	// Reset the stop override when it no longer belongs to any selected student.
+	const stopOptionsKey = stopOptions.join('|')
+	const selectedStopValid = !stopId || stopOptions.includes(stopId)
+	useEffect(() => {
+		if (!selectedStopValid) {
+			setStopId('')
+			onStopChange(null)
+		}
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+	}, [stopOptionsKey, selectedStopValid])
+
+	const visibleAllSelected =
+		students.length > 0 && students.every(student => selectedUids.includes(student.uid))
+
 	return (
 		<div className='space-y-3'>
 			<div className='flex items-center justify-between'>
@@ -105,7 +125,7 @@ export default function StudentPicker({ selectedUids, onChange, onStopChange }: 
 						onClick={toggleAllVisible}
 						className='text-sm font-medium text-blue-600 hover:text-blue-700'
 					>
-						{selectedUids.length === students.length ? t('clearSelection') : t('selectAllVisible')}
+						{visibleAllSelected ? t('clearSelection') : t('selectAllVisible')}
 					</button>
 				)}
 			</div>
@@ -139,10 +159,10 @@ export default function StudentPicker({ selectedUids, onChange, onStopChange }: 
 							onClick={() => toggle(student.uid)}
 							className={listClass(active)}
 						>
-							<span className='text-sm'>
-								{student.firstName} {student.lastName}
-								<span className='text-gray-500'> · {student.grade}</span>
-							</span>
+						<span className='text-sm'>
+							{student.firstName} {student.lastName}
+							{student.grade && <span className='text-gray-500'> · {student.grade}</span>}
+						</span>
 					{active && <Check className='h-4 w-4 text-blue-600' />}
 					</button>
 					)

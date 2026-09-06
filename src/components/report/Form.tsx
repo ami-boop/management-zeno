@@ -106,7 +106,7 @@ export default function Form({
 	}
 
 	return (
-		<>
+		<form onSubmit={handleSubmit}>
 			<Status />
 			{/* Mode Selection */}
 			<div className='grid grid-cols-2 gap-2 mb-6'>
@@ -142,7 +142,10 @@ export default function Form({
 				<div className='mb-6'>
 					<StudentPicker
 						selectedUids={manualUids}
-						onChange={setManualUids}
+						onChange={uids => {
+							setManualUids(uids)
+							if (uids.length === 0) setManualStopId(null)
+						}}
 						onStopChange={setManualStopId}
 					/>
 				</div>
@@ -241,7 +244,7 @@ export default function Form({
 										<button
 											type='button'
 											onClick={() => setSelectedProfile('all')}
-											className={`p-3 text-sm font-medium rounded-md border transition-colors duration-200 text-right ${selectedProfile === 'all'
+											className={`p-3 text-sm font-medium rounded-md border transition-colors duration-200 text-start ${selectedProfile === 'all'
 												? 'bg-blue-50 text-blue-700 border-blue-200'
 												: 'bg-white text-gray-700 border-gray-300 hover:bg-gray-50'
 												}`}
@@ -253,7 +256,7 @@ export default function Form({
 												key={profile.key}
 												type='button'
 												onClick={() => setSelectedProfile(profile.key)}
-												className={`p-3 text-sm font-medium rounded-md border transition-colors duration-200 text-right ${selectedProfile === profile.key
+												className={`p-3 text-sm font-medium rounded-md border transition-colors duration-200 text-start ${selectedProfile === profile.key
 													? 'bg-blue-50 text-blue-700 border-blue-200'
 													: 'bg-white text-gray-700 border-gray-300 hover:bg-gray-50'
 													}`}
@@ -312,7 +315,7 @@ export default function Form({
 			)}
 			{/* Submit Button */}
 			<button
-				onClick={handleSubmit}
+				type='submit'
 				disabled={!canSubmit}
 				className={`w-full py-3 px-4 rounded-md text-sm font-medium transition-colors duration-200 ${!canSubmit
 					? 'bg-gray-400 text-white cursor-not-allowed'
@@ -321,7 +324,7 @@ export default function Form({
 			>
 				{isSubmitting ? (
 					<div className='flex items-center justify-center'>
-						<Loader2 className='animate-spin -ml-1 mr-3 h-4 w-4 text-white' />
+						<Loader2 className='animate-spin -ms-1 me-3 h-4 w-4 text-white' />
 						{t('submitting')}
 					</div>
 				) : (
@@ -329,6 +332,6 @@ export default function Form({
 				)}
 			</button>
 			<Notice />
-		</>
+		</form>
 	)
 }

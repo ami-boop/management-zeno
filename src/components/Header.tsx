@@ -1,7 +1,8 @@
 'use client'
 
-import { Bell, MenuIcon, Monitor, Moon, Sun } from 'lucide-react'
-import { Link } from '@/i18n/navigation'
+import { useState } from 'react'
+import { Bell, LogOut, MenuIcon, Monitor, Moon, Sun } from 'lucide-react'
+import { Link, useRouter } from '@/i18n/navigation'
 import { useLocale, useTranslations } from 'next-intl'
 import {
   Sheet,
@@ -19,10 +20,30 @@ import {
 import { useTheme, type ThemeSetting } from '@/context/ThemeContext'
 import { setLocaleCookie } from '@/utils/setlocale'
 import { locales } from '@/i18n/routing'
+import { auth } from '@/lib/firebase'
+import { waitForServiceWorkerSignOut } from '@/lib/service-worker'
 
 export default function Header() {
   const locale = useLocale()
   const t = useTranslations('Header')
+  const router = useRouter()
+  const [signingOut, setSigningOut] = useState(false)
+
+  const handleSignOut = async () => {
+    if (signingOut) return
+    setSigningOut(true)
+    try {
+      await auth.signOut()
+      // Wait until the service worker stops attaching the old token, so the
+      // login redirect is not bounced back by a lingering session.
+      await waitForServiceWorkerSignOut()
+    } catch {
+      // fall through: even on failure the client session is cleared
+    } finally {
+      setSigningOut(false)
+      router.replace('/login')
+    }
+  }
 
   const localeLabel = (locale: string): string => {
     switch (locale) {
@@ -73,6 +94,15 @@ export default function Header() {
           <Link className='text-sm font-medium text-[#111518]' href='/help'>
             {t('menu.help')}
           </Link>
+          <button
+            type='button'
+            disabled={signingOut}
+            onClick={() => void handleSignOut()}
+            className='inline-flex items-center gap-2 text-sm font-medium text-red-600 disabled:opacity-50'
+          >
+            <LogOut className='h-4 w-4' />
+            {t('signOut')}
+          </button>
           <div className='absolute bottom-0 left-1/2 -translate-x-1/2 flex pb-6'>
             {locales.map((locale, idx) => (
               <Link
@@ -153,6 +183,16 @@ export default function Header() {
               <Bell className='cursor-pointer' />
             </Link>
           </ToolButton>
+          <button
+            type='button'
+            aria-label={t('signOut')}
+            title={t('signOut')}
+            disabled={signingOut}
+            onClick={() => void handleSignOut()}
+            className='flex h-10 items-center justify-center rounded-full bg-[#f0f3f4] px-2.5 text-sm font-bold text-[#111518] hover:opacity-80 disabled:opacity-50'
+          >
+            <LogOut className='h-4 w-4' />
+          </button>
           <DropdownMenu>
             <DropdownMenuTrigger>{locale.toUpperCase()}</DropdownMenuTrigger>
             <DropdownMenuContent>

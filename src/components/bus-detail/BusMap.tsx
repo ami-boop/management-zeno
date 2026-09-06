@@ -47,13 +47,14 @@ export default function BusMap({ trip }: BusMapProps) {
 	const containerRef = useRef<HTMLDivElement | null>(null)
 	const mapRef = useRef<MapLibreMap | null>(null)
 	const busMarkerRef = useRef<MapLibreMarker | null>(null)
+	// ETA badges by stopId — updated in place on every poll without a map rebuild.
+	const etaSpansRef = useRef<Map<string, HTMLSpanElement>>(new Map())
 	const [ready, setReady] = useState(false)
 	const [lng, lat] = [trip.live?.lng ?? null, trip.live?.lat ?? null]
 	// RSC refreshes produce new (deep-equal) arrays every poll — rebuild the map
 	// only when the geometry itself changes.
 	const pathKey = useMemo(() => JSON.stringify(trip.path), [trip.path])
 	const stopsKey = useMemo(() => JSON.stringify(trip.stops), [trip.stops])
-	const etasKey = useMemo(() => JSON.stringify(trip.etas), [trip.etas])
 
 	useEffect(() => {
 		const geoStops = trip.stops
@@ -79,9 +80,7 @@ export default function BusMap({ trip }: BusMapProps) {
 			})
 			mapRef.current = map
 			map.addControl(new maplibregl.NavigationControl({ showCompass: false }), 'bottom-right')
-
-			// Debug handle for headless verification.
-			;(window as unknown as { __busMap?: MapLibreMap }).__busMap = map
+			etaSpansRef.current = new Map()
 			map.on('load', () => {
 				if (mapRef.current !== map) return
 
@@ -142,16 +141,19 @@ export default function BusMap({ trip }: BusMapProps) {
 					nameSpan.textContent = stop.name
 					label.appendChild(nameSpan)
 
+					const etaSpan = document.createElement('span')
+					etaSpan.style.padding = '1px 6px'
+					etaSpan.style.borderRadius = '999px'
+					etaSpan.style.backgroundColor = '#2563eb'
+					etaSpan.style.color = '#ffffff'
+					etaSpan.style.fontSize = '10px'
 					if (eta != null) {
-						const etaSpan = document.createElement('span')
-						etaSpan.style.padding = '1px 6px'
-						etaSpan.style.borderRadius = '999px'
-						etaSpan.style.backgroundColor = '#2563eb'
-						etaSpan.style.color = '#ffffff'
-						etaSpan.style.fontSize = '10px'
 						etaSpan.textContent = t('detail.etaShort', { minutes: eta })
-						label.appendChild(etaSpan)
+					} else {
+						etaSpan.style.display = 'none'
 					}
+					etaSpansRef.current.set(stop.stopId, etaSpan)
+					label.appendChild(etaSpan)
 
 					const dot = document.createElement('div')
 					dot.style.width = '12px'
@@ -183,9 +185,24 @@ export default function BusMap({ trip }: BusMapProps) {
 			mapRef.current = null
 			busMarkerRef.current = null
 		}
-		// Rebuild only when the route geometry changes; live marker updates below.
+		// Rebuild only when the route geometry changes; live marker and ETA
+		// badges update below without touching the map.
 		// eslint-disable-next-line react-hooks/exhaustive-deps
-	}, [trip.tripId, pathKey, stopsKey, etasKey])
+	}, [trip.tripId, pathKey, stopsKey])
+
+	// Update ETA badges in place when a new poll arrives — no map teardown.
+	useEffect(() => {
+		if (!ready || !trip.etas) return
+		for (const [stopId, span] of etaSpansRef.current) {
+			const eta = trip.etas[stopId]
+			if (eta == null) {
+				span.style.display = 'none'
+			} else {
+				span.style.display = ''
+				span.textContent = t('detail.etaShort', { minutes: eta })
+			}
+		}
+	}, [ready, trip.etas, t])
 
 	// Live marker follows incoming positions without rebuilding the map.
 	useEffect(() => {

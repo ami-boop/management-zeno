@@ -244,6 +244,7 @@ export default function StudentsClient({ initial, routeNameMap }: StudentsClient
 					</div>
 
 					{/* Route Filters */}
+					<div className='px-6 py-4 border-b border-gray-200'>
 					{routeOptions.length > 0 && (
 						<div className='flex flex-wrap gap-2 mb-3'>
 							<button
@@ -418,6 +419,7 @@ export default function StudentsClient({ initial, routeNameMap }: StudentsClient
 							</span>
 						</div>
 					)}
+					</div>
 
 					{/* Loading overlay */}
 					{loading && (

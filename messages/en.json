@@ -186,6 +186,16 @@
         "completed": "Completed",
         "cancelled": "Cancelled"
       }
+    },
+    "tabs": {
+      "list": "List",
+      "map": "Live map"
+    },
+    "live": {
+      "title": "Fleet live map",
+      "empty": "No buses on the route right now",
+      "onRoute": "{count} on route",
+      "viewDetail": "Details"
     }
   },
   "Routes": {

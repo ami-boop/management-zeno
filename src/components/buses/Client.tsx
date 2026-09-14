@@ -4,10 +4,11 @@ import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { useTranslations } from 'next-intl'
 import { useSearchFilter } from '@/hooks/useSearchFilter'
-import { AlertCircle, Bus, Search } from 'lucide-react'
-import type { FleetBus } from '@/lib/api-contracts'
+import { AlertCircle, Bus, List, Map as MapIcon, Search } from 'lucide-react'
+import type { BusLiveTrip, FleetBus } from '@/lib/api-contracts'
 import { updateBus } from '@/app/actions/buses'
 import BusDialog, { type BusFormValues } from './BusDialog'
+import FleetMap from './FleetMap'
 import MobileCards from './MobileCards'
 import Table from './Table'
 
@@ -19,13 +20,16 @@ export interface BusLiveBadge {
 interface BusesClientProps {
 	initialBuses: FleetBus[] | null
 	initialLiveByBus: Record<string, BusLiveBadge>
+	initialTrips: BusLiveTrip[]
 }
 
-export default function Client({ initialBuses, initialLiveByBus }: BusesClientProps) {
+export default function Client({ initialBuses, initialLiveByBus, initialTrips }: BusesClientProps) {
 	const t = useTranslations('Fleet')
 	const router = useRouter()
 	const [buses, setBuses] = useState<FleetBus[] | null>(initialBuses)
 	const [liveByBus, setLiveByBus] = useState<Record<string, BusLiveBadge>>(initialLiveByBus)
+	const [trips, setTrips] = useState<BusLiveTrip[]>(initialTrips)
+	const [view, setView] = useState<'list' | 'map'>('list')
 	const [dialogOpen, setDialogOpen] = useState(false)
 	const [editingBus, setEditingBus] = useState<FleetBus | null>(null)
 	const [busyBusId, setBusyBusId] = useState<string | null>(null)
@@ -45,6 +49,11 @@ export default function Client({ initialBuses, initialLiveByBus }: BusesClientPr
 	useEffect(() => {
 		setLiveByBus(initialLiveByBus)
 	}, [initialLiveByBus])
+
+	// Sync live trips for the map tab with refreshed server props.
+	useEffect(() => {
+		setTrips(initialTrips)
+	}, [initialTrips])
 
 	function applyCreated(busId: string, values: BusFormValues) {
 		setBuses(prev =>
@@ -119,8 +128,39 @@ export default function Client({ initialBuses, initialLiveByBus }: BusesClientPr
 				/>
 			</div>
 
+			<div className='mb-4 inline-flex rounded-xl border border-gray-200 bg-white p-1' role='tablist'>
+				<button
+					type='button'
+					role='tab'
+					aria-selected={view === 'list'}
+					onClick={() => setView('list')}
+					className={`inline-flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-sm font-medium ${
+						view === 'list' ? 'bg-blue-600 text-white' : 'text-gray-600 hover:text-gray-900'
+					}`}
+				>
+					<List className='h-4 w-4' />
+					{t('tabs.list')}
+				</button>
+				<button
+					type='button'
+					role='tab'
+					aria-selected={view === 'map'}
+					onClick={() => setView('map')}
+					className={`inline-flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-sm font-medium ${
+						view === 'map' ? 'bg-blue-600 text-white' : 'text-gray-600 hover:text-gray-900'
+					}`}
+				>
+					<MapIcon className='h-4 w-4' />
+					{t('tabs.map')}
+				</button>
+			</div>
+
 			{actionError && <p className='mb-3 text-sm text-red-600'>{t('errors.actionFailed')}</p>}
 
+			{view === 'map' ? (
+				<FleetMap trips={trips} buses={buses} />
+			) : (
+				<>
 			{filtered === null ? (
 				<div className='mb-3 flex items-center gap-2 rounded-xl border border-red-200 bg-red-50 p-4 text-sm text-red-700'>
 					<AlertCircle className='h-4 w-4 shrink-0' />
@@ -156,6 +196,8 @@ export default function Client({ initialBuses, initialLiveByBus }: BusesClientPr
 					onToggleActive={toggleActive}
 				/>
 			</div>
+				</>
+			)}
 
 			<BusDialog
 				open={dialogOpen}

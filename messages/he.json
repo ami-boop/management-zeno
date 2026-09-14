@@ -186,6 +186,16 @@
         "completed": "הסתיים",
         "cancelled": "בוטל"
       }
+    },
+    "tabs": {
+      "list": "רשימה",
+      "map": "מפה חיה"
+    },
+    "live": {
+      "title": "מפת צי חי",
+      "empty": "אין אוטובוסים במסלול כרגע",
+      "onRoute": "{count} במסלול",
+      "viewDetail": "פרטים"
     }
   },
   "Routes": {

@@ -30,7 +30,11 @@ declare module 'maplibre-gl' {
 		})
 		on(event: 'load', handler: () => void): void
 		addSource(id: string, source: Record<string, unknown>): void
+		getSource(id: string): unknown
+		removeSource(id: string): void
 		addLayer(layer: Record<string, unknown>): void
+		getLayer(id: string): unknown
+		removeLayer(id: string): void
 		addControl(control: unknown, position?: string): void
 		remove(): void
 		resize(): void

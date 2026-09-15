@@ -91,7 +91,8 @@
       "students": "Students",
       "report": "Report",
       "friendTrips": "Friend trips",
-      "calendar": "Calendar"
+      "calendar": "Calendar",
+      "statistics": "Statistics"
     },
     "theme": "Theme",
     "themeSystem": "System",
@@ -658,6 +659,75 @@
       "manager_rejected": "Rejected by management",
       "active": "Active",
       "inactive": "Inactive"
+    }
+  },
+  "Statistics": {
+    "title": "Statistics",
+    "loading": "Loading…",
+    "noData": "No data for this period",
+    "csv": "Export CSV",
+    "period": {
+      "today": "Today",
+      "range7": "7 days",
+      "range30": "30 days",
+      "customDay": "Pick a day"
+    },
+    "cards": {
+      "riding": "Riding",
+      "attendance": "Attendance",
+      "seats": "Seats ordered",
+      "trips": "Trips"
+    },
+    "tabs": {
+      "load": "Load",
+      "attendance": "Attendance",
+      "routes": "Routes",
+      "friend": "Friend trips"
+    },
+    "alerts": {
+      "overfull": "{count} overfilled trips",
+      "missing": "{count} without report",
+      "friendPending": "{count} friend approvals pending"
+    },
+    "load": {
+      "title": "Trip load",
+      "hint": "Passengers vs ordered seats. Over 100% is overfilled.",
+      "route": "Route",
+      "time": "Time",
+      "students": "Riders",
+      "seats": "Seats",
+      "fill": "Fill",
+      "fullest": "Most loaded",
+      "emptiest": "Emptiest"
+    },
+    "attendance": {
+      "title": "Attendance",
+      "summary": "{going} riding · {notGoing} not going · {missing} no report",
+      "rate": "Attendance %",
+      "singleDayHint": "Trend appears for 7 or 30 days",
+      "chronic": "Frequent no-shows",
+      "student": "Student",
+      "notGoing": "Not going",
+      "missing": "Missing"
+    },
+    "routes": {
+      "title": "Passengers by route",
+      "stops": "Boardings by stop",
+      "stop": "Stop",
+      "boardings": "Boardings",
+      "note": "Note",
+      "mergeCandidate": "Merge candidate"
+    },
+    "friend": {
+      "total": "Friend trips",
+      "pending": "Pending",
+      "approved": "Approved",
+      "rejected": "Rejected",
+      "pendingTitle": "Pending approvals",
+      "date": "Date"
+    },
+    "errors": {
+      "loadFailed": "Failed to load statistics"
     }
   }
 }

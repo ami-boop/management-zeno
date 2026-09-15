@@ -91,7 +91,8 @@
       "students": "תלמידים",
       "report": "דיווח",
       "friendTrips": "נסיעות לחברים",
-      "calendar": "יומן"
+      "calendar": "יומן",
+      "statistics": "סטטיסטיקה"
     },
     "theme": "ערכת נושא",
     "themeSystem": "מערכת",
@@ -671,6 +672,75 @@
       "manager_rejected": "נדחה על ידי ההנהלה",
       "active": "פעיל",
       "inactive": "לא פעיל"
+    }
+  },
+  "Statistics": {
+    "title": "סטטיסטיקה",
+    "loading": "טוען…",
+    "noData": "אין נתונים לתקופה",
+    "csv": "ייצוא CSV",
+    "period": {
+      "today": "היום",
+      "range7": "7 ימים",
+      "range30": "30 ימים",
+      "customDay": "בחירת יום"
+    },
+    "cards": {
+      "riding": "נוסעים",
+      "attendance": "נוכחות",
+      "seats": "מושבים הוזמנו",
+      "trips": "נסיעות"
+    },
+    "tabs": {
+      "load": "עומס",
+      "attendance": "נוכחות",
+      "routes": "מסלולים",
+      "friend": "נסיעות לחבר"
+    },
+    "alerts": {
+      "overfull": "נסיעות מלאות מדי: {count}",
+      "missing": "בלי דיווח: {count}",
+      "friendPending": "ממתינים לאישור: {count}"
+    },
+    "load": {
+      "title": "עומס נסיעות",
+      "hint": "נוסעים מול מושבים שהוזמנו. מעל 100% — עומס יתר.",
+      "route": "מסלול",
+      "time": "שעה",
+      "students": "נוסעים",
+      "seats": "מושבים",
+      "fill": "מילוי",
+      "fullest": "המלאות ביותר",
+      "emptiest": "הריקות ביותר"
+    },
+    "attendance": {
+      "title": "נוכחות",
+      "summary": "נוסעים: {going} · לא נוסעים: {notGoing} · בלי דיווח: {missing}",
+      "rate": "נוכחות %",
+      "singleDayHint": "מגמה מוצגת ל-7 או 30 ימים",
+      "chronic": "נעדרים קבועים",
+      "student": "תלמיד",
+      "notGoing": "לא נוסע",
+      "missing": "בלי דיווח"
+    },
+    "routes": {
+      "title": "נוסעים לפי מסלול",
+      "stops": "עליות לפי תחנה",
+      "stop": "תחנה",
+      "boardings": "עליות",
+      "note": "הערה",
+      "mergeCandidate": "מועמד לאיחוד"
+    },
+    "friend": {
+      "total": "נסיעות לחבר",
+      "pending": "ממתינים",
+      "approved": "אושרו",
+      "rejected": "נדחו",
+      "pendingTitle": "ממתינים לאישור",
+      "date": "תאריך"
+    },
+    "errors": {
+      "loadFailed": "טעינת הסטטיסטיקה נכשלה"
     }
   }
 }

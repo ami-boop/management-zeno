@@ -91,7 +91,8 @@
       "students": "Ученики",
       "report": "Отмена",
       "friendTrips": "Поездки к друзьям",
-      "calendar": "Календарь"
+      "calendar": "Календарь",
+      "statistics": "Статистика"
     },
     "theme": "Тема",
     "themeSystem": "Системная",
@@ -658,6 +659,75 @@
       "manager_rejected": "Отклонено управлением",
       "active": "Активен",
       "inactive": "Неактивен"
+    }
+  },
+  "Statistics": {
+    "title": "Статистика",
+    "loading": "Загрузка…",
+    "noData": "Нет данных за период",
+    "csv": "Экспорт CSV",
+    "period": {
+      "today": "Сегодня",
+      "range7": "7 дней",
+      "range30": "30 дней",
+      "customDay": "Выбрать день"
+    },
+    "cards": {
+      "riding": "Едет",
+      "attendance": "Явка",
+      "seats": "Мест заказано",
+      "trips": "Рейсов"
+    },
+    "tabs": {
+      "load": "Загруженность",
+      "attendance": "Явка",
+      "routes": "Маршруты",
+      "friend": "К другу"
+    },
+    "alerts": {
+      "overfull": "Переполненных рейсов: {count}",
+      "missing": "Без отметки: {count}",
+      "friendPending": "Ожидают одобрения: {count}"
+    },
+    "load": {
+      "title": "Загрузка рейсов",
+      "hint": "Пассажиры vs заказанные места. Больше 100% — переполнение.",
+      "route": "Маршрут",
+      "time": "Время",
+      "students": "Пассажиры",
+      "seats": "Места",
+      "fill": "Заполн.",
+      "fullest": "Самые забитые",
+      "emptiest": "Самые пустые"
+    },
+    "attendance": {
+      "title": "Явка",
+      "summary": "Едет: {going} · не едет: {notGoing} · без отметки: {missing}",
+      "rate": "Явка %",
+      "singleDayHint": "Тренд виден за 7 или 30 дней",
+      "chronic": "Частые no-show",
+      "student": "Ученик",
+      "notGoing": "Не едет",
+      "missing": "Нет отметки"
+    },
+    "routes": {
+      "title": "Пассажиры по маршрутам",
+      "stops": "Посадки по остановкам",
+      "stop": "Остановка",
+      "boardings": "Посадки",
+      "note": "Заметка",
+      "mergeCandidate": "Кандидат на слияние"
+    },
+    "friend": {
+      "total": "Поездок к другу",
+      "pending": "Ожидают",
+      "approved": "Одобрено",
+      "rejected": "Отклонено",
+      "pendingTitle": "Ожидающие одобрения",
+      "date": "Дата"
+    },
+    "errors": {
+      "loadFailed": "Не удалось загрузить статистику"
     }
   }
 }

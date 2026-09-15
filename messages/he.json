@@ -618,7 +618,47 @@
       "endTimesRequired": "הוסיפו לפחות שעת סיום אחת ליום מקוצר",
       "specialScheduleRequired": "למערכת מיוחדת נדרשות כיתות ושעת יציאה"
     },
-    "noExceptions": "אין עדיין חריגות"
+    "noExceptions": "אין עדיין חריגות",
+    "today": "היום",
+    "wheelHint": "גלילה לזום • גרירה לבחירת טווח",
+    "noException": "—",
+    "displayMode": {
+      "list": "רשימה",
+      "calendar": "לוח"
+    },
+    "view": {
+      "day": "יום",
+      "week": "שבוע",
+      "month": "חודש"
+    },
+    "filters": {
+      "title": "סינון",
+      "typeAll": "כל הסוגים",
+      "activeAll": "הכל",
+      "activeOnly": "פעיל בלבד",
+      "inactiveOnly": "לא פעיל"
+    },
+    "legend": "מקרא",
+    "presets": {
+      "title": "תבניות מהירות",
+      "holiday": "חופשה",
+      "noTransport": "ללא הסעה",
+      "exam": "יום מבחנים",
+      "half1200": "יום מקוצר 12:00",
+      "half1300": "יום מקוצר 13:00",
+      "special1330": "מיוחדת 13:30",
+      "special1400": "מיוחדת 14:00"
+    },
+    "batch": {
+      "conflict": "תאריכים כבר מכילים חריגות",
+      "conflictHint": "תאריכים מתנגשים:",
+      "editSuggestion": "לערוך קיימות?"
+    },
+    "noteCounter": "{count}/30",
+    "undo": "בטל",
+    "undoRestored": "שוחזר",
+    "rangeLabel": "{start} → {end} ({count} ימים)",
+    "selectedRange": "נבחרו {count} ימים"
   },
   "Common": {
     "status": {

@@ -31,3 +31,32 @@ export async function updateException(
 		return { ok: false }
 	}
 }
+
+export async function createExceptionsBatch(
+	dates: string[],
+	values: ExceptionFormValues
+): Promise<{ ok: boolean; conflicts?: string[] }> {
+	const token = await getSessionToken()
+	if (!token) return { ok: false }
+	try {
+		const result = await apiPost('calendar-exceptions/batch', token, { dates, ...values })
+		if (!result.ok) {
+			const body = result.data as { conflicts?: string[] } | null
+			return { ok: false, conflicts: body?.conflicts }
+		}
+		return { ok: true }
+	} catch {
+		return { ok: false }
+	}
+}
+
+export async function restoreException(date: string): Promise<{ ok: boolean }> {
+	const token = await getSessionToken()
+	if (!token) return { ok: false }
+	try {
+		const result = await apiPost(`calendar-exceptions/${date}/restore`, token, {})
+		return { ok: result.ok }
+	} catch {
+		return { ok: false }
+	}
+}

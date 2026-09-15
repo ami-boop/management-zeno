@@ -605,7 +605,47 @@
       "endTimesRequired": "Добавьте хотя бы одно время окончания для сокращённого дня",
       "specialScheduleRequired": "Для особого расписания нужны классы и время выезда"
     },
-    "noExceptions": "Исключений пока нет"
+    "noExceptions": "Исключений пока нет",
+    "today": "Сегодня",
+    "wheelHint": "Колесо — зум • Перетаскивание — диапазон",
+    "noException": "—",
+    "displayMode": {
+      "list": "Список",
+      "calendar": "Календарь"
+    },
+    "view": {
+      "day": "День",
+      "week": "Неделя",
+      "month": "Месяц"
+    },
+    "filters": {
+      "title": "Фильтры",
+      "typeAll": "Все типы",
+      "activeAll": "Все",
+      "activeOnly": "Только активные",
+      "inactiveOnly": "Неактивные"
+    },
+    "legend": "Легенда",
+    "presets": {
+      "title": "Быстрые шаблоны",
+      "holiday": "Каникулы",
+      "noTransport": "Без подвоза",
+      "exam": "Экзамен",
+      "half1200": "Полдня 12:00",
+      "half1300": "Полдня 13:00",
+      "special1330": "Спец 13:30",
+      "special1400": "Спец 14:00"
+    },
+    "batch": {
+      "conflict": "Даты уже имеют исключения",
+      "conflictHint": "Конфликтующие даты:",
+      "editSuggestion": "Редактировать?"
+    },
+    "noteCounter": "{count}/30",
+    "undo": "Отменить",
+    "undoRestored": "Восстановлено",
+    "rangeLabel": "{start} → {end} ({count} дн.)",
+    "selectedRange": "Выбрано {count} дн."
   },
   "Common": {
     "status": {

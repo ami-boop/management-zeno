@@ -605,7 +605,47 @@
       "endTimesRequired": "Add at least one class end time for a half day",
       "specialScheduleRequired": "Classes and departure time are required for a special schedule"
     },
-    "noExceptions": "No calendar exceptions yet"
+    "noExceptions": "No calendar exceptions yet",
+    "today": "Today",
+    "wheelHint": "Scroll to zoom • Drag to select range",
+    "noException": "—",
+    "displayMode": {
+      "list": "List",
+      "calendar": "Calendar"
+    },
+    "view": {
+      "day": "Day",
+      "week": "Week",
+      "month": "Month"
+    },
+    "filters": {
+      "title": "Filters",
+      "typeAll": "All types",
+      "activeAll": "All",
+      "activeOnly": "Active only",
+      "inactiveOnly": "Inactive"
+    },
+    "legend": "Legend",
+    "presets": {
+      "title": "Quick presets",
+      "holiday": "Holiday",
+      "noTransport": "No transport",
+      "exam": "Exam day",
+      "half1200": "Half day 12:00",
+      "half1300": "Half day 13:00",
+      "special1330": "Special 13:30",
+      "special1400": "Special 14:00"
+    },
+    "batch": {
+      "conflict": "Dates already have exceptions",
+      "conflictHint": "Following dates conflict:",
+      "editSuggestion": "Edit existing ones?"
+    },
+    "noteCounter": "{count}/30",
+    "undo": "Undo",
+    "undoRestored": "Restored",
+    "rangeLabel": "{start} → {end} ({count} days)",
+    "selectedRange": "Selected {count} days"
   },
   "Common": {
     "status": {

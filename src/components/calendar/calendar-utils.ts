@@ -80,6 +80,70 @@ export function isSameMonth(a: string, b: string): boolean {
 	return da.getMonth() === db.getMonth() && da.getFullYear() === db.getFullYear()
 }
 
+let _hebrewPartsFmt: Intl.DateTimeFormat | null = null
+let _hebrewMonthFmt: Intl.DateTimeFormat | null = null
+
+const GEMATRIA_TENS: Array<[number, string]> = [
+	[400, 'ת'], [300, 'ש'], [200, 'ר'], [100, 'ק'], [90, 'צ'], [80, 'פ'],
+	[70, 'ע'], [60, 'ס'], [50, 'נ'], [40, 'מ'], [30, 'ל'], [20, 'כ'], [10, 'י'],
+]
+const GEMATRIA_ONES = ['', 'א', 'ב', 'ג', 'ד', 'ה', 'ו', 'ז', 'ח', 'ט']
+
+/** Number to Hebrew-letter numeral (gematria), e.g. 23 → כ״ג, 12 → י״ב, 4 → ד׳. */
+export function toHebrewNumeral(n: number): string {
+	if (!Number.isInteger(n) || n <= 0) return ''
+	if (n === 15) return 'ט״ו'
+	if (n === 16) return 'ט״ז'
+	let letters = ''
+	let rest = n
+	for (const [value, ch] of GEMATRIA_TENS) {
+		while (rest >= value) {
+			letters += ch
+			rest -= value
+		}
+	}
+	if (rest === 15) return letters + 'ט״ו'
+	if (rest === 16) return letters + 'ט״ז'
+	letters += GEMATRIA_ONES[rest]
+	if (letters.length <= 1) return letters + '׳'
+	return letters.slice(0, -1) + '״' + letters.slice(-1)
+}
+
+function hebrewDateParts(iso: string): { day: number; monthName: string; year: number } | null {
+	try {
+		if (!_hebrewPartsFmt) _hebrewPartsFmt = new Intl.DateTimeFormat('he-u-ca-hebrew', { day: 'numeric', month: 'numeric', year: 'numeric' })
+		if (!_hebrewMonthFmt) _hebrewMonthFmt = new Intl.DateTimeFormat('he-u-ca-hebrew', { month: 'long' })
+		const date = fromISO(iso)
+		const parts = _hebrewPartsFmt.formatToParts(date)
+		const day = Number(parts.find(p => p.type === 'day')?.value)
+		const year = Number(parts.find(p => p.type === 'year')?.value)
+		const monthName = _hebrewMonthFmt.format(date).replace(/^ב/, '')
+		if (!day || !year || !monthName) return null
+		return { day, monthName, year }
+	} catch {
+		return null
+	}
+}
+
+/** Hebrew day-of-month (e.g. כ״ג) for the alternate calendar, like Apple Calendar. */
+export function hebrewDayLabel(iso: string): string {
+	const parts = hebrewDateParts(iso)
+	return parts ? toHebrewNumeral(parts.day) : ''
+}
+
+/** Short Hebrew date with month (e.g. כ״ג אלול) to sit next to the Gregorian date. */
+export function hebrewShortLabel(iso: string): string {
+	const parts = hebrewDateParts(iso)
+	return parts ? `${toHebrewNumeral(parts.day)} ${parts.monthName}` : ''
+}
+
+/** Full Hebrew date (e.g. כ״ג באלול תשפ״ו). Year is written without millennia, as customary. */
+export function hebrewFullLabel(iso: string): string {
+	const parts = hebrewDateParts(iso)
+	if (!parts) return ''
+	return `${toHebrewNumeral(parts.day)} ב${parts.monthName} ${toHebrewNumeral(parts.year % 1000)}`
+}
+
 export function rangeDates(start: string, end: string): string[] {
 	const s = fromISO(start)
 	const e = fromISO(end)

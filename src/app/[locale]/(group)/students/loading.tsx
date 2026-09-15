@@ -2,7 +2,7 @@ import { Skeleton } from '@/components/ui/skeleton'
 
 export default function Loading() {
   return (
-    <div className='bg-gray-50'>
+    <div className='bg-zeno-paper-soft'>
       <div className='max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8 py-8'>
         {/* Header Skeleton */}
         <div className='mb-8'>
@@ -16,15 +16,15 @@ export default function Loading() {
 
           {/* Stats Skeleton */}
           <div className='grid grid-cols-1 md:grid-cols-3 gap-6 mb-8'>
-            <div className='bg-white rounded-lg border border-gray-200 p-6'>
+            <div className='bg-zeno-surface rounded-lg border border-zeno-line p-6'>
               <Skeleton className='h-4 w-32 mb-2' />
               <Skeleton className='h-8 w-16' />
             </div>
-            <div className='bg-white rounded-lg border border-gray-200 p-6'>
+            <div className='bg-zeno-surface rounded-lg border border-zeno-line p-6'>
               <Skeleton className='h-4 w-32 mb-2' />
               <Skeleton className='h-8 w-16' />
             </div>
-            <div className='bg-white rounded-lg border border-gray-200 p-6'>
+            <div className='bg-zeno-surface rounded-lg border border-zeno-line p-6'>
               <Skeleton className='h-4 w-32 mb-2' />
               <Skeleton className='h-8 w-16' />
             </div>
@@ -32,8 +32,8 @@ export default function Loading() {
         </div>
 
         {/* Main Content Skeleton */}
-        <div className='bg-white rounded-lg shadow-sm border border-gray-200'>
-          <div className='px-6 py-4 border-b border-gray-200'>
+        <div className='bg-zeno-surface rounded-lg shadow-sm border border-zeno-line'>
+          <div className='px-6 py-4 border-b border-zeno-line'>
             <div className='flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-4'>
               <Skeleton className='h-7 w-40' />
               <Skeleton className='h-10 w-64 rounded-md' />
@@ -50,8 +50,8 @@ export default function Loading() {
 
           {/* Desktop Table Skeleton */}
           <div className='hidden lg:block overflow-hidden'>
-            <table className='min-w-full divide-y divide-gray-200'>
-              <thead className='bg-gray-50'>
+            <table className='min-w-full divide-y divide-zeno-line'>
+              <thead className='bg-zeno-paper-soft'>
                 <tr>
                   <th className='px-6 py-3'>
                     <Skeleton className='h-4 w-4' />
@@ -76,7 +76,7 @@ export default function Loading() {
                   </th>
                 </tr>
               </thead>
-              <tbody className='bg-white divide-y divide-gray-200'>
+              <tbody className='bg-zeno-surface divide-y divide-zeno-line'>
                 {Array.from({ length: 10 }).map((_, i) => (
                   <tr key={i}>
                     <td className='px-6 py-4'>
@@ -108,7 +108,7 @@ export default function Loading() {
           </div>
 
           {/* Mobile Cards Skeleton */}
-          <div className='lg:hidden divide-y divide-gray-200'>
+          <div className='lg:hidden divide-y divide-zeno-line'>
             {Array.from({ length: 5 }).map((_, i) => (
               <div key={i} className='p-6'>
                 <div className='flex items-start justify-between mb-4'>

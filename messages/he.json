@@ -124,7 +124,9 @@
       "minutesAgo": "דקות לפני",
       "hoursAgo": "שעות לפני",
       "daysAgo": "ימים לפני"
-    }
+    },
+    "loadingMore": "טוען עוד…",
+    "retry": "נסה שוב"
   },
   "Fleet": {
     "title": "אוטובוסים",

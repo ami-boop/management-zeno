@@ -1,20 +1,19 @@
+import { redirect } from 'next/navigation'
 import Client from '@/components/notifications/Client'
 import { getSessionToken } from '@/utils/getSessionToken'
-import { type Notification } from '@/types/notification'
-import { API_URL } from '@/constants'
+import { apiGet } from '@/lib/api/client'
+import { parseNotificationsPage } from '@/lib/api-contracts'
+
+export const dynamic = 'force-dynamic'
+
+const FIRST_PAGE_LIMIT = 30
 
 export default async function NotificationsPage() {
-  const sessionCookie = await getSessionToken()
+	const token = await getSessionToken()
+	if (!token) redirect('/login')
 
-  const notifications: Notification[] = await fetch(
-    `${API_URL}/notifications`,
-    {
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${sessionCookie as string}`,
-      },
-    }
-  ).then(res => res.json())
+	const raw = await apiGet('notifications', token, { params: { limit: FIRST_PAGE_LIMIT } }).catch(() => null)
+	const initial = parseNotificationsPage(raw)
 
-  return <Client initialNotifications={notifications} />
+	return <Client initialNotifications={initial?.items ?? []} initialCursor={initial?.nextCursor ?? null} />
 }

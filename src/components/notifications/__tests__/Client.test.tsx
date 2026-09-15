@@ -82,7 +82,7 @@ describe('NotificationsClient', () => {
       await user.click(unreadButton);
 
       // Check that button is active
-      expect(unreadButton).toHaveClass('bg-blue-100');
+      expect(unreadButton).toHaveClass('bg-zeno-amber');
     });
 
     it('should filter notifications by alerts', async () => {
@@ -92,7 +92,7 @@ describe('NotificationsClient', () => {
       const alertsButton = screen.getByRole('button', { name: /filterAlerts/i });
       await user.click(alertsButton);
 
-      expect(alertsButton).toHaveClass('bg-blue-100');
+      expect(alertsButton).toHaveClass('bg-zeno-amber');
     });
 
     it('should filter notifications by info', async () => {
@@ -102,7 +102,7 @@ describe('NotificationsClient', () => {
       const infoButton = screen.getByRole('button', { name: /filterInfo/i });
       await user.click(infoButton);
 
-      expect(infoButton).toHaveClass('bg-blue-100');
+      expect(infoButton).toHaveClass('bg-zeno-amber');
     });
 
     it('should show all notifications when "all" filter is selected', async () => {
@@ -117,7 +117,7 @@ describe('NotificationsClient', () => {
       const allButton = screen.getByRole('button', { name: /filterAll/i });
       await user.click(allButton);
 
-      expect(allButton).toHaveClass('bg-blue-100');
+      expect(allButton).toHaveClass('bg-zeno-amber');
       expect(screen.getByTestId('notification-count')).toHaveTextContent(
         notifications.length.toString()
       );

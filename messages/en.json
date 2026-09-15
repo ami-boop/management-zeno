@@ -124,7 +124,9 @@
       "minutesAgo": "minutes ago",
       "hoursAgo": "hours ago",
       "daysAgo": "days ago"
-    }
+    },
+    "loadingMore": "Loading more…",
+    "retry": "Retry"
   },
   "Fleet": {
     "title": "Buses",

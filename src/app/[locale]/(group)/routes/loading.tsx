@@ -2,10 +2,10 @@ import { Skeleton } from '@/components/ui/skeleton'
 
 export default function Loading() {
   return (
-    <div className='min-h-screen bg-white'>
+    <div className='min-h-screen bg-zeno-surface'>
       <div className='max-w-4xl mx-auto px-4 sm:px-8 py-8'>
         <div className='flex flex-col sm:flex-row justify-between gap-3 mb-6'>
-          <h1 className='text-3xl font-bold text-gray-900 flex items-center gap-2'>
+          <h1 className='text-3xl font-bold text-zeno-ink flex items-center gap-2'>
             <Skeleton className='h-8 w-48' />
           </h1>
         </div>
@@ -19,7 +19,7 @@ export default function Loading() {
         </div>
 
         {/* Desktop Table Skeleton */}
-        <div className='hidden md:flex px-4 py-3 overflow-hidden rounded-xl border border-[#dbe1e6] bg-white'>
+        <div className='hidden md:flex px-4 py-3 overflow-hidden rounded-xl border border-[#dbe1e6] bg-zeno-surface'>
           <table className='w-full'>
             <thead>
               <tr>
@@ -63,7 +63,7 @@ export default function Loading() {
           {Array.from({ length: 5 }).map((_, i) => (
             <div
               key={i}
-              className='bg-white border border-[#dbe1e6] rounded-xl p-4 space-y-3'
+              className='bg-zeno-surface border border-[#dbe1e6] rounded-xl p-4 space-y-3'
             >
               <div className='flex justify-between items-start'>
                 <div>

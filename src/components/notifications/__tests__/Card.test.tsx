@@ -30,7 +30,7 @@ describe('NotificationCard', () => {
     expect(screen.getByTestId('clock-icon')).toBeInTheDocument()
     expect(screen.getByTestId('mark-as-read-button')).toBeInTheDocument()
     expect(screen.getByTestId('remove-notification-button')).toBeInTheDocument()
-    expect(screen.getByText('messages.late')).not.toHaveClass('text-gray-600')
+    expect(screen.getByText('messages.late')).not.toHaveClass('text-zeno-muted')
 
   })
 
@@ -43,7 +43,7 @@ describe('NotificationCard', () => {
       />)
 
     expect(screen.queryByTestId('mark-as-read-button')).not.toBeInTheDocument()
-    expect(screen.getByText('messages.late')).toHaveClass('text-gray-600')
+    expect(screen.getByText('messages.late')).toHaveClass('text-zeno-muted')
   })
 
   it('isRead, removeNotification buttons works correcrtly', async () => {

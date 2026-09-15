@@ -1,22 +1,32 @@
 'use client'
 
-import { useState, useMemo } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { useTranslations } from 'next-intl'
 import { Archive, CheckCircle } from 'lucide-react'
 import type { Notification } from '@/types/notification'
 import List from './List'
 import setNotificationsAction from '@/app/actions/setNotificationsAction'
+import { getNotificationsPage } from '@/app/actions/getNotificationsPage'
+
 interface NotificationsClientProps {
   initialNotifications: Notification[]
+  initialCursor?: string | null
 }
+
+const PAGE_LIMIT = 30
 
 export default function Client({
   initialNotifications,
+  initialCursor = null,
 }: NotificationsClientProps) {
   const t = useTranslations('Notifications')
   const [selectedFilter, setSelectedFilter] = useState<string>('all')
   const [notifications, setNotifications] =
     useState<Notification[]>(initialNotifications)
+  const [cursor, setCursor] = useState<string | null>(initialCursor)
+  const [loadingMore, setLoadingMore] = useState(false)
+  const [pageError, setPageError] = useState(false)
+  const sentinelRef = useRef<HTMLDivElement>(null)
 
   const removeNotification = async (id: string) => {
     setNotifications(notifications.filter(n => n.id !== id))
@@ -37,8 +47,41 @@ export default function Client({
 
   const clearAll = async () => {
     setNotifications([])
+    setCursor(null)
     await setNotificationsAction({ clearAll: true })
   }
+
+  const loadMore = useCallback(async () => {
+    if (loadingMore || !cursor) return
+    setLoadingMore(true)
+    setPageError(false)
+    const result = await getNotificationsPage(cursor, PAGE_LIMIT)
+    if (!result.ok || !result.data) {
+      setLoadingMore(false)
+      setPageError(true)
+      return
+    }
+    const fresh = result.data.items.filter(
+      item => !notifications.some(n => n.id === item.id)
+    )
+    setNotifications([...notifications, ...fresh])
+    setCursor(result.data.nextCursor)
+    setLoadingMore(false)
+  }, [cursor, loadingMore, notifications])
+
+  useEffect(() => {
+    if (!cursor) return
+    const el = sentinelRef.current
+    if (!el || typeof IntersectionObserver === 'undefined') return
+    const io = new IntersectionObserver(
+      entries => {
+        if (entries[0].isIntersecting) void loadMore()
+      },
+      { rootMargin: '400px' }
+    )
+    io.observe(el)
+    return () => io.disconnect()
+  }, [cursor, loadMore])
 
   const filteredNotifications = useMemo(() => {
     return notifications.filter(notification => {
@@ -72,19 +115,19 @@ export default function Client({
   ]
 
   return (
-    <div className='min-h-screen bg-gray-50'>
+    <div className='min-h-screen'>
       <div className='max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8'>
         <div className='mb-8'>
           <div className='flex items-center justify-between'>
             <div>
-              <h1 className='text-3xl font-bold text-gray-900 mb-2'>
+              <h1 className='text-3xl font-bold tracking-tight text-zeno-ink mb-2'>
                 {t('title')}
               </h1>
-              <p className='text-gray-600'>{t('description')}</p>
+              <p className='text-sm text-zeno-ink-soft'>{t('description')}</p>
             </div>
-            <div className='flex items-center space-x-2'>
+            <div className='flex items-center gap-2'>
               {unreadCount > 0 && (
-                <div className='bg-red-100 text-red-800 px-3 py-1 rounded-full text-sm font-medium'>
+                <div className='bg-zeno-danger-soft text-zeno-danger px-3 py-1 rounded-full text-sm font-medium tabular-nums'>
                   {unreadCount} {t('unread')}
                 </div>
               )}
@@ -93,8 +136,8 @@ export default function Client({
         </div>
 
         {/* Controls */}
-        <div className='bg-white rounded-lg shadow-sm border border-gray-200 mb-6'>
-          <div className='px-6 py-4 border-b border-gray-200'>
+        <div className='zeno-card mb-6'>
+          <div className='px-6 py-4 border-b border-zeno-line'>
             <div className='flex flex-col sm:flex-row sm:items-center justify-between gap-4'>
               {/* Filters */}
               <div className='flex flex-wrap gap-2'>
@@ -102,17 +145,18 @@ export default function Client({
                   <button
                     key={filter.key}
                     onClick={() => setSelectedFilter(filter.key)}
-                    className={`inline-flex items-center px-3 py-1.5 rounded-md text-sm font-medium transition-colors duration-200 ${selectedFilter === filter.key
-                      ? 'bg-blue-100 text-blue-800 border border-blue-200'
-                      : 'bg-white text-gray-700 border border-gray-300 hover:bg-gray-50'
+                    aria-pressed={selectedFilter === filter.key}
+                    className={`inline-flex items-center px-3 py-1.5 rounded-full text-sm font-medium transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-zeno-amber ${selectedFilter === filter.key
+                      ? 'bg-zeno-amber text-zeno-amber-fg'
+                      : 'bg-zeno-surface text-zeno-ink-soft border border-zeno-line hover:bg-zeno-paper-soft'
                       }`}
                     data-testid='filter-button'
                   >
                     {filter.label}
                     <span
-                      className={`ml-2 px-2 py-0.5 rounded-full text-xs ${selectedFilter === filter.key
-                        ? 'bg-blue-200 text-blue-800'
-                        : 'bg-gray-100 text-gray-600'
+                      className={`ms-2 px-2 py-0.5 rounded-full text-xs tabular-nums ${selectedFilter === filter.key
+                        ? 'bg-white/50 text-zeno-amber-fg'
+                        : 'bg-zeno-paper-soft text-zeno-muted'
                         }`}
                     >
                       {filter.count}
@@ -122,22 +166,22 @@ export default function Client({
               </div>
 
               {/* Actions */}
-              <div className='flex items-center space-x-2'>
+              <div className='flex items-center gap-2'>
                 {unreadCount > 0 && (
                   <button
                     onClick={markAllAsRead}
-                    className='inline-flex items-center px-3 py-1.5 text-sm text-blue-600 hover:text-blue-800 font-medium'
+                    className='inline-flex items-center px-3 py-1.5 text-sm text-zeno-sage hover:bg-zeno-sage-soft rounded-lg font-medium focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-zeno-amber'
                   >
-                    <CheckCircle className='w-4 h-4 mr-1' data-testid='check-circle-icon' />
+                    <CheckCircle className='w-4 h-4 me-1' data-testid='check-circle-icon' />
                     {t('markAllRead')}
                   </button>
                 )}
                 {notifications.length > 0 && (
                   <button
                     onClick={clearAll}
-                    className='inline-flex items-center px-3 py-1.5 text-sm text-red-600 hover:text-red-800 font-medium'
+                    className='inline-flex items-center px-3 py-1.5 text-sm text-zeno-danger hover:bg-zeno-danger-soft rounded-lg font-medium focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-zeno-amber'
                   >
-                    <Archive className='w-4 h-4 mr-1' data-testid='archive-icon' />
+                    <Archive className='w-4 h-4 me-1' data-testid='archive-icon' />
                     {t('clearAll')}
                   </button>
                 )}
@@ -152,6 +196,22 @@ export default function Client({
           markAsRead={markAsRead}
           removeNotification={removeNotification}
         />
+
+        {cursor && <div ref={sentinelRef} aria-hidden='true' className='h-1' />}
+        {loadingMore && (
+          <p className='py-4 text-center text-sm text-zeno-muted'>{t('loadingMore')}</p>
+        )}
+        {pageError && (
+          <div className='py-4 text-center'>
+            <button
+              type='button'
+              onClick={() => void loadMore()}
+              className='rounded-full border border-zeno-line-strong bg-zeno-surface px-4 py-1.5 text-xs font-semibold text-zeno-ink hover:bg-zeno-paper-soft focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-zeno-amber'
+            >
+              {t('retry')}
+            </button>
+          </div>
+        )}
       </div>
     </div>
   )

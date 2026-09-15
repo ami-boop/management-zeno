@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 import { useLocale, useTranslations } from 'next-intl'
-import { Armchair, Bus, CalendarCheck, Download, Users } from 'lucide-react'
+import { Download, Users } from 'lucide-react'
 import StatCard from '@/components/ui/stat-card'
 import ErrorBanner from '@/components/ErrorBanner'
 import EmptyState from '@/components/EmptyState'
@@ -24,11 +24,6 @@ function formatDate(date: string): string {
 	const [y, m, d] = date.split('-')
 	if (!y || !m || !d) return date
 	return `${d}.${m}.${y}`
-}
-
-function pct(rate: number | null): string {
-	if (rate === null) return '—'
-	return `${(rate * 100).toFixed(1)}%`
 }
 
 function TripTable({ trips, routeLabel, timeLabel, studentsLabel, seatsLabel, fillLabel }: {
@@ -154,13 +149,6 @@ export default function Client({ initial, initialDate, initialRange }: Statistic
 							].filter(Boolean).join(' · ')}
 						</div>
 					)}
-
-					<div className='mb-6 grid grid-cols-2 gap-3 lg:grid-cols-4'>
-						<StatCard label={t('cards.riding')} value={data.totals.going} tone='sage' icon={<Users className='h-5 w-5' />} />
-						<StatCard label={t('cards.attendance')} value={pct(data.totals.attendanceRate)} tone='ink' icon={<CalendarCheck className='h-5 w-5' />} />
-						<StatCard label={t('cards.seats')} value={data.totals.seatsOrdered} tone='amber' icon={<Armchair className='h-5 w-5' />} />
-						<StatCard label={t('cards.trips')} value={data.totals.trips} tone='ink' icon={<Bus className='h-5 w-5' />} />
-					</div>
 
 					<div className='mb-4 inline-flex rounded-full border border-zeno-line bg-zeno-surface p-1'>
 						{(['load', 'attendance', 'routes', 'friend'] as const).map(v => (

@@ -56,6 +56,7 @@ export default function Client({ initial }: { initial: SettingsData | null }) {
 	const [newTime, setNewTime] = useState('')
 	const [bus, setBus] = useState(initial?.vehicleCapacities.bus ?? 55)
 	const [minibus, setMinibus] = useState(initial?.vehicleCapacities.minibus ?? 20)
+	const [minibusesEnabled, setMinibusesEnabled] = useState(initial?.minibusesEnabled ?? false)
 	const [saving, setSaving] = useState<string | null>(null)
 	const [saved, setSaved] = useState<string | null>(null)
 	const [error, setError] = useState<string | null>(null)
@@ -82,6 +83,7 @@ export default function Client({ initial }: { initial: SettingsData | null }) {
 		setTimes(result.data.reportTimes)
 		setBus(result.data.vehicleCapacities.bus)
 		setMinibus(result.data.vehicleCapacities.minibus)
+		setMinibusesEnabled(result.data.minibusesEnabled)
 		setSaved(section)
 		setTimeout(() => setSaved(null), 3000)
 	}
@@ -107,7 +109,7 @@ export default function Client({ initial }: { initial: SettingsData | null }) {
 			setError(t('errors.capacitiesRange'))
 			return
 		}
-		void save('capacities', { vehicleCapacities: { bus, minibus } })
+		void save('capacities', { vehicleCapacities: { bus, minibus }, minibusesEnabled })
 	}
 
 	function addTime() {
@@ -187,6 +189,21 @@ export default function Client({ initial }: { initial: SettingsData | null }) {
 				</Section>
 
 				<Section title={t('capacities.title')} hint={t('capacities.hint')}>
+					<button
+						type='button'
+						role='switch'
+						aria-checked={minibusesEnabled}
+						onClick={() => setMinibusesEnabled(prev => !prev)}
+						className='mb-4 flex w-full items-center justify-between gap-3 rounded-xl border border-zeno-line bg-zeno-paper-soft px-3 py-2.5 text-start focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-zeno-amber'
+					>
+						<span>
+							<span className='block text-sm font-semibold text-zeno-ink'>{t('minibuses.title')}</span>
+							<span className='block text-xs text-zeno-muted'>{t('minibuses.hint')}</span>
+						</span>
+						<span className={`relative h-6 w-11 shrink-0 rounded-full transition ${minibusesEnabled ? 'bg-zeno-amber' : 'bg-zeno-line-strong'}`}>
+							<span className={`absolute top-0.5 h-5 w-5 rounded-full bg-white shadow transition-all ${minibusesEnabled ? 'start-5' : 'start-0.5'}`} />
+						</span>
+					</button>
 					<div className='grid max-w-md gap-3 sm:grid-cols-2'>
 						<FormField label={t('capacities.bus')}>
 							<input
@@ -203,6 +220,7 @@ export default function Client({ initial }: { initial: SettingsData | null }) {
 								type='number'
 								min={1}
 								value={minibus}
+								disabled={!minibusesEnabled}
 								onChange={e => setMinibus(Number(e.target.value))}
 							/>
 						</FormField>

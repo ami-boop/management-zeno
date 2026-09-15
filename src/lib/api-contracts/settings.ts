@@ -4,6 +4,7 @@ export interface SettingsData {
 	reportDeadlineMinutes: number
 	reportTimes: string[]
 	vehicleCapacities: { bus: number; minibus: number }
+	minibusesEnabled: boolean
 }
 
 function num(value: unknown, fallback: number): number {
@@ -21,5 +22,6 @@ export function parseSettings(value: unknown): SettingsData | null {
 			bus: num(capacities.bus, 55),
 			minibus: num(capacities.minibus, 20),
 		},
+		minibusesEnabled: value.minibusesEnabled === true,
 	}
 }

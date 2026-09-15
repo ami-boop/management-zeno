@@ -764,6 +764,10 @@
       "timesRequired": "Add at least one time",
       "capacitiesRange": "Capacities must be positive integers",
       "timeFormat": "Time must be HH:MM"
+    },
+    "minibuses": {
+      "title": "Minibuses",
+      "hint": "When off, the fleet is buses-only: remainders go to an extra bus. Off by default."
     }
   }
 }

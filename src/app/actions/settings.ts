@@ -19,6 +19,7 @@ export interface SettingsPatch {
 	reportDeadlineMinutes?: number
 	reportTimes?: string[]
 	vehicleCapacities?: { bus: number; minibus: number }
+	minibusesEnabled?: boolean
 }
 
 export async function updateSettingsData(

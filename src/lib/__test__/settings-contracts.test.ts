@@ -11,11 +11,13 @@ describe('parseSettings', () => {
 			reportDeadlineMinutes: 60,
 			reportTimes: ['16:20', '15:35'],
 			vehicleCapacities: { bus: 50, minibus: 18 },
+			minibusesEnabled: true,
 		})
 		expect(parsed).toEqual({
 			reportDeadlineMinutes: 60,
 			reportTimes: ['15:35', '16:20'],
 			vehicleCapacities: { bus: 50, minibus: 18 },
+			minibusesEnabled: true,
 		})
 	})
 
@@ -24,6 +26,7 @@ describe('parseSettings', () => {
 			reportDeadlineMinutes: 45,
 			reportTimes: [],
 			vehicleCapacities: { bus: 55, minibus: 20 },
+			minibusesEnabled: false,
 		})
 	})
 })

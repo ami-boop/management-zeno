@@ -2,9 +2,10 @@
 
 import { useEffect, useRef, useState } from 'react'
 import { useTranslations } from 'next-intl'
-import { Check, Search } from 'lucide-react'
+import { Check } from 'lucide-react'
 import getManagementStudents from '@/app/actions/getManagementStudents'
 import type { ManagementStudent } from '@/lib/api-contracts'
+import SearchInput from '@/components/SearchInput'
 
 interface StudentPickerProps {
 	selectedUids: string[]
@@ -130,16 +131,13 @@ export default function StudentPicker({ selectedUids, onChange, onStopChange }: 
 				)}
 			</div>
 
-			<div className='relative'>
-				<Search className='absolute start-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400' />
-				<input
-					type='text'
-					placeholder={t('searchStudentsPlaceholder')}
-					value={search}
-					onChange={e => setSearch(e.target.value)}
-					className='block w-full ps-9 pe-3 py-2 border border-gray-300 rounded-xl text-sm placeholder-gray-500 focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500'
-				/>
-			</div>
+			<SearchInput
+				value={search}
+				onChange={setSearch}
+				placeholder={t('searchStudentsPlaceholder')}
+				wrapperClassName='relative'
+				inputClassName='block w-full ps-9 pe-3 py-2 border border-gray-300 rounded-xl text-sm placeholder-gray-500 focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500'
+			/>
 
 			{error && <p className='text-sm text-red-600'>{t('studentsLoadError')}</p>}
 			{!error && loading && students.length === 0 && (

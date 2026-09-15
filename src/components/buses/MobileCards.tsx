@@ -4,7 +4,9 @@ import { Link } from '@/i18n/navigation'
 import { useTranslations } from 'next-intl'
 import { Pencil, PowerOff, RotateCcw } from 'lucide-react'
 import type { FleetBus } from '@/lib/api-contracts'
+import ActiveBadge from '@/components/ActiveBadge'
 import type { BusLiveBadge } from './Client'
+import OnRouteBadge from './OnRouteBadge'
 
 interface BusesMobileCardsProps {
 	buses: FleetBus[]
@@ -38,21 +40,13 @@ export default function MobileCards({
 							{bus.notes && <div className='text-xs text-gray-500'>{bus.notes}</div>}
 						</div>
 						<div className='flex flex-col items-end gap-1.5'>
-							<span
-								className={`inline-flex rounded-full px-2.5 py-0.5 text-xs font-medium ${
-									bus.isActive ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-500'
-								}`}
-							>
-								{bus.isActive ? t('status.active') : t('status.inactive')}
-							</span>
+							<ActiveBadge
+								active={bus.isActive}
+								activeLabel={t('status.active')}
+								inactiveLabel={t('status.inactive')}
+							/>
 							{liveByBus[bus.busId]?.onRoute && (
-								<span className='inline-flex items-center gap-1 rounded-full bg-blue-100 px-2.5 py-0.5 text-xs font-medium text-blue-700'>
-									<span className='relative flex h-1.5 w-1.5'>
-										<span className='absolute inline-flex h-full w-full animate-ping rounded-full bg-blue-400 opacity-75' />
-										<span className='relative inline-flex h-1.5 w-1.5 rounded-full bg-blue-500' />
-									</span>
-									{t('status.onRoute')}
-								</span>
+								<OnRouteBadge label={t('status.onRoute')} />
 							)}
 						</div>
 					</div>

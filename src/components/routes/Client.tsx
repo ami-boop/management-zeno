@@ -2,8 +2,9 @@
 
 import { useTranslations } from 'next-intl'
 import { useSearchFilter } from '@/hooks/useSearchFilter'
-import { AlertCircle, Info, ListChecks, RefreshCw, Search } from 'lucide-react'
+import { AlertCircle, Info, ListChecks, RefreshCw } from 'lucide-react'
 import type { RouteItem } from '@/lib/api-contracts'
+import SearchInput from '@/components/SearchInput'
 import Table from './Table'
 import MobileCards from './MobileCards'
 
@@ -64,16 +65,13 @@ export default function Client({ routes }: RoutesClientProps) {
 					<div className='px-6 py-4 border-b border-gray-200'>
 						<div className='flex flex-col sm:flex-row sm:items-center justify-between gap-4'>
 							<h2 className='text-xl font-semibold text-gray-900'>{t('title')}</h2>
-							<div className='relative max-w-md w-full sm:w-80'>
-								<Search className='absolute start-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400' />
-								<input
-									type='text'
-									placeholder={t('searchPlaceholder')}
-									value={search}
-									onChange={e => setSearch(e.target.value)}
-									className='block w-full ps-9 pe-3 py-2 border border-gray-300 rounded-xl text-sm placeholder-gray-500 focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500'
-								/>
-							</div>
+							<SearchInput
+								value={search}
+								onChange={setSearch}
+								placeholder={t('searchPlaceholder')}
+								wrapperClassName='relative max-w-md w-full sm:w-80'
+								inputClassName='block w-full ps-9 pe-3 py-2 border border-gray-300 rounded-xl text-sm placeholder-gray-500 focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500'
+							/>
 						</div>
 					</div>
 

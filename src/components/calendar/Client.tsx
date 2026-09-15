@@ -2,10 +2,14 @@
 
 import { useMemo, useState } from 'react'
 import { useTranslations } from 'next-intl'
-import { CalendarPlus, Pencil, PowerOff, RotateCcw } from 'lucide-react'
+import { CalendarPlus } from 'lucide-react'
 import { GRADE_ORDER, classToHebrew, gradeOfClass, splitClassId } from '@/lib/classes'
 import type { CalendarExceptionDetail, ExceptionFormValues } from '@/lib/api-contracts'
 import { updateException } from '@/app/actions/calendar'
+import ActiveBadge from '@/components/ActiveBadge'
+import EmptyState from '@/components/EmptyState'
+import EntityActions from '@/components/EntityActions'
+import ErrorBanner from '@/components/ErrorBanner'
 import ExceptionDialog from './ExceptionDialog'
 
 interface CalendarClientProps {
@@ -161,13 +165,9 @@ export default function Client({
 			{actionError && <p className='mb-3 text-sm text-red-600'>{t('errors.actionFailed')}</p>}
 
 			{!sorted ? (
-				<p className='rounded-xl border border-red-200 bg-red-50 p-4 text-sm text-red-700'>
-					{t('errors.loadFailed')}
-				</p>
+				<ErrorBanner message={t('errors.loadFailed')} />
 			) : sorted.length === 0 ? (
-				<p className='rounded-xl border border-gray-200 bg-white p-8 text-center text-sm text-gray-500'>
-					{t('noExceptions')}
-				</p>
+				<EmptyState message={t('noExceptions')} />
 			) : (
 				<div className='grid gap-3'>
 					{sorted.map(exception => (
@@ -184,49 +184,25 @@ export default function Client({
 									</div>
 									<div className='text-xs text-gray-500'>{t(`types.${exception.type}`)}</div>
 								</div>
-								<span
-									className={`inline-flex rounded-full px-2.5 py-0.5 text-xs font-medium ${
-										exception.isActive
-											? 'bg-green-100 text-green-700'
-											: 'bg-gray-100 text-gray-500'
-									}`}
-								>
-									{exception.isActive ? t('status.active') : t('status.inactive')}
-								</span>
+								<ActiveBadge
+									active={exception.isActive}
+									activeLabel={t('status.active')}
+									inactiveLabel={t('status.inactive')}
+								/>
 							</div>
 						<ExceptionDetail exception={exception} />
 							{exception.note && (
 								<div className='mb-3 text-xs text-gray-500'>{exception.note}</div>
 							)}
-							<div className='flex items-center gap-1 border-t border-gray-100 pt-2'>
-								<button
-									className='inline-flex items-center gap-1.5 rounded-lg px-2 py-1.5 text-xs font-medium text-gray-600 hover:bg-blue-50 hover:text-blue-700'
-									onClick={() => {
-										setEditing(exception)
-										setDialogOpen(true)
-									}}
-								>
-									<Pencil className='h-3.5 w-3.5' />
-									{t('actions.edit')}
-								</button>
-								<button
-									className='inline-flex items-center gap-1.5 rounded-lg px-2 py-1.5 text-xs font-medium text-gray-600 hover:bg-amber-50 hover:text-amber-700 disabled:opacity-40'
-									disabled={busyId === exception.id}
-									onClick={() => toggleActive(exception)}
-								>
-									{exception.isActive ? (
-										<>
-											<PowerOff className='h-3.5 w-3.5' />
-											{t('actions.deactivate')}
-										</>
-									) : (
-										<>
-											<RotateCcw className='h-3.5 w-3.5' />
-											{t('actions.activate')}
-										</>
-									)}
-								</button>
-							</div>
+							<EntityActions
+								onEdit={() => setEditing(exception)}
+								onToggle={() => toggleActive(exception)}
+								active={exception.isActive}
+								busy={busyId === exception.id}
+								editLabel={t('actions.edit')}
+								deactivateLabel={t('actions.deactivate')}
+								activateLabel={t('actions.activate')}
+							/>
 						</div>
 					))}
 				</div>

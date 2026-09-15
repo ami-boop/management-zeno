@@ -4,8 +4,19 @@ import { useEffect, useMemo, useRef, useState } from 'react'
 import { Link } from '@/i18n/navigation'
 import { useTranslations } from 'next-intl'
 import { BusFront, Gauge, Navigation } from 'lucide-react'
-import type { Map as MapLibreMap, Marker as MapLibreMarker } from 'maplibre-gl'
+import type { Marker as MapLibreMarker } from 'maplibre-gl'
 import { loadMaplibre } from '@/lib/maplibre-loader'
+import {
+	addPathLine,
+	fitBoundsTo,
+	makeBusMarker,
+	makeStopMarker,
+	paintBusMarker,
+	removePathLine,
+	setEtaBadge,
+	type MapPoint,
+} from '@/components/maps/mapkit'
+import { useMap } from '@/components/maps/useMap'
 import type { BusLiveTrip, FleetBus } from '@/lib/api-contracts'
 
 interface FleetMapProps {
@@ -13,83 +24,11 @@ interface FleetMapProps {
 	buses: FleetBus[] | null
 }
 
-const BUS_COLOR = '#16a34a'
-const STOP_COLOR = '#2563eb'
-const DEFAULT_CENTER: [number, number] = [35.213, 31.768]
-
-function fitBoundsTo(map: MapLibreMap, points: Array<[number, number]>) {
-	if (points.length === 0) return
-	if (points.length === 1) {
-		map.easeTo({ center: points[0], zoom: 14 })
-		return
-	}
-	let minLng = points[0][0]
-	let maxLng = points[0][0]
-	let minLat = points[0][1]
-	let maxLat = points[0][1]
-	for (const [lng, lat] of points) {
-		minLng = Math.min(minLng, lng)
-		maxLng = Math.max(maxLng, lng)
-		minLat = Math.min(minLat, lat)
-		maxLat = Math.max(maxLat, lat)
-	}
-	map.fitBounds(
-		[
-			[minLng, minLat],
-			[maxLng, maxLat],
-		],
-		{ padding: 60, maxZoom: 15, duration: 600 }
-	)
-}
-
-function makeBusElement(plate: string, selected: boolean): HTMLDivElement {
-	const wrapper = document.createElement('div')
-	wrapper.style.display = 'flex'
-	wrapper.style.flexDirection = 'column'
-	wrapper.style.alignItems = 'center'
-	wrapper.style.gap = '2px'
-	wrapper.style.pointerEvents = 'auto'
-	wrapper.style.cursor = 'pointer'
-
-	const label = document.createElement('div')
-	label.style.padding = '3px 9px'
-	label.style.borderRadius = '999px'
-	label.style.backgroundColor = selected ? BUS_COLOR : 'rgba(255, 255, 255, 0.95)'
-	label.style.border = selected ? `1.5px solid ${BUS_COLOR}` : '1.5px solid #dfe5e8'
-	label.style.boxShadow = '0 1px 4px rgba(21, 35, 45, 0.25)'
-	label.style.whiteSpace = 'nowrap'
-	label.style.fontFamily = 'inherit'
-	label.style.fontSize = '11px'
-	label.style.fontWeight = '700'
-	label.style.color = selected ? '#ffffff' : '#40515c'
-	label.style.lineHeight = '1.2'
-	label.textContent = plate
-
-	const dot = document.createElement('div')
-	dot.style.width = '14px'
-	dot.style.height = '14px'
-	dot.style.borderRadius = '50%'
-	dot.style.backgroundColor = BUS_COLOR
-	dot.style.border = '3px solid #ffffff'
-	dot.style.boxShadow = '0 1px 4px rgba(21, 35, 45, 0.35)'
-
-	wrapper.appendChild(label)
-	wrapper.appendChild(dot)
-	return wrapper
-}
-
-function paintBusElement(element: HTMLElement, selected: boolean) {
-	const label = element.firstChild as HTMLElement | null
-	if (!label) return
-	label.style.backgroundColor = selected ? BUS_COLOR : 'rgba(255, 255, 255, 0.95)'
-	label.style.border = selected ? `1.5px solid ${BUS_COLOR}` : '1.5px solid #dfe5e8'
-	label.style.color = selected ? '#ffffff' : '#40515c'
-}
+const DEFAULT_CENTER: MapPoint = [35.213, 31.768]
 
 export default function FleetMap({ trips, buses }: FleetMapProps) {
 	const t = useTranslations('Fleet')
 	const containerRef = useRef<HTMLDivElement | null>(null)
-	const mapRef = useRef<MapLibreMap | null>(null)
 	const busMarkersRef = useRef<Map<string, MapLibreMarker>>(new Map())
 	const stopMarkersRef = useRef<MapLibreMarker[]>([])
 	const etaSpansRef = useRef<Map<string, HTMLSpanElement>>(new Map())
@@ -98,9 +37,10 @@ export default function FleetMap({ trips, buses }: FleetMapProps) {
 	const prevSelectedRef = useRef<string | null>(null)
 	const userChoseRef = useRef(false)
 	const selectedRef = useRef<string | null>(null)
-	const [ready, setReady] = useState(false)
 	const [selectedTripId, setSelectedTripId] = useState<string | null>(null)
 	selectedRef.current = selectedTripId
+
+	const { mapRef, ready } = useMap(containerRef, { center: DEFAULT_CENTER, zoom: 10 })
 
 	const busById = useMemo(() => {
 		const map = new Map<string, FleetBus>()
@@ -132,43 +72,20 @@ export default function FleetMap({ trips, buses }: FleetMapProps) {
 		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [onRouteKey])
 
-	function choose(tripId: string) {
-		userChoseRef.current = true
-		setSelectedTripId(tripId)
-	}
-
-	// Map instance is created once; all live data syncs below without teardown.
+	// Drop markers of the previous selection when the map unmounts.
 	useEffect(() => {
-		let cancelled = false
-		const container = containerRef.current
-		if (!container) return
-		loadMaplibre().then(maplibregl => {
-			if (cancelled || !containerRef.current || containerRef.current !== container) return
-			const map = new maplibregl.Map({
-				container,
-				style: 'https://tiles.openfreemap.org/styles/liberty',
-				center: DEFAULT_CENTER,
-				zoom: 10,
-				attributionControl: { compact: true },
-			})
-			mapRef.current = map
-			map.addControl(new maplibregl.NavigationControl({ showCompass: false }), 'bottom-right')
-			map.on('load', () => {
-				if (mapRef.current !== map) return
-				setReady(true)
-			})
-		})
-		setReady(false)
 		return () => {
-			cancelled = true
 			for (const marker of busMarkersRef.current.values()) marker.remove()
 			busMarkersRef.current = new Map()
 			for (const marker of stopMarkersRef.current) marker.remove()
 			stopMarkersRef.current = []
-			mapRef.current?.remove()
-			mapRef.current = null
 		}
 	}, [])
+
+	function choose(tripId: string) {
+		userChoseRef.current = true
+		setSelectedTripId(tripId)
+	}
 
 	// Sync bus markers in place on every poll: move, add, drop — no rebuild.
 	const markersKey = useMemo(
@@ -188,8 +105,8 @@ export default function FleetMap({ trips, buses }: FleetMapProps) {
 		if (!ready || !mapRef.current) return
 		let cancelled = false
 		loadMaplibre().then(maplibregl => {
-			if (cancelled || !mapRef.current) return
 			const map = mapRef.current
+			if (cancelled || !map) return
 			const seen = new Set<string>()
 			for (const trip of onRoute) {
 				if (!trip.live) continue
@@ -199,9 +116,9 @@ export default function FleetMap({ trips, buses }: FleetMapProps) {
 				const existing = busMarkersRef.current.get(trip.tripId)
 				if (existing) {
 					existing.setLngLat([trip.live.lng, trip.live.lat])
-					paintBusElement(existing.getElement(), isSelected)
+					paintBusMarker(existing.getElement(), isSelected)
 				} else {
-					const element = makeBusElement(plate, isSelected)
+					const element = makeBusMarker(plate, isSelected)
 					element.addEventListener('click', () => {
 						const latest = tripsRef.current.find(item => item.tripId === trip.tripId)
 						if (latest?.isOnRouteNow) choose(trip.tripId)
@@ -228,7 +145,7 @@ export default function FleetMap({ trips, buses }: FleetMapProps) {
 	// Repaint selection ring when the user picks a different bus.
 	useEffect(() => {
 		for (const [tripId, marker] of busMarkersRef.current) {
-			paintBusElement(marker.getElement(), tripId === selectedTripId)
+			paintBusMarker(marker.getElement(), tripId === selectedTripId)
 		}
 	}, [selectedTripId])
 
@@ -245,10 +162,9 @@ export default function FleetMap({ trips, buses }: FleetMapProps) {
 		if (!ready || !mapRef.current) return
 		let cancelled = false
 		loadMaplibre().then(maplibregl => {
-			if (cancelled || !mapRef.current) return
 			const map = mapRef.current
-			if (map.getLayer('fleet-path-line')) map.removeLayer('fleet-path-line')
-			if (map.getSource('fleet-path')) map.removeSource('fleet-path')
+			if (cancelled || !map) return
+			removePathLine(map, 'fleet-path')
 			for (const marker of stopMarkersRef.current) marker.remove()
 			stopMarkersRef.current = []
 			etaSpansRef.current = new Map()
@@ -259,83 +175,28 @@ export default function FleetMap({ trips, buses }: FleetMapProps) {
 			if (!trip || !trip.isOnRouteNow) return
 
 			if (trip.path && trip.path.length >= 2) {
-				map.addSource('fleet-path', {
-					type: 'geojson',
-					data: {
-						type: 'Feature',
-						properties: {},
-						geometry: { type: 'LineString', coordinates: trip.path },
-					},
-				})
-				map.addLayer({
-					id: 'fleet-path-line',
-					type: 'line',
-					source: 'fleet-path',
-					layout: { 'line-join': 'round', 'line-cap': 'round' },
-					paint: { 'line-color': '#2563eb', 'line-width': 4, 'line-opacity': 0.8 },
-				})
+				addPathLine(map, 'fleet-path', trip.path)
 			}
 
-			const points: Array<[number, number]> = []
+			const points: MapPoint[] = []
 			for (const stop of trip.stops) {
 				if (stop.lat === null || stop.lng === null) continue
 				points.push([stop.lng, stop.lat])
-				const eta = trip.etas?.[stop.stopId]
-
-				const wrapper = document.createElement('div')
-				wrapper.style.display = 'flex'
-				wrapper.style.flexDirection = 'column'
-				wrapper.style.alignItems = 'center'
-				wrapper.style.gap = '4px'
-				wrapper.style.pointerEvents = 'auto'
-				wrapper.style.cursor = 'default'
-
-				const label = document.createElement('div')
-				label.style.display = 'flex'
-				label.style.alignItems = 'center'
-				label.style.gap = '6px'
-				label.style.padding = '3px 9px'
-				label.style.borderRadius = '999px'
-				label.style.backgroundColor = 'rgba(255, 255, 255, 0.95)'
-				label.style.border = '1.5px solid #dfe5e8'
-				label.style.boxShadow = '0 1px 4px rgba(21, 35, 45, 0.18)'
-				label.style.whiteSpace = 'nowrap'
-				label.style.fontFamily = 'inherit'
-				label.style.fontSize = '11px'
-				label.style.fontWeight = '700'
-				label.style.color = '#40515c'
-				label.style.lineHeight = '1.2'
-
-				const nameSpan = document.createElement('span')
-				nameSpan.textContent = stop.name
-				label.appendChild(nameSpan)
-
-				const etaSpan = document.createElement('span')
-				etaSpan.style.padding = '1px 6px'
-				etaSpan.style.borderRadius = '999px'
-				etaSpan.style.backgroundColor = '#2563eb'
-				etaSpan.style.color = '#ffffff'
-				etaSpan.style.fontSize = '10px'
-				if (eta != null) {
-					etaSpan.textContent = t('detail.etaShort', { minutes: eta })
-				} else {
-					etaSpan.style.display = 'none'
+				const { element, badge } = makeStopMarker({
+					name: stop.name,
+					badge: { kind: 'eta', text: null },
+				})
+				if (badge) {
+					setEtaBadge(
+						badge,
+						trip.etas?.[stop.stopId] != null
+							? t('detail.etaShort', { minutes: trip.etas[stop.stopId] })
+							: null
+					)
+					etaSpansRef.current.set(stop.stopId, badge)
 				}
-				etaSpansRef.current.set(stop.stopId, etaSpan)
-				label.appendChild(etaSpan)
-
-				const dot = document.createElement('div')
-				dot.style.width = '12px'
-				dot.style.height = '12px'
-				dot.style.borderRadius = '50%'
-				dot.style.backgroundColor = '#ffffff'
-				dot.style.border = `3px solid ${STOP_COLOR}`
-				dot.style.boxShadow = '0 1px 4px rgba(21, 35, 45, 0.25)'
-
-				wrapper.appendChild(label)
-				wrapper.appendChild(dot)
 				stopMarkersRef.current.push(
-					new maplibregl.Marker({ element: wrapper, anchor: 'bottom' })
+					new maplibregl.Marker({ element, anchor: 'bottom' })
 						.setLngLat([stop.lng, stop.lat])
 						.addTo(map)
 				)
@@ -343,7 +204,7 @@ export default function FleetMap({ trips, buses }: FleetMapProps) {
 
 			if (shouldFit) {
 				if (trip.live) points.push([trip.live.lng, trip.live.lat])
-				fitBoundsTo(map, points)
+				fitBoundsTo(map, points, { maxZoom: 15 })
 			}
 		})
 		return () => {
@@ -357,12 +218,7 @@ export default function FleetMap({ trips, buses }: FleetMapProps) {
 		if (!ready || !selected?.etas) return
 		for (const [stopId, span] of etaSpansRef.current) {
 			const eta = selected.etas[stopId]
-			if (eta == null) {
-				span.style.display = 'none'
-			} else {
-				span.style.display = ''
-				span.textContent = t('detail.etaShort', { minutes: eta })
-			}
+			setEtaBadge(span, eta != null ? t('detail.etaShort', { minutes: eta }) : null)
 		}
 	}, [ready, selected?.etas, t])
 

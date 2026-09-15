@@ -3,9 +3,14 @@
 import { useState } from 'react'
 import { Link } from '@/i18n/navigation'
 import { useTranslations } from 'next-intl'
-import { AlertCircle, MapPin, Pencil, PowerOff, RotateCcw, Search } from 'lucide-react'
+import { MapPin } from 'lucide-react'
 import type { StopDetail, StopFormValues } from '@/lib/api-contracts'
 import { updateStop } from '@/app/actions/stops'
+import ActiveBadge from '@/components/ActiveBadge'
+import EmptyState from '@/components/EmptyState'
+import EntityActions from '@/components/EntityActions'
+import ErrorBanner from '@/components/ErrorBanner'
+import SearchInput from '@/components/SearchInput'
 import StopDialog from './StopDialog'
 import { useSearchFilter } from '@/hooks/useSearchFilter'
 
@@ -82,27 +87,18 @@ export default function Client({ initialStops }: StopsClientProps) {
 				</button>
 			</div>
 
-			<div className='relative mb-4'>
-				<Search className='pointer-events-none absolute start-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400' />
-				<input
-					className='w-full rounded-xl border border-gray-300 bg-white py-2 pe-3 ps-9 text-sm text-gray-900 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-none'
-					placeholder={t('searchPlaceholder')}
-					value={search}
-					onChange={event => setSearch(event.target.value)}
-				/>
-			</div>
+			<SearchInput
+				value={search}
+				onChange={setSearch}
+				placeholder={t('searchPlaceholder')}
+			/>
 
 			{actionError && <p className='mb-3 text-sm text-red-600'>{t('errors.actionFailed')}</p>}
 
 			{filtered === null ? (
-				<div className='mb-3 flex items-center gap-2 rounded-xl border border-red-200 bg-red-50 p-4 text-sm text-red-700'>
-					<AlertCircle className='h-4 w-4 shrink-0' />
-					{t('errors.loadFailed')}
-				</div>
+				<ErrorBanner message={t('errors.loadFailed')} />
 			) : filtered.length === 0 ? (
-				<p className='rounded-xl border border-gray-200 bg-white p-8 text-center text-sm text-gray-500'>
-					{search ? t('noResults') : t('noStops')}
-				</p>
+				<EmptyState message={search ? t('noResults') : t('noStops')} />
 			) : null}
 
 			<div className='grid gap-3'>
@@ -123,13 +119,11 @@ export default function Client({ initialStops }: StopsClientProps) {
 								</Link>
 								<div className='text-xs text-gray-500 font-mono'>{stop.stopId}</div>
 							</div>
-							<span
-								className={`inline-flex rounded-full px-2.5 py-0.5 text-xs font-medium ${
-									stop.isActive ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-500'
-								}`}
-							>
-								{stop.isActive ? t('status.active') : t('status.inactive')}
-							</span>
+							<ActiveBadge
+								active={stop.isActive}
+								activeLabel={t('status.active')}
+								inactiveLabel={t('status.inactive')}
+							/>
 						</div>
 						<div className='mb-3 text-sm text-gray-700'>
 							{stop.address && <div>{stop.address}</div>}
@@ -139,35 +133,18 @@ export default function Client({ initialStops }: StopsClientProps) {
 								</div>
 							)}
 						</div>
-						<div className='flex items-center gap-1 border-t border-gray-100 pt-2'>
-							<button
-								className='inline-flex items-center gap-1.5 rounded-lg px-2 py-1.5 text-xs font-medium text-gray-600 hover:bg-blue-50 hover:text-blue-700'
-								onClick={() => {
-									setEditingStop(stop)
-									setDialogOpen(true)
-								}}
-							>
-								<Pencil className='h-3.5 w-3.5' />
-								{t('actions.edit')}
-							</button>
-							<button
-								className='inline-flex items-center gap-1.5 rounded-lg px-2 py-1.5 text-xs font-medium text-gray-600 hover:bg-amber-50 hover:text-amber-700 disabled:opacity-40'
-								disabled={busyStopId === stop.stopId}
-								onClick={() => toggleActive(stop)}
-							>
-								{stop.isActive ? (
-									<>
-										<PowerOff className='h-3.5 w-3.5' />
-										{t('actions.deactivate')}
-									</>
-								) : (
-									<>
-										<RotateCcw className='h-3.5 w-3.5' />
-										{t('actions.activate')}
-									</>
-								)}
-							</button>
-						</div>
+						<EntityActions
+							onEdit={() => {
+								setEditingStop(stop)
+								setDialogOpen(true)
+							}}
+							onToggle={() => toggleActive(stop)}
+							active={stop.isActive}
+							busy={busyStopId === stop.stopId}
+							editLabel={t('actions.edit')}
+							deactivateLabel={t('actions.deactivate')}
+							activateLabel={t('actions.activate')}
+						/>
 					</div>
 				))}
 			</div>

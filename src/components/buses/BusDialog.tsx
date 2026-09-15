@@ -2,16 +2,15 @@
 
 import { useEffect, useState } from 'react'
 import { useTranslations } from 'next-intl'
-import { Loader2 } from 'lucide-react'
 import {
 	Dialog,
 	DialogContent,
 	DialogDescription,
-	DialogFooter,
 	DialogHeader,
 	DialogTitle,
 } from '@/components/ui/dialog'
-import { Button } from '@/components/ui/button'
+import DialogSaveFooter from '@/components/DialogSaveFooter'
+import FormField, { fieldInputClassName } from '@/components/FormField'
 import { createBus, updateBus } from '@/app/actions/buses'
 import type { FleetBus } from '@/lib/api-contracts'
 
@@ -31,8 +30,7 @@ interface BusDialogProps {
 	onEdited: (busId: string, values: BusFormValues) => void
 }
 
-const inputClass =
-	'w-full rounded-xl border border-gray-300 bg-white px-3 py-2 text-sm text-gray-900 focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500'
+const inputClass = fieldInputClassName
 
 export default function BusDialog({ open, bus, onClose, onCreated, onEdited }: BusDialogProps) {
 	const t = useTranslations('Fleet')
@@ -101,16 +99,14 @@ export default function BusDialog({ open, bus, onClose, onCreated, onEdited }: B
 					<DialogDescription>{t('dialog.description')}</DialogDescription>
 				</DialogHeader>
 				<div className='grid gap-3'>
-					<label className='grid gap-1'>
-						<span className='text-xs font-medium text-gray-500'>{t('fields.licensePlate')} *</span>
+					<FormField label={t('fields.licensePlate')} required>
 						<input
 							className={inputClass}
 							value={licensePlate}
 							onChange={event => setLicensePlate(event.target.value)}
 						/>
-					</label>
-					<label className='grid gap-1'>
-						<span className='text-xs font-medium text-gray-500'>{t('fields.capacity')} *</span>
+					</FormField>
+					<FormField label={t('fields.capacity')} required>
 						<input
 							className={inputClass}
 							type='number'
@@ -118,43 +114,38 @@ export default function BusDialog({ open, bus, onClose, onCreated, onEdited }: B
 							value={capacity}
 							onChange={event => setCapacity(event.target.value)}
 						/>
-					</label>
-					<label className='grid gap-1'>
-						<span className='text-xs font-medium text-gray-500'>{t('fields.driverName')}</span>
+					</FormField>
+					<FormField label={t('fields.driverName')}>
 						<input
 							className={inputClass}
 							value={driverName}
 							onChange={event => setDriverName(event.target.value)}
 						/>
-					</label>
-					<label className='grid gap-1'>
-						<span className='text-xs font-medium text-gray-500'>{t('fields.driverPhone')}</span>
+					</FormField>
+					<FormField label={t('fields.driverPhone')}>
 						<input
 							className={inputClass}
 							value={driverPhone}
 							onChange={event => setDriverPhone(event.target.value)}
 						/>
-					</label>
-					<label className='grid gap-1'>
-						<span className='text-xs font-medium text-gray-500'>{t('fields.notes')}</span>
+					</FormField>
+					<FormField label={t('fields.notes')}>
 						<textarea
 							className={inputClass}
 							rows={2}
 							value={notes}
 							onChange={event => setNotes(event.target.value)}
 						/>
-					</label>
+					</FormField>
 					{error && <p className='text-sm text-red-600'>{error}</p>}
 				</div>
-				<DialogFooter>
-					<Button variant='outline' onClick={onClose} disabled={saving}>
-						{t('actions.cancel')}
-					</Button>
-					<Button onClick={handleSave} disabled={saving}>
-						{saving && <Loader2 className='h-4 w-4 animate-spin' />}
-						{t('actions.save')}
-					</Button>
-				</DialogFooter>
+				<DialogSaveFooter
+					onCancel={onClose}
+					onSave={() => void handleSave()}
+					saving={saving}
+					cancelLabel={t('actions.cancel')}
+					saveLabel={t('actions.save')}
+				/>
 			</DialogContent>
 		</Dialog>
 	)

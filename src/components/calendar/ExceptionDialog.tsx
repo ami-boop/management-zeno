@@ -2,20 +2,17 @@
 
 import { useEffect, useState } from 'react'
 import { useTranslations } from 'next-intl'
-import { Loader2, Plus, Trash2 } from 'lucide-react'
 import {
 	Dialog,
 	DialogContent,
 	DialogDescription,
-	DialogFooter,
 	DialogHeader,
 	DialogTitle,
 } from '@/components/ui/dialog'
-import { Button } from '@/components/ui/button'
+import DialogSaveFooter from '@/components/DialogSaveFooter'
+import FormField, { fieldInputClassName } from '@/components/FormField'
 import { createException, updateException } from '@/app/actions/calendar'
 import {
-	ALL_CLASS_OPTIONS,
-	GRADE_ORDER,
 	GRADE_OPTIONS,
 	classToHebrew,
 	classesOfGrade,
@@ -29,6 +26,8 @@ import {
 	type CalendarExceptionType,
 	type ExceptionFormValues,
 } from '@/lib/api-contracts'
+import HalfDayEditor, { type EndTimeRow } from './HalfDayEditor'
+import ScopeEditor from './ScopeEditor'
 
 interface ExceptionDialogProps {
 	open: boolean
@@ -41,8 +40,7 @@ interface ExceptionDialogProps {
 	onEdited: (date: string, values: ExceptionFormValues) => void
 }
 
-const inputClass =
-	'w-full rounded-xl border border-gray-300 bg-white px-3 py-2 text-sm text-gray-900 focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500'
+const inputClass = fieldInputClassName
 
 const TYPE_LABELS: Record<CalendarExceptionType, string> = {
 	holiday: 'holiday',
@@ -70,7 +68,7 @@ export default function ExceptionDialog({
 	const [date, setDate] = useState(today())
 	const [type, setType] = useState<CalendarExceptionType>('holiday')
 	const [note, setNote] = useState('')
-	const [endTimes, setEndTimes] = useState<{ classId: string; time: string }[]>([])
+	const [endTimes, setEndTimes] = useState<EndTimeRow[]>([])
 	const [scope, setScope] = useState<string[]>([])
 	const [scopeGrade, setScopeGrade] = useState<string>('')
 	const [departureTime, setDepartureTime] = useState('')
@@ -166,8 +164,7 @@ export default function ExceptionDialog({
 					<DialogDescription>{t('dialog.description')}</DialogDescription>
 				</DialogHeader>
 				<div className='grid gap-3'>
-					<label className='grid gap-1'>
-						<span className='text-xs font-medium text-gray-500'>{t('fields.date')} *</span>
+					<FormField label={t('fields.date')} required>
 						<input
 							className={inputClass}
 							type='date'
@@ -175,9 +172,8 @@ export default function ExceptionDialog({
 							disabled={Boolean(exception)}
 							onChange={event => setDate(event.target.value)}
 						/>
-					</label>
-					<label className='grid gap-1'>
-						<span className='text-xs font-medium text-gray-500'>{t('fields.type')} *</span>
+					</FormField>
+					<FormField label={t('fields.type')} required>
 						<select
 							className={inputClass}
 							value={type}
@@ -189,273 +185,81 @@ export default function ExceptionDialog({
 								</option>
 							))}
 						</select>
-					</label>
+					</FormField>
 
 					{type === 'half_day' && (
-						<div className='grid gap-2'>
-							<span className='text-xs font-medium text-gray-500'>
-								{t('fields.overrideEndTimes')} *
-							</span>
-							{endTimes.map((row, index) => {
-								const grade = row.classId ? gradeOfClass(row.classId) : null
-								return (
-									<div key={index} className='flex items-center gap-2'>
-										{row.classId && !grade ? (
-											<select
-												className={`${inputClass} flex-1`}
-												value={row.classId}
-												onChange={event =>
-													setEndTimes(prev =>
-														prev.map((item, i) =>
-															i === index ? { ...item, classId: event.target.value } : item
-														)
-													)
-												}
-											>
-												<option value={row.classId}>{labelOf(row.classId)}</option>
-												{ALL_CLASS_OPTIONS.map(option => (
-													<option key={option.id} value={option.id}>
-														{option.label}
-													</option>
-												))}
-												{megamas.length > 0 && (
-													<optgroup label={t('fields.megamas')}>
-														{megamas.map(option => (
-															<option key={option.id} value={option.id}>
-																{option.label}
-															</option>
-														))}
-													</optgroup>
-												)}
-											</select>
-										) : (
-											<>
-												<select
-													className={`${inputClass} w-28`}
-													value={grade ?? ''}
-													onChange={event => {
-														const first = classesOfGrade(event.target.value)[0]
-														setEndTimes(prev =>
-															prev.map((item, i) =>
-																i === index
-																	? { ...item, classId: first?.id ?? '' }
-																	: item
-															)
-														)
-													}}
-												>
-													<option value='' disabled>
-														{t('fields.grade')}
-													</option>
-													{gradeOptions.map(option => (
-														<option key={option.id} value={option.id}>
-															{option.label}
-														</option>
-													))}
-												</select>
-												<select
-													className={`${inputClass} flex-1`}
-													value={grade ? row.classId : ''}
-													disabled={!grade}
-													onChange={event =>
-														setEndTimes(prev =>
-															prev.map((item, i) =>
-																i === index ? { ...item, classId: event.target.value } : item
-															)
-														)
-													}
-												>
-													<option value='' disabled>
-														{t('fields.class')}
-													</option>
-													{(grade ? classesOfGrade(grade) : []).map(option => (
-														<option key={option.id} value={option.id}>
-															{splitClassId(option.id)[1]}
-														</option>
-													))}
-												</select>
-											</>
-										)}
-										<input
-											className={`${inputClass} w-24`}
-											type='time'
-											value={row.time}
-											onChange={event =>
-												setEndTimes(prev =>
-													prev.map((item, i) =>
-														i === index ? { ...item, time: event.target.value } : item
-													)
-												)
-											}
-										/>
-										<button
-											className='rounded-lg p-2 text-gray-400 hover:bg-red-50 hover:text-red-600'
-											title={t('actions.removeRow')}
-											onClick={() => setEndTimes(prev => prev.filter((_, i) => i !== index))}
-										>
-											<Trash2 className='h-4 w-4' />
-										</button>
-									</div>
+						<HalfDayEditor
+							rows={endTimes}
+							onUpdateRow={(index, patch) =>
+								setEndTimes(prev =>
+									prev.map((item, i) => (i === index ? { ...item, ...patch } : item))
 								)
-							})}
-							<div className='flex flex-wrap gap-2'>
-								<button
-									className='inline-flex w-fit items-center gap-1.5 rounded-lg border border-dashed border-gray-300 px-3 py-1.5 text-xs font-medium text-gray-600 hover:bg-gray-50'
-									onClick={() => setEndTimes(prev => [...prev, { classId: '', time: '' }])}
-								>
-									<Plus className='h-3.5 w-3.5' />
-									{t('actions.addRow')}
-								</button>
-								{megamas.length > 0 && (
-									<button
-										className='inline-flex w-fit items-center gap-1.5 rounded-lg border border-dashed border-gray-300 px-3 py-1.5 text-xs font-medium text-gray-600 hover:bg-gray-50'
-										onClick={() =>
-											setEndTimes(prev => [
-												...prev,
-												{ classId: megamas.find(option => !prev.some(row => row.classId === option.id))?.id ?? megamas[0].id, time: '' },
-											])
-										}
-									>
-										<Plus className='h-3.5 w-3.5' />
-										{t('actions.addMegama')}
-									</button>
-								)}
-							</div>
-						</div>
+							}
+							onRemoveRow={index =>
+								setEndTimes(prev => prev.filter((_, i) => i !== index))
+							}
+							onAddRow={() => setEndTimes(prev => [...prev, { classId: '', time: '' }])}
+							onAddMegama={() =>
+								setEndTimes(prev => [
+									...prev,
+									{
+										classId:
+											megamas.find(option => !prev.some(row => row.classId === option.id))
+												?.id ?? megamas[0].id,
+										time: '',
+									},
+								])
+							}
+							megamas={megamas}
+							labelOf={labelOf}
+							gradeOptions={gradeOptions}
+						/>
 					)}
 
 					{type === 'special_schedule' && (
-						<div className='grid gap-3'>
-							<div className='grid gap-2'>
-								<span className='text-xs font-medium text-gray-500'>{t('fields.scope')} *</span>
-								{scope.length > 0 && (
-									<div className='flex flex-wrap gap-1.5'>
-										{[...scope]
-											.sort(
-												(a, b) =>
-													GRADE_ORDER.indexOf(splitClassId(a)[0]) -
-														GRADE_ORDER.indexOf(splitClassId(b)[0]) || a.localeCompare(b)
-											)
-											.map(classId => (
-												<button
-													key={classId}
-													type='button'
-													className='inline-flex items-center gap-1 rounded-full bg-blue-50 px-2.5 py-0.5 text-xs font-medium text-blue-700 hover:bg-blue-100'
-													title={t('actions.removeRow')}
-													onClick={() => setScope(prev => prev.filter(id => id !== classId))}
-												>
-													{labelOf(classId)}
-													<span aria-hidden='true'>×</span>
-												</button>
-											))}
-									</div>
-								)}
-								<div className='flex items-center gap-2'>
-									<select
-										className={`${inputClass} w-28`}
-										value={scopeGrade}
-										onChange={event => setScopeGrade(event.target.value)}
-									>
-										{gradeOptions.map(option => (
-											<option key={option.id} value={option.id}>
-												{option.label}
-											</option>
-										))}
-									</select>
-									<button
-										className='rounded-lg px-2 py-1.5 text-xs font-medium text-blue-600 hover:bg-blue-50'
-										onClick={() =>
-											setScope(prev => [
-												...new Set([...prev, ...classesOfGrade(scopeGrade).map(o => o.id)]),
-											])
-										}
-									>
-										{t('fields.selectAll')}
-									</button>
-								</div>
-								{megamas.length > 0 && (
-									<div className='flex items-center gap-2'>
-										<select
-											className={`${inputClass} flex-1`}
-											defaultValue=''
-											onChange={event => {
-												if (!event.target.value) return
-												setScope(prev =>
-													prev.includes(event.target.value) ? prev : [...prev, event.target.value]
-												)
-												event.target.value = ''
-											}}
-										>
-											<option value=''>{t('fields.addMegamaScope')}</option>
-											{megamas.map(option => (
-												<option key={option.id} value={option.id}>
-													{option.label}
-												</option>
-											))}
-										</select>
-									</div>
-								)}
-								<div className='flex flex-wrap gap-1.5'>
-									{classesOfGrade(scopeGrade).map(option => {
-										const checked = scope.includes(option.id)
-										return (
-											<button
-												key={option.id}
-												type='button'
-												aria-pressed={checked}
-												className={`inline-flex h-8 min-w-8 items-center justify-center rounded-lg border px-2 text-sm font-medium ${
-													checked
-														? 'border-blue-500 bg-blue-50 text-blue-700'
-														: 'border-gray-200 text-gray-600 hover:bg-gray-50'
-												}`}
-												onClick={() =>
-													setScope(prev =>
-														prev.includes(option.id)
-															? prev.filter(id => id !== option.id)
-															: [...prev, option.id]
-													)
-												}
-											>
-												{splitClassId(option.id)[1]}
-											</button>
-										)
-									})}
-								</div>
-							</div>
-							<label className='grid gap-1'>
-								<span className='text-xs font-medium text-gray-500'>
-									{t('fields.departureTime')} *
-								</span>
-								<input
-									className={inputClass}
-									type='time'
-									value={departureTime}
-									onChange={event => setDepartureTime(event.target.value)}
-								/>
-							</label>
-						</div>
+						<ScopeEditor
+							scope={scope}
+							onToggle={id =>
+								setScope(prev =>
+									prev.includes(id) ? prev.filter(item => item !== id) : [...prev, id]
+								)
+							}
+							onRemove={id => setScope(prev => prev.filter(item => item !== id))}
+							onSelectAllGrade={() =>
+								setScope(prev => [
+									...new Set([...prev, ...classesOfGrade(scopeGrade).map(o => o.id)]),
+								])
+							}
+							scopeGrade={scopeGrade}
+							onScopeGradeChange={setScopeGrade}
+							onAddMegama={id =>
+								setScope(prev => (prev.includes(id) ? prev : [...prev, id]))
+							}
+							megamas={megamas}
+							labelOf={labelOf}
+							gradeOptions={gradeOptions}
+							departureTime={departureTime}
+							onDepartureTimeChange={setDepartureTime}
+						/>
 					)}
 
-					<label className='grid gap-1'>
-						<span className='text-xs font-medium text-gray-500'>{t('fields.note')}</span>
+					<FormField label={t('fields.note')}>
 						<textarea
 							className={inputClass}
 							rows={2}
 							value={note}
 							onChange={event => setNote(event.target.value)}
 						/>
-					</label>
+					</FormField>
 					{error && <p className='text-sm text-red-600'>{error}</p>}
 				</div>
-				<DialogFooter>
-					<Button variant='outline' onClick={onClose} disabled={saving}>
-						{t('actions.cancel')}
-					</Button>
-					<Button onClick={handleSave} disabled={saving}>
-						{saving && <Loader2 className='h-4 w-4 animate-spin' />}
-						{t('actions.save')}
-					</Button>
-				</DialogFooter>
+				<DialogSaveFooter
+					onCancel={onClose}
+					onSave={() => void handleSave()}
+					saving={saving}
+					cancelLabel={t('actions.cancel')}
+					saveLabel={t('actions.save')}
+				/>
 			</DialogContent>
 		</Dialog>
 	)

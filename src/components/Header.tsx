@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 import { Bell, LogOut, MenuIcon, Monitor, Moon, Sun } from 'lucide-react'
-import { Link, useRouter } from '@/i18n/navigation'
+import { Link, usePathname, useRouter } from '@/i18n/navigation'
 import { useLocale, useTranslations } from 'next-intl'
 import {
   Sheet,
@@ -27,6 +27,7 @@ export default function Header() {
   const locale = useLocale()
   const t = useTranslations('Header')
   const router = useRouter()
+  const pathname = usePathname()
   const [signingOut, setSigningOut] = useState(false)
 
   const handleSignOut = async () => {
@@ -58,34 +59,42 @@ export default function Header() {
     }
   }
 
+  const isActive = (href: string) => pathname === href || pathname.startsWith(`${href}/`)
+
+  const navLink = (href: string, label: string) => {
+    const active = isActive(href)
+    return (
+      <Link
+        key={href}
+        href={href}
+        aria-current={active ? 'page' : undefined}
+        className={`group relative pb-1 text-sm font-medium transition-colors duration-200 ${
+          active ? 'text-blue-700' : 'text-[#111518] hover:text-blue-700'
+        }`}
+      >
+        {label}
+        <span
+          aria-hidden='true'
+          className={`absolute bottom-0 start-0 h-0.5 w-full origin-start rounded-full bg-blue-600 transition-transform duration-300 ease-out ${
+            active ? 'scale-x-100' : 'scale-x-0 group-hover:scale-x-100 group-hover:bg-blue-300'
+          }`}
+        />
+      </Link>
+    )
+  }
+
   const menuOptions = (dir: 'line' | 'col') => (
     <div
       className={`flex ${dir === 'col' ? 'flex-col' : 'items-center'} gap-9`}
     >
-      <Link className='text-sm font-medium text-[#111518]' href='/dashboard'>
-        {t('menu.dashboard')}
-      </Link>
-      <Link className='text-sm font-medium text-[#111518]' href='/schedule'>
-        {t('menu.schedule')}
-      </Link>
-      <Link className='text-sm font-medium text-[#111518]' href='/routes'>
-        {t('menu.routes')}
-      </Link>
-      <Link className='text-sm font-medium text-[#111518]' href='/buses'>
-        {t('menu.busses')}
-      </Link>
-      <Link className='text-sm font-medium text-[#111518]' href='/students'>
-        {t('menu.students')}
-      </Link>
-      <Link className='text-sm font-medium text-[#111518]' href='/calendar'>
-        {t('menu.calendar')}
-      </Link>
-      <Link className='text-sm font-medium text-[#111518]' href='/friend-trips'>
-        {t('menu.friendTrips')}
-      </Link>
-      <Link className='text-sm font-medium text-[#111518]' href='/report'>
-        {t('menu.report')}
-      </Link>
+      {navLink('/dashboard', t('menu.dashboard'))}
+      {navLink('/schedule', t('menu.schedule'))}
+      {navLink('/routes', t('menu.routes'))}
+      {navLink('/buses', t('menu.busses'))}
+      {navLink('/students', t('menu.students'))}
+      {navLink('/calendar', t('menu.calendar'))}
+      {navLink('/friend-trips', t('menu.friendTrips'))}
+      {navLink('/report', t('menu.report'))}
       {dir === 'col' && (
         <>
           <Link className='text-sm font-medium text-[#111518]' href='/profile'>

@@ -32,3 +32,10 @@ export function minutesToHHMM(total: number): string {
 	const minutes = normalized % 60
 	return `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}`
 }
+
+/** Format an ISO string or epoch ms as HH:MM in the given locale. Falls back to raw input. */
+export function formatClockHHMM(value: string | number, locale: string): string {
+	const date = new Date(value)
+	if (Number.isNaN(date.getTime())) return String(value)
+	return date.toLocaleTimeString(locale, { hour: '2-digit', minute: '2-digit' })
+}

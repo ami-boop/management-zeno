@@ -3,12 +3,11 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { useTranslations } from 'next-intl'
 import {
-	AlertCircle,
 	CheckCircle2,
 	ChevronLeft,
 	ChevronRight,
 	RefreshCw,
-	Search,
+	AlertCircle,
 	UserPlus,
 } from 'lucide-react'
 import type {
@@ -21,35 +20,14 @@ import getManagementStudents, {
 } from '@/app/actions/getManagementStudents'
 import Table from './Table'
 import MobileCards from './MobileCards'
+import FilterBar, { EMPTY_FILTERS, type FilterState } from './FilterBar'
+import SearchInput from '@/components/SearchInput'
+import ErrorBanner from '@/components/ErrorBanner'
 import { PAGE_SIZE } from '@/utils/constants'
-
-type StatusFilter = 'all' | 'submitted' | 'notMarked' | 'friendPending'
 
 interface StudentsClientProps {
 	initial: ManagementStudentsResponse
 	routeNameMap: Record<string, string>
-}
-
-interface FilterState {
-	route: string
-	parallel: string
-	classId: string
-	megama: string
-	stop: string
-	time: string
-	status: StatusFilter
-	search: string
-}
-
-const EMPTY_FILTERS: FilterState = {
-	route: 'all',
-	parallel: 'all',
-	classId: 'all',
-	megama: 'all',
-	stop: 'all',
-	time: 'all',
-	status: 'all',
-	search: '',
 }
 
 export default function StudentsClient({ initial, routeNameMap }: StudentsClientProps) {
@@ -209,20 +187,11 @@ export default function StudentsClient({ initial, routeNameMap }: StudentsClient
 
 				{/* Error banner */}
 				{error && (
-					<div className='mb-6 flex items-center justify-between gap-4 bg-red-50 border border-red-200 rounded-xl p-4'>
-						<div className='flex items-center gap-2 text-sm text-red-800'>
-							<AlertCircle className='h-4 w-4' />
-							{t('loadError')}
-						</div>
-						<button
-							type='button'
-							onClick={() => void fetchPage(filters, currentPage)}
-							className='inline-flex items-center gap-1.5 text-sm font-medium text-red-800 hover:text-red-900'
-						>
-							<RefreshCw className='h-4 w-4' />
-							{t('retry')}
-						</button>
-					</div>
+					<ErrorBanner
+						message={t('loadError')}
+						onRetry={() => void fetchPage(filters, currentPage)}
+						retryLabel={t('retry')}
+					/>
 				)}
 
 				{/* Main Content */}
@@ -230,196 +199,43 @@ export default function StudentsClient({ initial, routeNameMap }: StudentsClient
 					<div className='px-6 py-4 border-b border-gray-200'>
 						<div className='flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-4'>
 							<h2 className='text-xl font-semibold text-gray-900'>{t('title')}</h2>
-							<div className='relative max-w-md w-full sm:w-80'>
-								<Search className='absolute start-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400' />
-								<input
-									type='text'
-									placeholder={t('searchPlaceholder')}
-									value={filters.search}
-									onChange={e => updateFilters({ search: e.target.value })}
-									className='block w-full ps-9 pe-3 py-2 border border-gray-300 rounded-xl text-sm placeholder-gray-500 focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500'
-								/>
-							</div>
+							<SearchInput
+								value={filters.search}
+								onChange={value => updateFilters({ search: value })}
+								placeholder={t('searchPlaceholder')}
+								wrapperClassName='relative max-w-md w-full sm:w-80'
+								inputClassName='block w-full ps-9 pe-3 py-2 border border-gray-300 rounded-xl text-sm placeholder-gray-500 focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500'
+							/>
 						</div>
 					</div>
 
-					{/* Route Filters */}
-					<div className='px-6 py-4 border-b border-gray-200'>
-					{routeOptions.length > 0 && (
-						<div className='flex flex-wrap gap-2 mb-3'>
-							<button
-								onClick={() => updateFilters({ route: 'all' })}
-								className={`inline-flex items-center px-3 py-1.5 rounded-lg text-sm font-medium transition-colors duration-200 ${
-									filters.route === 'all'
-										? 'bg-blue-100 text-blue-800 border border-blue-200'
-										: 'bg-white text-gray-700 border border-gray-300 hover:bg-gray-50'
-								}`}
-							>
-								{t('filterAll')}
-								<span
-									className={`ms-2 px-2 py-0.5 rounded-full text-xs tabular-nums ${
-										filters.route === 'all'
-											? 'bg-blue-200 text-blue-800'
-											: 'bg-gray-100 text-gray-600'
-									}`}
-								>
-									{effectiveMeta.total}
-								</span>
-							</button>
-							{routeOptions.map(r => (
-								<button
-									key={r.id}
-									onClick={() => updateFilters({ route: r.id })}
-									className={`inline-flex items-center px-3 py-1.5 rounded-lg text-sm font-medium transition-colors duration-200 ${
-										filters.route === r.id
-											? 'bg-blue-100 text-blue-800 border border-blue-200'
-											: 'bg-white text-gray-700 border border-gray-300 hover:bg-gray-50'
-									}`}
-								>
-									{r.id === 'none' ? t('noRoute') : routeNameMap[r.id] ?? r.id}
-									<span
-										className={`ms-2 px-2 py-0.5 rounded-full text-xs tabular-nums ${
-											filters.route === r.id
-												? 'bg-blue-200 text-blue-800'
-												: 'bg-gray-100 text-gray-600'
-										}`}
-									>
-										{r.count}
-									</span>
-								</button>
-							))}
-						</div>
-					)}
-
-					{/* Status Filters */}
-					<div className='flex flex-wrap gap-2 mb-3'>
-						{(
-							[
-								{ key: 'all' as StatusFilter, label: t('statusAll'), count: effectiveMeta.counts.submitted + effectiveMeta.counts.notMarked },
-								{ key: 'submitted' as StatusFilter, label: t('statusSubmitted'), count: effectiveMeta.counts.submitted },
-								{ key: 'notMarked' as StatusFilter, label: t('statusNotMarked'), count: effectiveMeta.counts.notMarked },
-								{ key: 'friendPending' as StatusFilter, label: t('statusFriendPending'), count: effectiveMeta.counts.friendPending },
-							] as const
-						).map(filter => (
-							<button
-								key={filter.key}
-								onClick={() => updateFilters({ status: filter.key })}
-								className={`inline-flex items-center px-3 py-1.5 rounded-lg text-sm font-medium transition-colors duration-200 ${
-									filters.status === filter.key
-										? 'bg-emerald-50 text-emerald-800 border border-emerald-200'
-										: 'bg-white text-gray-700 border border-gray-300 hover:bg-gray-50'
-								}`}
-							>
-								{filter.label}
-								<span
-									className={`ms-2 px-2 py-0.5 rounded-full text-xs tabular-nums ${
-										filters.status === filter.key
-											? 'bg-emerald-100 text-emerald-800'
-											: 'bg-gray-100 text-gray-600'
-									}`}
-								>
-									{filter.count}
-								</span>
-							</button>
-						))}
-					</div>
-
-					{/* Advanced Filters: parallel / class / stop / time */}
-					<div className='flex flex-wrap items-center gap-2'>
-						<span className='text-xs font-semibold text-gray-500 uppercase tracking-wide'>
-							{t('filters')}:
-						</span>
-						<select
-							aria-label={t('filterParallel')}
-							value={filters.parallel}
-							onChange={e => updateFilters({ parallel: e.target.value, classId: 'all' })}
-							className='rounded-xl border border-gray-300 bg-white px-3 py-2 text-sm text-gray-700 focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 max-w-[180px]'
-						>
-							<option value='all'>{t('parallelAll')}</option>
-							{parallelOptions.map(p => (
-								<option key={p.id} value={p.id}>
-									{p.id === 'none' ? t('noClass') : p.label} ({p.count})
-								</option>
-							))}
-						</select>
-						<select
-							aria-label={t('filterClass')}
-							value={filters.classId}
-							onChange={e => updateFilters({ classId: e.target.value })}
-							className='rounded-xl border border-gray-300 bg-white px-3 py-2 text-sm text-gray-700 focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 max-w-[180px]'
-						>
-							<option value='all'>{t('classAll')}</option>
-							{visibleClasses.map(c => (
-								<option key={c.id} value={c.id}>
-									{c.id === 'none' ? t('noClass') : c.label} ({c.count})
-								</option>
-							))}
-						</select>
-						{megamaOptions.length > 0 && (
-							<select
-								aria-label={t('filterMegama')}
-								value={filters.megama}
-								onChange={e => updateFilters({ megama: e.target.value })}
-								className='rounded-xl border border-gray-300 bg-white px-3 py-2 text-sm text-gray-700 focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 max-w-[180px]'
-							>
-								<option value='all'>{t('megamaAll')}</option>
-								{megamaOptions.map(m => (
-									<option key={m.id} value={m.id}>
-										{m.label} ({m.count})
-									</option>
-								))}
-							</select>
-						)}
-						<select
-							aria-label={t('filterStop')}
-							value={filters.stop}
-							onChange={e => updateFilters({ stop: e.target.value })}
-							className='rounded-xl border border-gray-300 bg-white px-3 py-2 text-sm text-gray-700 focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500'
-						>
-							<option value='all'>{t('stopAll')}</option>
-							{stopOptions.map(s => (
-								<option key={s.id} value={s.id}>
-									{s.id === 'none' ? t('noStop') : s.id} ({s.count})
-								</option>
-							))}
-						</select>
-						<select
-							aria-label={t('filterTime')}
-							value={filters.time}
-							onChange={e => updateFilters({ time: e.target.value })}
-							className='rounded-xl border border-gray-300 bg-white px-3 py-2 text-sm text-gray-700 focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500'
-						>
-							<option value='all'>{t('timeAll')}</option>
-							{timeOptions.map(tm => (
-								<option key={tm.id} value={tm.id}>
-									{tm.id === 'none' ? t('noTime') : tm.id} ({tm.count})
-								</option>
-							))}
-						</select>
-						{(filters.parallel !== 'all' ||
-							filters.classId !== 'all' ||
-							filters.megama !== 'all' ||
-							filters.stop !== 'all' ||
-							filters.time !== 'all') && (
-							<button
-								type='button'
-								onClick={resetAdvancedFilters}
-								className='text-sm font-medium text-gray-500 hover:text-gray-700 underline underline-offset-2'
-							>
-								{t('resetFilters')}
-							</button>
-						)}
-					</div>
+					<FilterBar
+						filters={filters}
+						onUpdate={updateFilters}
+						onResetAdvanced={resetAdvancedFilters}
+						routeOptions={routeOptions}
+						parallelOptions={parallelOptions}
+						visibleClasses={visibleClasses}
+						megamaOptions={megamaOptions}
+						stopOptions={stopOptions}
+						timeOptions={timeOptions}
+						routeNameMap={routeNameMap}
+						counts={{
+							total: effectiveMeta.total,
+							submitted: effectiveMeta.counts.submitted,
+							notMarked: effectiveMeta.counts.notMarked,
+							friendPending: effectiveMeta.counts.friendPending,
+						}}
+					/>
 
 					{/* Bulk Actions */}
 					{selectedUids.length > 0 && (
-						<div className='flex items-center justify-between bg-blue-50 border border-blue-200 rounded-lg p-3 mt-3'>
+						<div className='flex items-center justify-between bg-blue-50 border border-blue-200 rounded-lg p-3 mx-6 my-3'>
 							<span className='text-sm text-blue-800'>
 								{selectedUids.length} {t('selected')}
 							</span>
 						</div>
 					)}
-					</div>
 
 					{/* Loading overlay */}
 					{loading && (

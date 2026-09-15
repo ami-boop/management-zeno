@@ -4,9 +4,12 @@ import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { useTranslations } from 'next-intl'
 import { useSearchFilter } from '@/hooks/useSearchFilter'
-import { AlertCircle, Bus, List, Map as MapIcon, Search } from 'lucide-react'
+import { Bus, List, Map as MapIcon } from 'lucide-react'
 import type { BusLiveTrip, FleetBus } from '@/lib/api-contracts'
 import { updateBus } from '@/app/actions/buses'
+import SearchInput from '@/components/SearchInput'
+import ErrorBanner from '@/components/ErrorBanner'
+import EmptyState from '@/components/EmptyState'
 import BusDialog, { type BusFormValues } from './BusDialog'
 import FleetMap from './FleetMap'
 import MobileCards from './MobileCards'
@@ -118,15 +121,11 @@ export default function Client({ initialBuses, initialLiveByBus, initialTrips }:
 				</button>
 			</div>
 
-			<div className='relative mb-4'>
-				<Search className='pointer-events-none absolute start-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400' />
-				<input
-					className='w-full rounded-xl border border-gray-300 bg-white py-2 pe-3 ps-9 text-sm text-gray-900 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-none'
-					placeholder={t('searchPlaceholder')}
-					value={search}
-					onChange={event => setSearch(event.target.value)}
-				/>
-			</div>
+			<SearchInput
+				value={search}
+				onChange={setSearch}
+				placeholder={t('searchPlaceholder')}
+			/>
 
 			<div className='mb-4 inline-flex rounded-xl border border-gray-200 bg-white p-1' role='tablist'>
 				<button
@@ -162,14 +161,9 @@ export default function Client({ initialBuses, initialLiveByBus, initialTrips }:
 			) : (
 				<>
 			{filtered === null ? (
-				<div className='mb-3 flex items-center gap-2 rounded-xl border border-red-200 bg-red-50 p-4 text-sm text-red-700'>
-					<AlertCircle className='h-4 w-4 shrink-0' />
-					{t('errors.loadFailed')}
-				</div>
+				<ErrorBanner message={t('errors.loadFailed')} />
 			) : filtered.length === 0 ? (
-				<p className='rounded-xl border border-gray-200 bg-white p-8 text-center text-sm text-gray-500'>
-					{search ? t('noResults') : t('noBuses')}
-				</p>
+				<EmptyState message={search ? t('noResults') : t('noBuses')} />
 			) : null}
 
 			<div className='hidden rounded-xl border border-gray-200 bg-white md:block'>

@@ -2,16 +2,15 @@
 
 import { useEffect, useState } from 'react'
 import { useTranslations } from 'next-intl'
-import { Loader2 } from 'lucide-react'
 import {
 	Dialog,
 	DialogContent,
 	DialogDescription,
-	DialogFooter,
 	DialogHeader,
 	DialogTitle,
 } from '@/components/ui/dialog'
-import { Button } from '@/components/ui/button'
+import DialogSaveFooter from '@/components/DialogSaveFooter'
+import FormField, { fieldInputClassName } from '@/components/FormField'
 import { createStop, updateStop } from '@/app/actions/stops'
 import type { StopDetail, StopFormValues } from '@/lib/api-contracts'
 
@@ -23,8 +22,7 @@ interface StopDialogProps {
 	onEdited: (stopId: string, values: StopFormValues) => void
 }
 
-const inputClass =
-	'w-full rounded-xl border border-gray-300 bg-white px-3 py-2 text-sm text-gray-900 focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500'
+const inputClass = fieldInputClassName
 
 function parseCoord(value: string, min: number, max: number): number | null | 'invalid' {
 	if (!value.trim()) return null
@@ -105,62 +103,55 @@ export default function StopDialog({ open, stop, onClose, onCreated, onEdited }:
 					<DialogDescription>{t('dialog.description')}</DialogDescription>
 				</DialogHeader>
 				<div className='grid gap-3'>
-					<label className='grid gap-1'>
-						<span className='text-xs font-medium text-gray-500'>{t('fields.name')} *</span>
+					<FormField label={t('fields.name')} required>
 						<input
 							className={inputClass}
 							value={name}
 							onChange={event => setName(event.target.value)}
 						/>
-					</label>
-					<label className='grid gap-1'>
-						<span className='text-xs font-medium text-gray-500'>{t('fields.address')}</span>
+					</FormField>
+					<FormField label={t('fields.address')}>
 						<input
 							className={inputClass}
 							value={address}
 							onChange={event => setAddress(event.target.value)}
 						/>
-					</label>
+					</FormField>
 					<div className='grid grid-cols-2 gap-3'>
-						<label className='grid gap-1'>
-							<span className='text-xs font-medium text-gray-500'>{t('fields.lat')}</span>
+						<FormField label={t('fields.lat')}>
 							<input
 								className={inputClass}
 								inputMode='decimal'
 								value={lat}
 								onChange={event => setLat(event.target.value)}
 							/>
-						</label>
-						<label className='grid gap-1'>
-							<span className='text-xs font-medium text-gray-500'>{t('fields.lng')}</span>
+						</FormField>
+						<FormField label={t('fields.lng')}>
 							<input
 								className={inputClass}
 								inputMode='decimal'
 								value={lng}
 								onChange={event => setLng(event.target.value)}
 							/>
-						</label>
+						</FormField>
 					</div>
-					<label className='grid gap-1'>
-						<span className='text-xs font-medium text-gray-500'>{t('fields.notes')}</span>
+					<FormField label={t('fields.notes')}>
 						<textarea
 							className={inputClass}
 							rows={2}
 							value={notes}
 							onChange={event => setNotes(event.target.value)}
 						/>
-					</label>
+					</FormField>
 					{error && <p className='text-sm text-red-600'>{error}</p>}
 				</div>
-				<DialogFooter>
-					<Button variant='outline' onClick={onClose} disabled={saving}>
-						{t('actions.cancel')}
-					</Button>
-					<Button onClick={handleSave} disabled={saving}>
-						{saving && <Loader2 className='h-4 w-4 animate-spin' />}
-						{t('actions.save')}
-					</Button>
-				</DialogFooter>
+				<DialogSaveFooter
+					onCancel={onClose}
+					onSave={() => void handleSave()}
+					saving={saving}
+					cancelLabel={t('actions.cancel')}
+					saveLabel={t('actions.save')}
+				/>
 			</DialogContent>
 		</Dialog>
 	)

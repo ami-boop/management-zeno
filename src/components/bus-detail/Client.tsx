@@ -15,6 +15,7 @@ import {
 	User,
 } from 'lucide-react'
 import type { BusLiveTrip, FleetBus } from '@/lib/api-contracts'
+import { formatClockHHMM } from '@/utils/date'
 import BusMap from './BusMap'
 
 const POLL_INTERVAL_MS = 15_000
@@ -22,12 +23,6 @@ const POLL_INTERVAL_MS = 15_000
 interface BusDetailClientProps {
 	bus: FleetBus
 	trips: BusLiveTrip[]
-}
-
-function formatClock(iso: string, locale: string): string {
-	const date = new Date(iso)
-	if (Number.isNaN(date.getTime())) return iso
-	return date.toLocaleTimeString(locale, { hour: '2-digit', minute: '2-digit' })
 }
 
 export default function Client({ bus, trips }: BusDetailClientProps) {
@@ -139,7 +134,7 @@ export default function Client({ bus, trips }: BusDetailClientProps) {
 									<span className='inline-flex items-center gap-1'>
 										<Clock className='h-3.5 w-3.5' />
 										{t('detail.departure', {
-											time: formatClock(activeTrip.scheduledAtISO, locale),
+											time: formatClockHHMM(activeTrip.scheduledAtISO, locale),
 										})}
 									</span>
 									{activeTrip.live?.speedKmh != null && (
@@ -161,7 +156,7 @@ export default function Client({ bus, trips }: BusDetailClientProps) {
 					{activeTrip?.live?.updatedAtMs != null && (
 						<div className='text-xs text-gray-500 tabular-nums'>
 							{t('detail.lastUpdate', {
-								time: formatClock(new Date(activeTrip.live.updatedAtMs).toISOString(), locale),
+								time: formatClockHHMM(activeTrip.live.updatedAtMs, locale),
 							})}
 						</div>
 					)}
@@ -182,7 +177,7 @@ export default function Client({ bus, trips }: BusDetailClientProps) {
 									<MapPin className='h-4 w-4 text-gray-400' />
 									<span className='text-gray-900'>{trip.routeName ?? trip.routeId}</span>
 									<span className='text-gray-500 tabular-nums'>
-										{formatClock(trip.scheduledAtISO, locale)}
+										{formatClockHHMM(trip.scheduledAtISO, locale)}
 									</span>
 									<span className='ms-auto rounded-full bg-gray-100 px-2 py-0.5 text-xs text-gray-600'>
 										{t(`detail.tripStatus.${trip.status}`)}

@@ -506,7 +506,8 @@
     "statusManagerApproved": "Одобрено менеджментом",
     "statusManagerRejected": "Отклонено менеджментом",
     "sleepover": "С ночёвкой",
-    "defaultRoute": "Обычный маршрут"
+    "defaultRoute": "Обычный маршрут",
+    "loadFailed": "Не удалось загрузить поездки к другу"
   },
   "Stops": {
     "routesServing": "Маршруты через остановку",
@@ -613,7 +614,7 @@
     "today": "Сегодня",
     "navPrev": "Назад",
     "navNext": "Вперёд",
-    "wheelHint": "Колесо — зум • Перетаскивание — диапазон",
+    "wheelHint": "Щипок — зум • Перетаскивание — диапазон",
     "noException": "—",
     "displayMode": {
       "list": "Список",

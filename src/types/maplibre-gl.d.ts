@@ -28,7 +28,7 @@ declare module 'maplibre-gl' {
 			fitBoundsOptions?: { padding?: number }
 			attributionControl?: { compact?: boolean } | false
 		})
-		on(event: 'load', handler: () => void): void
+		on(event: 'load' | 'error', handler: () => void): void
 		addSource(id: string, source: Record<string, unknown>): void
 		getSource(id: string): unknown
 		removeSource(id: string): void

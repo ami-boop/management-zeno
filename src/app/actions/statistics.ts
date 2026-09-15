@@ -12,7 +12,8 @@ export async function getStatistics(
 	if (!token) return { ok: false, data: null }
 	try {
 		const raw = await apiGet('statistics', token, { params: { date, range } })
-		return { ok: true, data: parseStatistics(raw) }
+		const data = parseStatistics(raw)
+		return { ok: data !== null, data }
 	} catch {
 		return { ok: false, data: null }
 	}

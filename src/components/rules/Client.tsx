@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { useTranslations } from 'next-intl'
 import { Check, Loader2, Plus, X } from 'lucide-react'
 import ErrorBanner from '@/components/ErrorBanner'
@@ -60,6 +60,13 @@ export default function Client({ initial }: { initial: SettingsData | null }) {
 	const [saving, setSaving] = useState<string | null>(null)
 	const [saved, setSaved] = useState<string | null>(null)
 	const [error, setError] = useState<string | null>(null)
+	const savedTimer = useRef<ReturnType<typeof setTimeout> | null>(null)
+
+	useEffect(() => {
+		return () => {
+			if (savedTimer.current) clearTimeout(savedTimer.current)
+		}
+	}, [])
 
 	if (!initial) {
 		return (
@@ -85,7 +92,8 @@ export default function Client({ initial }: { initial: SettingsData | null }) {
 		setMinibus(result.data.vehicleCapacities.minibus)
 		setMinibusesEnabled(result.data.minibusesEnabled)
 		setSaved(section)
-		setTimeout(() => setSaved(null), 3000)
+		if (savedTimer.current) clearTimeout(savedTimer.current)
+		savedTimer.current = setTimeout(() => setSaved(current => (current === section ? null : current)), 3000)
 	}
 
 	function saveDeadline() {

@@ -31,7 +31,7 @@ export default function RouteMap({ stops, pathAfternoon, pathMorning }: RouteMap
 		() =>
 			stops
 				.filter(stop => stop.lat !== null && stop.lng !== null)
-				.sort((a, b) => (a.afternoonOrder ?? 99) - (b.afternoonOrder ?? 99)),
+				.sort((a, b) => (a.afternoonOrder ?? a.morningOrder ?? 999) - (b.afternoonOrder ?? b.morningOrder ?? 999)),
 		[stops]
 	)
 	const empty = geoStops.length === 0

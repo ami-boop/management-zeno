@@ -106,7 +106,8 @@ export function parseCalendarExceptions(value: unknown): CalendarExceptionDetail
 		if (!isRecord(item)) continue
 		const id = item.id
 		const type = item.type
-		if (!isString(id) || typeof type !== 'string') continue
+		if (!isString(id) || !isString(type)) continue
+		if (!(CALENDAR_EXCEPTION_TYPES as readonly string[]).includes(type)) continue
 		exceptions.push({
 			id,
 			type: type as CalendarExceptionType,

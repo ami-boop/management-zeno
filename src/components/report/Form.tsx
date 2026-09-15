@@ -42,7 +42,9 @@ export default function Form({
 
 	const handleSubmit = async (e: React.FormEvent) => {
 		e.preventDefault()
-		if (mode === 'manual' && manualUids.length === 0) return
+		// The submit button is disabled via canSubmit, but Enter/requestSubmit
+		// bypass it — re-check here so partial picks never reach the backend.
+		if (isSubmitting || (mode === 'manual' ? !manualReady : !parallelReady)) return
 		setIsSubmitting(true)
 		setSubmitError(false)
 

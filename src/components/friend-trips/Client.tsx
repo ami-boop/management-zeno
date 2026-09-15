@@ -13,6 +13,7 @@ import {
 	UserPlus,
 } from 'lucide-react'
 import { StatusBadge } from '@/components/ui/StatusBadge'
+import ErrorBanner from '@/components/ErrorBanner'
 import { overrideFriendRequest } from '@/app/actions/friend-requests'
 import type { FriendTripRequest, FriendTripsData } from '@/lib/api-contracts'
 
@@ -25,6 +26,14 @@ export default function Client({ initial }: FriendTripsProps) {
 	const [requests, setRequests] = useState<FriendTripRequest[]>(initial?.requests ?? [])
 	const [busyUid, setBusyUid] = useState<string | null>(null)
 	const [errorUid, setErrorUid] = useState<string | null>(null)
+
+	if (initial === null) {
+		return (
+			<div className='mx-auto max-w-6xl px-4 py-6'>
+				<ErrorBanner message={t('loadFailed')} />
+			</div>
+		)
+	}
 
 	const pending = requests.filter(request => request.parentStatus === 'pending')
 	const decided = requests.filter(request => request.parentStatus !== 'pending')

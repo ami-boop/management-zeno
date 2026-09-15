@@ -30,7 +30,7 @@ export default function StudentTable({
 					<Th className='normal-case'>
 						<input
 							type='checkbox'
-							checked={selectedStudents.length === students.length && students.length > 0}
+							checked={students.length > 0 && students.every(s => selectedStudents.includes(s.uid))}
 							onChange={onSelectAll}
 							aria-label={t('selectAll')}
 							className='h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded'

@@ -67,6 +67,11 @@ export function resolveManagementEndTime(
 	}
 
 	if (classEndTime && megamaEndTime) {
+		const classMinutes = parseHHMM(classEndTime)
+		const megamaMinutes = parseHHMM(megamaEndTime)
+		if (classMinutes !== null && megamaMinutes !== null) {
+			return { time: classMinutes >= megamaMinutes ? classEndTime : megamaEndTime, reason: 'normal' }
+		}
 		return { time: classEndTime > megamaEndTime ? classEndTime : megamaEndTime, reason: 'normal' }
 	}
 

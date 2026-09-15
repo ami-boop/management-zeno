@@ -14,7 +14,8 @@ export async function createBus(
 		if (!result.ok) return { ok: false }
 		const busId =
 			result.data && typeof result.data === 'object' && 'busId' in result.data
-				? String((result.data as { busId: unknown }).busId)
+				&& typeof (result.data as { busId: unknown }).busId === 'string'
+				? (result.data as { busId: string }).busId
 				: undefined
 		return { ok: true, busId }
 	} catch {

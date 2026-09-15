@@ -1,4 +1,4 @@
-import { isRecord, isString } from '@/utils/type-guards'
+import { isNonNegativeNumber, isRecord, isString } from '@/utils/type-guards'
 
 export interface SettingsData {
 	reportDeadlineMinutes: number
@@ -8,7 +8,7 @@ export interface SettingsData {
 }
 
 function num(value: unknown, fallback: number): number {
-	return typeof value === 'number' && Number.isFinite(value) ? value : fallback
+	return isNonNegativeNumber(value) ? value : fallback
 }
 
 export function parseSettings(value: unknown): SettingsData | null {

@@ -29,19 +29,19 @@ export default function Client({
   const sentinelRef = useRef<HTMLDivElement>(null)
 
   const removeNotification = async (id: string) => {
-    setNotifications(notifications.filter(n => n.id !== id))
+    setNotifications(prev => prev.filter(n => n.id !== id))
     await setNotificationsAction({ clearNotificationId: id })
   }
 
   const markAsRead = async (id: string) => {
-    setNotifications(
-      notifications.map(n => (n.id === id ? { ...n, isRead: true } : n))
+    setNotifications(prev =>
+      prev.map(n => (n.id === id ? { ...n, isRead: true } : n))
     )
     await setNotificationsAction({ markAsReadId: id })
   }
 
   const markAllAsRead = async () => {
-    setNotifications(notifications.map(n => ({ ...n, isRead: true })))
+    setNotifications(prev => prev.map(n => ({ ...n, isRead: true })))
     await setNotificationsAction({ markAllAsRead: true })
   }
 

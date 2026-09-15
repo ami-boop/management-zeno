@@ -519,7 +519,8 @@
     "statusManagerApproved": "אושר על ידי הניהול",
     "statusManagerRejected": "נדחה על ידי הניהול",
     "sleepover": "שינה אצל החבר",
-    "defaultRoute": "קו רגיל"
+    "defaultRoute": "קו רגיל",
+    "loadFailed": "טעינת הנסיעות לחבר נכשלה"
   },
   "Stops": {
     "routesServing": "קווים בתחנה זו",
@@ -626,7 +627,7 @@
     "today": "היום",
     "navPrev": "הקודם",
     "navNext": "הבא",
-    "wheelHint": "גלילה לזום • גרירה לבחירת טווח",
+    "wheelHint": "צביטה לזום • גרירה לבחירת טווח",
     "noException": "—",
     "displayMode": {
       "list": "רשימה",

@@ -34,6 +34,15 @@ export default function StudentPicker({ selectedUids, onChange, onStopChange }: 
 	// Bumped by every search reload: in-flight loadMore responses from a stale
 	// search must not append into the fresh list.
 	const epochRef = useRef(0)
+	// Remembers stopId per uid across searches/pages so the stop override
+	// options survive list changes.
+	const stopCacheRef = useRef(new Map<string, string>())
+
+	const rememberStops = (list: ManagementStudent[]) => {
+		for (const student of list) {
+			if (student.stopId) stopCacheRef.current.set(student.uid, student.stopId)
+		}
+	}
 
 	useEffect(() => {
 		let cancelled = false
@@ -48,6 +57,7 @@ export default function StudentPicker({ selectedUids, onChange, onStopChange }: 
 				setError(true)
 				setStudents([])
 			} else {
+				rememberStops(result.students)
 				setStudents(result.students)
 				setHasMore(result.students.length === PAGE_SIZE)
 			}
@@ -67,10 +77,14 @@ export default function StudentPicker({ selectedUids, onChange, onStopChange }: 
 			limit: PAGE_SIZE,
 			offset: students.length,
 		})
-		if (epoch !== epochRef.current) return
+		if (epoch !== epochRef.current) {
+			setLoadingMore(false)
+			return
+		}
 		if (result.error) {
 			setError(true)
 		} else {
+			rememberStops(result.students)
 			setStudents(prev => [...prev, ...result.students])
 			setHasMore(result.students.length === PAGE_SIZE)
 		}
@@ -87,15 +101,17 @@ export default function StudentPicker({ selectedUids, onChange, onStopChange }: 
 
 	const toggleAllVisible = () => {
 		const visibleUids = students.map(s => s.uid)
-		const allSelected = visibleUids.every(uid => selectedUids.includes(uid))
-		onChange(allSelected ? [] : [...new Set([...selectedUids, ...visibleUids])])
+		const allSelected = visibleUids.length > 0 && visibleUids.every(uid => selectedUids.includes(uid))
+		// Only the visible page is toggled — selection on other pages survives.
+		onChange(allSelected
+			? selectedUids.filter(id => !visibleUids.includes(id))
+			: [...new Set([...selectedUids, ...visibleUids])])
 	}
 
 	const stopOptions = [
 		...new Set(
-			students
-				.filter(s => selectedUids.includes(s.uid))
-				.map(s => s.stopId)
+			selectedUids
+				.map(uid => stopCacheRef.current.get(uid))
 				.filter((id): id is string => Boolean(id))
 		),
 	]

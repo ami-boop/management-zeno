@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useRef, useState } from 'react'
 import { useLocale, useTranslations } from 'next-intl'
 import { Download, Users } from 'lucide-react'
 import StatCard from '@/components/ui/stat-card'
@@ -74,13 +74,16 @@ export default function Client({ initial, initialDate, initialRange }: Statistic
 	const [tab, setTab] = useState<Tab>('load')
 	const [loading, setLoading] = useState(false)
 	const [loadError, setLoadError] = useState(false)
+	const requestSeq = useRef(0)
 
 	async function reload(nextEnd: string, nextRange: number) {
 		setEnd(nextEnd)
 		setRange(nextRange)
 		setLoading(true)
 		setLoadError(false)
+		const seq = ++requestSeq.current
 		const result = await getStatistics(nextEnd, nextRange)
+		if (seq !== requestSeq.current) return
 		setLoading(false)
 		if (!result.ok || !result.data) {
 			setLoadError(true)
@@ -115,7 +118,7 @@ export default function Client({ initial, initialDate, initialRange }: Statistic
 					<div className='inline-flex rounded-full border border-zeno-line bg-zeno-surface p-1'>
 						<button type='button' onClick={() => void reload(today, 1)} aria-pressed={range === 1 && end === today} className={`rounded-full px-3 py-1.5 text-xs font-semibold focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-zeno-amber ${range === 1 && end === today ? 'bg-zeno-amber text-zeno-amber-fg' : 'text-zeno-ink-soft hover:bg-zeno-paper-soft'}`}>{t('period.today')}</button>
 						{([7, 30] as const).map(r => (
-							<button key={r} type='button' onClick={() => void reload(today, r)} aria-pressed={range === r} className={`rounded-full px-3 py-1.5 text-xs font-semibold focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-zeno-amber ${range === r ? 'bg-zeno-amber text-zeno-amber-fg' : 'text-zeno-ink-soft hover:bg-zeno-paper-soft'}`}>{t(`period.range${r}`)}</button>
+							<button key={r} type='button' onClick={() => void reload(today, r)} aria-pressed={range === r && end === today} className={`rounded-full px-3 py-1.5 text-xs font-semibold focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-zeno-amber ${range === r && end === today ? 'bg-zeno-amber text-zeno-amber-fg' : 'text-zeno-ink-soft hover:bg-zeno-paper-soft'}`}>{t(`period.range${r}`)}</button>
 						))}
 					</div>
 					<input
@@ -304,7 +307,7 @@ export default function Client({ initial, initialDate, initialRange }: Statistic
 											</thead>
 											<tbody>
 												{data.friend.pendingItems.map(item => (
-													<tr key={`${item.date}_${item.uid}`} className='border-t border-zeno-line text-zeno-ink'>
+													<tr key={`${item.date}_${item.uid}_${item.tripId}`} className='border-t border-zeno-line text-zeno-ink'>
 														<td className='px-2 py-1.5 font-medium'>{`${item.firstName} ${item.lastName}`.trim() || item.uid}</td>
 														<td className='px-2 py-1.5 tabular-nums'>{formatDate(item.date)}</td>
 														<td className='px-2 py-1.5'>{item.tripId}</td>

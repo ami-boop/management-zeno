@@ -26,8 +26,9 @@ export default function EntityActions({
 		<div className='flex items-center gap-1 border-t border-zeno-line pt-2'>
 			<button
 				type='button'
-				className='inline-flex items-center gap-1.5 rounded-lg px-2 py-1.5 text-xs font-medium text-zeno-ink-soft hover:bg-zeno-sage-soft hover:text-zeno-sage focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-zeno-amber'
+				className='inline-flex items-center gap-1.5 rounded-lg px-2 py-1.5 text-xs font-medium text-zeno-ink-soft hover:bg-zeno-sage-soft hover:text-zeno-sage focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-zeno-amber disabled:opacity-40'
 				onClick={onEdit}
+				disabled={busy}
 			>
 				<Pencil className='h-3.5 w-3.5' />
 				{editLabel}

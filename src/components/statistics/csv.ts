@@ -2,7 +2,7 @@ import type { StatisticsData } from '@/lib/api-contracts'
 
 function esc(value: string | number): string {
 	const s = String(value)
-	return /[",\n]/.test(s) ? `"${s.replace(/"/g, '""')}"` : s
+	return /[",\n\r]/.test(s) ? `"${s.replace(/"/g, '""')}"` : s
 }
 
 export function statisticsCsv(data: StatisticsData): string {
@@ -33,5 +33,5 @@ export function downloadCsv(filename: string, content: string): void {
 	document.body.appendChild(link)
 	link.click()
 	link.remove()
-	URL.revokeObjectURL(url)
+	setTimeout(() => URL.revokeObjectURL(url), 1000)
 }

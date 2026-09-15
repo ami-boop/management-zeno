@@ -17,7 +17,7 @@ export interface GroupedClassOptions {
 	megamasByParallel: { parallel: string; megamaIds: string[] }[]
 }
 
-const DAY_KEYS = ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday'] as const
+const DAY_KEYS = ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'] as const
 
 const selectClass = 'w-full px-3 py-2 border border-gray-300 rounded-xl text-sm focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500'
 
@@ -38,8 +38,11 @@ export default function ClassEndTimes({
 	const [exception, setException] = useState<CalendarException | null>(null)
 	const [loading, setLoading] = useState(false)
 	const [error, setError] = useState<string | null>(null)
-	// Latest-interaction-wins: any newer selector change invalidates in-flight responses.
-	const seqRef = useRef(0)
+	// Independent slots: class and megama responses must not invalidate
+	// each other — a megama pick right after a class pick keeps both.
+	const classSeqRef = useRef(0)
+	const megamaSeqRef = useRef(0)
+	const megamaIdRef = useRef('')
 
 	const megamaOptions = useMemo(() => {
 		if (!classId) return []
@@ -49,9 +52,10 @@ export default function ClassEndTimes({
 	}, [classId, classGroups, megamaNames])
 
 	const handleClassChange = async (value: string) => {
-		const seq = ++seqRef.current
+		const seq = ++classSeqRef.current
 		setClassId(value)
 		setMegamaId('')
+		megamaIdRef.current = ''
 		setMegamaSchedule(null)
 		setSchedule(null)
 		setException(null)
@@ -62,7 +66,7 @@ export default function ClassEndTimes({
 			getClassSchedule(value),
 			getCalendarException(today.date),
 		])
-		if (seq !== seqRef.current) return
+		if (seq !== classSeqRef.current) return
 		if (scheduleRes.ok) {
 			setSchedule(scheduleRes.schedule)
 		} else {
@@ -73,13 +77,14 @@ export default function ClassEndTimes({
 	}
 
 	const handleMegamaChange = async (value: string) => {
-		const seq = ++seqRef.current
+		const seq = ++megamaSeqRef.current
 		setMegamaId(value)
+		megamaIdRef.current = value
 		setMegamaSchedule(null)
 		setError(null)
 		if (!value) return
 		const res = await getClassSchedule(value)
-		if (seq !== seqRef.current) return
+		if (seq !== megamaSeqRef.current || megamaIdRef.current !== value) return
 		if (res.ok) {
 			setMegamaSchedule(res.schedule)
 		} else {
@@ -179,7 +184,7 @@ export default function ClassEndTimes({
 			{!loading && error && <p className='mt-4 text-sm text-red-600'>{error}</p>}
 
 			{!loading && !error && schedule && (
-				<div className='mt-5 grid gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6'>
+				<div className='mt-5 grid gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-7'>
 					{rows.map(row => (
 						<div
 							key={row.key}

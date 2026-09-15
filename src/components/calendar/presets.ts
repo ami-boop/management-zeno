@@ -6,6 +6,7 @@ export interface CalendarPreset {
 	type: CalendarExceptionType
 	note: string | null
 	overrideEndTimes?: Record<string, string> | null
+	endTime?: string | null
 	specialSchedule?: { scope: string[]; departureTime: string } | null
 }
 
@@ -33,14 +34,14 @@ export const PRESETS: CalendarPreset[] = [
 		labelKey: 'presets.half1200',
 		type: 'half_day',
 		note: '',
-		overrideEndTimes: {},
+		endTime: '12:00',
 	},
 	{
 		id: 'half_1300',
 		labelKey: 'presets.half1300',
 		type: 'half_day',
 		note: '',
-		overrideEndTimes: {},
+		endTime: '13:00',
 	},
 	{
 		id: 'special_1330',

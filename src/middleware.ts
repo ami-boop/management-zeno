@@ -28,7 +28,10 @@ function getRoleFromAuthHeader(authHeader: string): string | null {
 		if (!payload) return null
 		const normalized = payload.replace(/-/g, '+').replace(/_/g, '/')
 		const padded = normalized.padEnd(Math.ceil(normalized.length / 4) * 4, '=')
-		const decoded = JSON.parse(atob(padded)) as { role?: unknown }
+		const decoded = JSON.parse(atob(padded)) as { role?: unknown; exp?: unknown }
+		// UI gate only: real enforcement happens server-side in actions/API.
+		// Still reject expired tokens so stale sessions land on /login.
+		if (typeof decoded.exp === 'number' && decoded.exp * 1000 < Date.now()) return null
 		return typeof decoded.role === 'string' ? decoded.role : null
 	} catch {
 		return null
@@ -71,8 +74,8 @@ export default async function middleware(request: NextRequest) {
 		return NextResponse.redirect(loginUrl)
 	}
 
-	// Просто проверяем наличие cookie, валидацию делаем на стороне сервера при необходимости
-	// Это ускоряет навигацию в 10+ раз
+	// Page gate only: the Bearer ID token is verified server-side in
+	// actions and API routes; here we just route by its role claim.
 	return createMiddleware(routing)(request)
 }
 

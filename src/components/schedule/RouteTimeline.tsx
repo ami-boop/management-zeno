@@ -16,7 +16,7 @@ import {
 import type { GroupedClassOptions } from './ClassEndTimes'
 import type { RouteOption, TodayInfo } from './Client'
 
-const DAY_KEYS = ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday'] as const
+const DAY_KEYS = ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'] as const
 
 const selectClass = 'w-full px-3 py-2 border border-gray-300 rounded-xl text-sm focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500'
 
@@ -44,8 +44,12 @@ export default function RouteTimeline({
 	const [exception, setException] = useState<CalendarException | null>(null)
 	const [stopsError, setStopsError] = useState<string | null>(null)
 	const [scheduleError, setScheduleError] = useState<string | null>(null)
-	// Latest-interaction-wins: any newer selector change invalidates in-flight responses.
-	const seqRef = useRef(0)
+	// Independent slots: route, class and megama responses must not
+	// invalidate each other — only a newer change of the same selector does.
+	const routeSeqRef = useRef(0)
+	const classSeqRef = useRef(0)
+	const megamaSeqRef = useRef(0)
+	const megamaIdRef = useRef('')
 
 	const megamaOptions = useMemo(() => {
 		if (!classId) return []
@@ -66,13 +70,13 @@ export default function RouteTimeline({
 	}, [today.date])
 
 	const handleRouteChange = async (value: string) => {
-		const seq = ++seqRef.current
+		const seq = ++routeSeqRef.current
 		setRouteId(value)
 		setStops(null)
 		setStopsError(null)
 		if (!value) return
 		const res = await getRouteStops(value)
-		if (seq !== seqRef.current) return
+		if (seq !== routeSeqRef.current) return
 		if (res.ok) {
 			setStops(res.stops)
 		} else {
@@ -81,15 +85,16 @@ export default function RouteTimeline({
 	}
 
 	const handleClassChange = async (value: string) => {
-		const seq = ++seqRef.current
+		const seq = ++classSeqRef.current
 		setClassId(value)
 		setMegamaId('')
+		megamaIdRef.current = ''
 		setMegamaSchedule(null)
 		setSchedule(null)
 		setScheduleError(null)
 		if (!value) return
 		const res = await getClassSchedule(value)
-		if (seq !== seqRef.current) return
+		if (seq !== classSeqRef.current) return
 		if (res.ok) {
 			setSchedule(res.schedule)
 		} else {
@@ -98,13 +103,14 @@ export default function RouteTimeline({
 	}
 
 	const handleMegamaChange = async (value: string) => {
-		const seq = ++seqRef.current
+		const seq = ++megamaSeqRef.current
 		setMegamaId(value)
+		megamaIdRef.current = value
 		setMegamaSchedule(null)
 		setScheduleError(null)
 		if (!value) return
 		const res = await getClassSchedule(value)
-		if (seq !== seqRef.current) return
+		if (seq !== megamaSeqRef.current || megamaIdRef.current !== value) return
 		if (res.ok) {
 			setMegamaSchedule(res.schedule)
 		} else {

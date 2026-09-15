@@ -210,7 +210,12 @@ export default function ExceptionDialog({
 										onClick={() => {
 											setType(p.type)
 											setNote(p.note ?? '')
-											if (p.type === 'half_day') setEndTimes(p.overrideEndTimes ? Object.entries(p.overrideEndTimes).map(([k,v])=>({classId:k,time:v})) : [{classId:'',time:'12:00'}])
+											if (p.type === 'half_day') {
+											const entries = p.overrideEndTimes ? Object.entries(p.overrideEndTimes) : []
+											setEndTimes(entries.length > 0
+												? entries.map(([k, v]) => ({ classId: k, time: v }))
+												: [{ classId: '', time: p.endTime ?? '12:00' }])
+										}
 											if (p.type === 'special_schedule') {
 												setScope(p.specialSchedule?.scope ?? [])
 												setDepartureTime(p.specialSchedule?.departureTime ?? '13:30')

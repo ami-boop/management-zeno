@@ -92,7 +92,7 @@ export default function StudentsClient({ initial, routeNameMap }: StudentsClient
 	}
 
 	const resetAdvancedFilters = () =>
-		updateFilters({ parallel: 'all', classId: 'all', megama: 'all', stop: 'all', time: 'all' })
+		updateFilters({ parallel: 'all', classId: 'all', megama: 'all', stop: 'all' })
 
 	// Fallback meta when the backend response has no meta (legacy shape)
 	const effectiveMeta: ManagementStudentsMeta = useMemo(() => {
@@ -125,7 +125,6 @@ export default function StudentsClient({ initial, routeNameMap }: StudentsClient
 	const classOptions = meta?.facets.classes ?? []
 	const megamaOptions = (meta?.facets.megamas ?? []).filter(m => m.id !== 'none')
 	const stopOptions = meta?.facets.stops ?? []
-	const timeOptions = meta?.facets.times ?? []
 	const routeOptions = meta?.facets.routes ?? []
 
 	const visibleClasses =
@@ -140,12 +139,20 @@ export default function StudentsClient({ initial, routeNameMap }: StudentsClient
 		)
 	}
 	const handleSelectAll = () => {
-		if (selectedUids.length === students.length) {
-			setSelectedUids([])
-		} else {
-			setSelectedUids(students.map(s => s.uid))
-		}
+		const visibleIds = students.map(s => s.uid)
+		const allVisibleSelected = visibleIds.length > 0 && visibleIds.every(id => selectedUids.includes(id))
+		setSelectedUids(prev =>
+			allVisibleSelected
+				? prev.filter(id => !visibleIds.includes(id))
+				: [...new Set([...prev, ...visibleIds])]
+		)
 	}
+
+	// Selection is bound to the visible page: filters/page changes drop it,
+	// otherwise the bulk bar shows ids from another view.
+	useEffect(() => {
+		setSelectedUids([])
+	}, [filters, page])
 
 	return (
 		<div className='bg-gray-50'>
@@ -218,7 +225,6 @@ export default function StudentsClient({ initial, routeNameMap }: StudentsClient
 						visibleClasses={visibleClasses}
 						megamaOptions={megamaOptions}
 						stopOptions={stopOptions}
-						timeOptions={timeOptions}
 						routeNameMap={routeNameMap}
 						counts={{
 							total: effectiveMeta.total,

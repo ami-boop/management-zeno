@@ -10,15 +10,19 @@ export default async function setTripBuses(
 	const token = await getSessionToken()
 	if (!token) return { ok: false, status: 401 }
 
-	const res = await fetch(`${API_URL}/dashboard/trips/${tripId}/buses`, {
-		method: 'POST',
-		headers: {
-			'Content-Type': 'application/json',
-			Authorization: `Bearer ${token}`,
-		},
-		body: JSON.stringify(body),
-		cache: 'no-store',
-	})
+	try {
+		const res = await fetch(`${API_URL}/dashboard/trips/${tripId}/buses`, {
+			method: 'POST',
+			headers: {
+				'Content-Type': 'application/json',
+				Authorization: `Bearer ${token}`,
+			},
+			body: JSON.stringify(body),
+			cache: 'no-store',
+		})
 
-	return { ok: res.ok, status: res.status }
+		return { ok: res.ok, status: res.status }
+	} catch {
+		return { ok: false, status: 0 }
+	}
 }

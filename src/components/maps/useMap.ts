@@ -45,6 +45,9 @@ export function useMap(
 				map.on('load', () => {
 					if (!cancelled && mapRef.current === map) setReady(true)
 				})
+				map.on('error', () => {
+					if (!cancelled && mapRef.current === map) setFailed(true)
+				})
 			})
 			.catch(() => {
 				if (!cancelled) setFailed(true)

@@ -27,8 +27,9 @@ const TOKEN_STALE_LEEWAY_MS = 120000
 function decodeJwtExpMs(idToken) {
   try {
     const payload = idToken.split('.')[1]
-    const json = atob(payload.replace(/-/g, '+').replace(/_/g, '/'))
-    const parsed = JSON.parse(json)
+    const normalized = payload.replace(/-/g, '+').replace(/_/g, '/')
+    const padded = normalized.padEnd(Math.ceil(normalized.length / 4) * 4, '=')
+    const parsed = JSON.parse(atob(padded))
     return typeof parsed.exp === 'number' ? parsed.exp * 1000 : null
   } catch {
     return null

@@ -14,7 +14,7 @@ import {
 } from '@/components/ui/dialog'
 import type { TripStudent } from '@/lib/api-contracts'
 import getTripStudents from '@/app/actions/getTripStudents'
-import overrideFriendRequest from '@/app/actions/overrideFriendRequest'
+import { overrideFriendRequest } from '@/app/actions/friend-requests'
 
 interface FriendPendingDialogProps {
 	tripId: string

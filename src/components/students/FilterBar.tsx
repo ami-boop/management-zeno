@@ -11,7 +11,6 @@ export interface FilterState {
 	classId: string
 	megama: string
 	stop: string
-	time: string
 	status: StatusFilter
 	search: string
 }
@@ -22,7 +21,6 @@ export const EMPTY_FILTERS: FilterState = {
 	classId: 'all',
 	megama: 'all',
 	stop: 'all',
-	time: 'all',
 	status: 'all',
 	search: '',
 }
@@ -36,7 +34,6 @@ interface FilterBarProps {
 	visibleClasses: ManagementFacetEntry[]
 	megamaOptions: ManagementFacetEntry[]
 	stopOptions: ManagementFacetEntry[]
-	timeOptions: ManagementFacetEntry[]
 	routeNameMap: Record<string, string>
 	counts: { total: number; submitted: number; notMarked: number; friendPending: number }
 }
@@ -54,7 +51,6 @@ export default function FilterBar({
 	visibleClasses,
 	megamaOptions,
 	stopOptions,
-	timeOptions,
 	routeNameMap,
 	counts,
 }: FilterBarProps) {
@@ -142,7 +138,7 @@ export default function FilterBar({
 				))}
 			</div>
 
-			{/* Advanced Filters: parallel / class / megama / stop / time */}
+			{/* Advanced Filters: parallel / class / megama / stop */}
 			<div className='flex flex-wrap items-center gap-2'>
 				<span className='text-xs font-semibold text-gray-500 uppercase tracking-wide'>
 					{t('filters')}:
@@ -201,24 +197,10 @@ export default function FilterBar({
 						</option>
 					))}
 				</select>
-				<select
-					aria-label={t('filterTime')}
-					value={filters.time}
-					onChange={e => onUpdate({ time: e.target.value })}
-					className={selectClass}
-				>
-					<option value='all'>{t('timeAll')}</option>
-					{timeOptions.map(tm => (
-						<option key={tm.id} value={tm.id}>
-							{tm.id === 'none' ? t('noTime') : tm.id} ({tm.count})
-						</option>
-					))}
-				</select>
 				{(filters.parallel !== 'all' ||
 					filters.classId !== 'all' ||
 					filters.megama !== 'all' ||
-					filters.stop !== 'all' ||
-					filters.time !== 'all') && (
+					filters.stop !== 'all') && (
 					<button
 						type='button'
 						onClick={onResetAdvanced}

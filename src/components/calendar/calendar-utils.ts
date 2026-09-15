@@ -20,13 +20,32 @@ export function toISO(date: Date): string {
 
 export function fromISO(iso: string): Date {
 	const [y, m, d] = iso.split('-').map(Number)
-	return new Date(y, m - 1, d)
+	const date = new Date(y, m - 1, d)
+	if (date.getFullYear() !== y || date.getMonth() !== m - 1 || date.getDate() !== d) {
+		return new Date(NaN)
+	}
+	return date
+}
+
+export function isValidISODate(iso: string): boolean {
+	if (!/^\d{4}-\d{2}-\d{2}$/.test(iso)) return false
+	return !Number.isNaN(fromISO(iso).getTime())
 }
 
 export function addDays(iso: string, delta: number): string {
 	const d = fromISO(iso)
 	d.setDate(d.getDate() + delta)
 	return toISO(d)
+}
+
+/** Month step that clamps to the target month length (Jan 31 + 1mo → Feb 28, not Mar 3). */
+export function addMonths(iso: string, delta: number): string {
+	const d = fromISO(iso)
+	const day = d.getDate()
+	const target = new Date(d.getFullYear(), d.getMonth() + delta, 1)
+	const lastDay = new Date(target.getFullYear(), target.getMonth() + 1, 0).getDate()
+	target.setDate(Math.min(day, lastDay))
+	return toISO(target)
 }
 
 export function startOfWeek(iso: string): string {
@@ -63,7 +82,7 @@ export function weekLabel(anchor: string, locale: string): string {
 	const days = weekDays(anchor)
 	const start = fromISO(days[0])
 	const end = fromISO(days[6])
-	const sameMonth = start.getMonth() === end.getMonth()
+	const sameMonth = start.getMonth() === end.getMonth() && start.getFullYear() === end.getFullYear()
 	if (sameMonth) {
 		return `${start.getDate()}–${end.getDate()} ${start.toLocaleDateString(locale, { month: 'long', year: 'numeric' })}`
 	}
@@ -110,6 +129,7 @@ export function toHebrewNumeral(n: number): string {
 }
 
 function hebrewDateParts(iso: string): { day: number; monthName: string; year: number } | null {
+	if (!isValidISODate(iso)) return null
 	try {
 		if (!_hebrewPartsFmt) _hebrewPartsFmt = new Intl.DateTimeFormat('he-u-ca-hebrew', { day: 'numeric', month: 'numeric', year: 'numeric' })
 		if (!_hebrewMonthFmt) _hebrewMonthFmt = new Intl.DateTimeFormat('he-u-ca-hebrew', { month: 'long' })

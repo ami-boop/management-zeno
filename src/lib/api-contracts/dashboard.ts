@@ -9,6 +9,8 @@ import {
 
 export type TripStatus = 'scheduled' | 'boarding' | 'in_transit' | 'completed' | 'cancelled'
 
+const TRIP_STATUSES: readonly string[] = ['scheduled', 'boarding', 'in_transit', 'completed', 'cancelled']
+
 export interface TripMetrics {
 	totalStudents: number
 	busesNeeded: number
@@ -66,6 +68,7 @@ function parseDashboardTrip(value: unknown): DashboardTrip | null {
 	if (!isString(tripId) || !isString(routeId) || !isString(scheduledTime) || !isString(status)) {
 		return null
 	}
+	if (!TRIP_STATUSES.includes(status)) return null
 	return {
 		tripId,
 		routeId,

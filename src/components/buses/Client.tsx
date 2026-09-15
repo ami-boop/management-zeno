@@ -58,6 +58,14 @@ export default function Client({ initialBuses, initialLiveByBus, initialTrips }:
 		setTrips(initialTrips)
 	}, [initialTrips])
 
+	// Sync the registry with refreshed server props so polling picks up
+	// changes made in other sessions. Skipped while a row action is busy
+	// to protect the optimistic update.
+	useEffect(() => {
+		if (busyBusId) return
+		setBuses(initialBuses)
+	}, [initialBuses, busyBusId])
+
 	function applyCreated(busId: string, values: BusFormValues) {
 		setBuses(prev =>
 			[...(prev ?? []), { busId, isActive: true, ...values }].sort((a, b) =>

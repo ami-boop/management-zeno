@@ -9,7 +9,8 @@ export async function getSettingsData(): Promise<{ ok: boolean; data: SettingsDa
 	if (!token) return { ok: false, data: null }
 	try {
 		const raw = await apiGet('settings', token)
-		return { ok: true, data: parseSettings(raw) }
+		const data = parseSettings(raw)
+		return { ok: data !== null, data }
 	} catch {
 		return { ok: false, data: null }
 	}

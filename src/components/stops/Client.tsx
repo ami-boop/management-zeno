@@ -41,7 +41,9 @@ export default function Client({ initialStops }: StopsClientProps) {
 	function applyEdited(stopId: string, values: StopFormValues) {
 		setStops(prev =>
 			prev
-				? prev.map(item => (item.stopId === stopId ? { ...item, ...values } : item))
+				? prev
+						.map(item => (item.stopId === stopId ? { ...item, ...values } : item))
+						.sort((a, b) => a.name.localeCompare(b.name))
 				: prev
 		)
 	}

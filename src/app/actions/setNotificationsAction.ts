@@ -15,10 +15,11 @@ export default async function setNotificationsAction(data: data): Promise<{ ok: 
   if (!sessionCookie) return { ok: false }
 
   try {
-    const isDelete = Boolean(data.clearAll || data.clearNotificationId)
-    const result = isDelete
-      ? await apiDelete('notifications', sessionCookie)
-      : await apiPost('notifications', sessionCookie, data)
+    if (data.clearAll || data.clearNotificationId) {
+      const result = await apiDelete('notifications', sessionCookie, data)
+      return { ok: result.ok }
+    }
+    const result = await apiPost('notifications', sessionCookie, data)
     return { ok: result.ok }
   } catch {
     return { ok: false }

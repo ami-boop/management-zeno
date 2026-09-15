@@ -10,11 +10,13 @@ export async function getNotificationsPage(
 ): Promise<{ ok: boolean; data: NotificationsPage | null }> {
 	const token = await getSessionToken()
 	if (!token) return { ok: false, data: null }
+	const safeLimit = Number.isInteger(limit) ? Math.min(Math.max(limit, 1), 100) : 30
 	try {
-		const params: Record<string, string | number | undefined> = { limit }
+		const params: Record<string, string | number | undefined> = { limit: safeLimit }
 		if (cursor) params.cursor = cursor
 		const raw = await apiGet('notifications', token, { params })
-		return { ok: true, data: parseNotificationsPage(raw) }
+		const data = parseNotificationsPage(raw)
+		return { ok: data !== null, data }
 	} catch {
 		return { ok: false, data: null }
 	}

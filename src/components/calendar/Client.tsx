@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { useTranslations } from 'next-intl'
 import { CalendarPlus, RotateCcw } from 'lucide-react'
 import { GRADE_ORDER, classToHebrew, gradeOfClass, splitClassId } from '@/lib/classes'
@@ -15,7 +15,7 @@ import CalendarGrid from './CalendarGrid'
 import Legend from './Legend'
 import { TYPE_COLORS } from './type-colors'
 import { todayInIsrael } from '@/lib/schedule-times'
-import { addDays, hebrewFullLabel, type CalendarView, type DisplayMode } from './calendar-utils'
+import { addDays, hebrewFullLabel, isValidISODate, type CalendarView, type DisplayMode } from './calendar-utils'
 
 interface CalendarClientProps {
 	initialExceptions: CalendarExceptionDetail[] | null
@@ -38,6 +38,13 @@ export default function Client({
 	const [busyId, setBusyId] = useState<string | null>(null)
 	const [actionError, setActionError] = useState(false)
 	const [undo, setUndo] = useState<{ date: string; prevActive: boolean } | null>(null)
+	const undoTimer = useRef<ReturnType<typeof setTimeout> | null>(null)
+
+	useEffect(() => {
+		return () => {
+			if (undoTimer.current) clearTimeout(undoTimer.current)
+		}
+	}, [])
 
 	const [displayMode, setDisplayMode] = useState<DisplayMode>('calendar')
 	const [view, setView] = useState<CalendarView>('week')
@@ -52,7 +59,7 @@ export default function Client({
 			const v = localStorage.getItem('calendar:view') as CalendarView | null
 			if (v && ['day', 'week', 'month'].includes(v)) setView(v)
 			const a = localStorage.getItem('calendar:anchor')
-			if (a && /^\d{4}-\d{2}-\d{2}$/.test(a)) setAnchor(a)
+			if (a && isValidISODate(a)) setAnchor(a)
 		} catch {}
 	}, [])
 	useEffect(() => {
@@ -128,7 +135,8 @@ export default function Client({
 		}
 		setExceptions(prev => prev ? prev.map(item => item.id === exception.id ? { ...item, isActive: !exception.isActive } : item) : prev)
 		setUndo({ date: exception.id, prevActive })
-		setTimeout(() => setUndo(null), 5000)
+		if (undoTimer.current) clearTimeout(undoTimer.current)
+		undoTimer.current = setTimeout(() => setUndo(null), 5000)
 	}
 
 	async function handleUndo() {

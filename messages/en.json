@@ -506,7 +506,8 @@
     "statusManagerApproved": "Approved by management",
     "statusManagerRejected": "Rejected by management",
     "sleepover": "Sleepover",
-    "defaultRoute": "Default route"
+    "defaultRoute": "Default route",
+    "loadFailed": "Failed to load friend trips"
   },
   "Stops": {
     "routesServing": "Routes serving this stop",
@@ -613,7 +614,7 @@
     "today": "Today",
     "navPrev": "Previous",
     "navNext": "Next",
-    "wheelHint": "Scroll to zoom • Drag to select range",
+    "wheelHint": "Pinch to zoom • Drag to select range",
     "noException": "—",
     "displayMode": {
       "list": "List",

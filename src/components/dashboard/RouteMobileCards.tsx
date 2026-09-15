@@ -189,6 +189,7 @@ const RouteMobileCards = ({
                   </button>
                   {route.busesOrdered < route.busesNeeded && (
                     <button
+                      disabled={isBusy}
                       onClick={() =>
                         onOrderBuses(
                           route.id,

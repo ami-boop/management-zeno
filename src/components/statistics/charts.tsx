@@ -25,7 +25,7 @@ function shortDate(iso: string): string {
 	return iso.length >= 10 ? iso.slice(5) : iso
 }
 
-function ChartTip({ active, payload, label }: { active?: boolean; payload?: Array<{ name?: string; value?: number | string }>; label?: string }) {
+function ChartTip({ active, payload, label }: { active?: boolean; payload?: Array<{ name?: string; value?: number | string; payload?: Record<string, unknown> }>; label?: string }) {
 	if (!active || !payload || payload.length === 0) return null
 	return (
 		<div className='rounded-xl border border-zeno-line bg-zeno-surface px-3 py-2 text-xs shadow-zeno-card'>
@@ -33,7 +33,7 @@ function ChartTip({ active, payload, label }: { active?: boolean; payload?: Arra
 			{payload.map((entry, i) => (
 				<div key={i} className='flex items-center justify-between gap-4 text-zeno-ink-soft tabular-nums'>
 					<span>{entry.name}</span>
-					<span className='font-bold text-zeno-ink'>{entry.value}</span>
+					<span className='font-bold text-zeno-ink'>{entry.payload?.unknownFill ? '—' : entry.value}</span>
 				</div>
 			))}
 		</div>
@@ -87,6 +87,7 @@ export function TripFillBars({ trips, isRTL }: { trips: TripStat[]; isRTL: boole
 	const data = trips.map(t => ({
 		name: `${t.routeId} · ${t.scheduledTime}`,
 		fill: t.fillRate === null ? 0 : Math.round(t.fillRate * 100),
+		unknownFill: t.fillRate === null,
 		color: fillColor(t.fillRate),
 		students: t.students,
 		seats: t.seats,

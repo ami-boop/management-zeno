@@ -14,7 +14,8 @@ export async function createStop(
 		if (!result.ok) return { ok: false }
 		const stopId =
 			result.data && typeof result.data === 'object' && 'stopId' in result.data
-				? String((result.data as { stopId: unknown }).stopId)
+				&& typeof (result.data as { stopId: unknown }).stopId === 'string'
+				? (result.data as { stopId: string }).stopId
 				: undefined
 		return { ok: true, stopId }
 	} catch {

@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useMemo } from 'react'
+import { useState, useMemo, useEffect, useRef } from 'react'
 import { useRouter } from 'next/navigation'
 import { useTranslations } from 'next-intl'
 import { toast } from 'sonner'
@@ -20,6 +20,12 @@ interface DashboardStat {
   change?: string
 }
 
+const orderStatus = (busesOrdered: number, busesNeeded: number): DashboardRoute['status'] => {
+  if (busesNeeded <= 0) return 'completed'
+  if (busesOrdered <= 0) return 'pending'
+  return busesOrdered >= busesNeeded ? 'completed' : 'partial'
+}
+
 const adaptTrip = (
   trip: DashboardResponse['trips'][number],
   routeNameMap: Record<string, string>
@@ -28,12 +34,7 @@ const adaptTrip = (
   const totalStudents = trip.metrics?.totalStudents ?? 0
   const assigned = trip.assignedBuses
   const busesOrdered = assigned ?? 0
-  const status: DashboardRoute['status'] =
-    assigned === null
-      ? 'pending'
-      : busesOrdered >= busesNeeded
-        ? 'completed'
-        : 'partial'
+  const status = orderStatus(busesOrdered, busesNeeded)
   const ts = trip.scheduledAt ? dayjs(trip.scheduledAt).unix() : dayjs().unix()
   return {
     id: trip.tripId,
@@ -69,6 +70,16 @@ const Client = ({
   )
   // Routes with an in-flight order action — guards against double submits.
   const [busyRouteIds, setBusyRouteIds] = useState<ReadonlySet<string>>(new Set())
+  // Synchronous guard: state updates land after re-render, a ref blocks
+  // double clicks that happen before the disabled attribute applies.
+  const busyRef = useRef<Set<string>>(new Set())
+
+  // Re-sync from the server snapshot (router.refresh after ordering).
+  // Skipped while an order is in flight so optimistic updates survive.
+  useEffect(() => {
+    if (busyRef.current.size > 0) return
+    setRoutes((data?.trips ?? []).map((trip) => adaptTrip(trip, routeNameMap)))
+  }, [data, routeNameMap])
 
   const dashboardStats: DashboardStat[] = useMemo(() => {
     const totalStudentsOnBus = localRoutes.reduce(
@@ -143,16 +154,16 @@ const Client = ({
 
   const handleOrderBuses = async (routeId: string, busesToOrder: number) => {
     const current = localRoutes.find((route: DashboardRoute) => route.id === routeId)
-    if (!current || busyRouteIds.has(routeId)) return
+    if (!current || busyRef.current.has(routeId)) return
 
     const newOrdered = Math.min(
       Math.max(current.busesOrdered + busesToOrder, 0),
       current.busesNeeded
     )
-    const newStatus: DashboardRoute['status'] =
-      newOrdered === 0 ? 'pending' : newOrdered >= current.busesNeeded ? 'completed' : 'partial'
+    const newStatus = orderStatus(newOrdered, current.busesNeeded)
     const now = { _seconds: dayjs().unix(), _nanoseconds: 0 }
 
+    busyRef.current.add(routeId)
     setBusyRouteIds(prev => new Set(prev).add(routeId))
     setRoutes((prevRoutes: DashboardRoute[]) =>
       prevRoutes.map((route: DashboardRoute) =>
@@ -170,7 +181,7 @@ const Client = ({
         setRoutes((prevRoutes: DashboardRoute[]) =>
           prevRoutes.map((route: DashboardRoute) =>
             route.id === routeId
-              ? { ...route, busesOrdered: current.busesOrdered, status: current.status }
+              ? { ...route, busesOrdered: current.busesOrdered, status: current.status, lastUpdate: current.lastUpdate }
               : route
           )
         )
@@ -179,6 +190,7 @@ const Client = ({
       }
       router.refresh()
     } finally {
+      busyRef.current.delete(routeId)
       setBusyRouteIds((prev) => {
         const next = new Set(prev)
         next.delete(routeId)

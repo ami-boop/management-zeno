@@ -50,11 +50,12 @@ export async function apiPut<TBody>(
 	return apiSend('PUT', endpoint, token, body)
 }
 
-export async function apiDelete(
+export async function apiDelete<TBody>(
 	endpoint: string,
 	token: string,
+	body?: TBody,
 ): Promise<{ ok: boolean; status: number; data: unknown | null }> {
-	return apiSend('DELETE', endpoint, token)
+	return apiSend('DELETE', endpoint, token, body)
 }
 
 async function apiSend<TBody>(

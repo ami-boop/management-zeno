@@ -33,12 +33,17 @@ export default function FleetMap({ trips, buses }: FleetMapProps) {
 	const stopMarkersRef = useRef<MapLibreMarker[]>([])
 	const etaSpansRef = useRef<Map<string, HTMLSpanElement>>(new Map())
 	const tripsRef = useRef<BusLiveTrip[]>(trips)
-	tripsRef.current = trips
 	const prevSelectedRef = useRef<string | null>(null)
 	const userChoseRef = useRef(false)
 	const selectedRef = useRef<string | null>(null)
 	const [selectedTripId, setSelectedTripId] = useState<string | null>(null)
-	selectedRef.current = selectedTripId
+
+	useEffect(() => {
+		tripsRef.current = trips
+	}, [trips])
+	useEffect(() => {
+		selectedRef.current = selectedTripId
+	}, [selectedTripId])
 
 	const { mapRef, ready } = useMap(containerRef, { center: DEFAULT_CENTER, zoom: 10 })
 
@@ -149,12 +154,13 @@ export default function FleetMap({ trips, buses }: FleetMapProps) {
 		}
 	}, [selectedTripId])
 
-	// Selected-trip overlay: route path + stop markers with ETA badges.
-	// Refit only when the selection itself changes, not on ETA polls.
+	// Selected-trip overlay: route path + stop markers.
+	// Rebuilt only when the selection, stops or path change — ETA polls
+	// update badges in place (see below), never rebuild the overlay.
 	const overlayKey = useMemo(
 		() =>
 			selected
-				? JSON.stringify([selected.tripId, selected.stops, selected.path, selected.etas])
+				? JSON.stringify([selected.tripId, selected.stops, selected.path])
 				: '',
 		[selected]
 	)

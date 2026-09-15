@@ -117,7 +117,7 @@ export default function Header() {
           <div className='absolute bottom-0 left-1/2 -translate-x-1/2 flex pb-6'>
             {locales.map((locale, idx) => (
               <Link
-                href='/dashboard'
+                href={pathname}
                 locale={locale}
                 onClick={() => setLocaleCookie(locale)}
                 key={locale}
@@ -210,7 +210,7 @@ export default function Header() {
               {locales.map(locale => (
                 <DropdownMenuItem key={locale}>
                   <Link
-                    href='/dashboard'
+                    href={pathname}
                     locale={locale}
                     onClick={() => setLocaleCookie(locale)}
                   >

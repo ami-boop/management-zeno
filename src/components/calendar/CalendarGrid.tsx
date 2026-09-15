@@ -7,7 +7,7 @@ import { ChevronLeft, ChevronRight } from 'lucide-react'
 import { todayInIsrael } from '@/lib/schedule-times'
 import type { CalendarExceptionDetail } from '@/lib/api-contracts'
 import { TYPE_COLORS } from './type-colors'
-import { addDays, dayLabel, fromISO, hebrewFullLabel, hebrewShortLabel, isSameMonth, monthGrid, monthLabel, toISO, weekDays, weekLabel, type CalendarView } from './calendar-utils'
+import { addDays, addMonths, dayLabel, fromISO, hebrewFullLabel, hebrewShortLabel, isSameMonth, monthGrid, monthLabel, weekDays, weekLabel, type CalendarView } from './calendar-utils'
 
 interface Props {
 	view: CalendarView
@@ -56,14 +56,19 @@ export default function CalendarGrid({ view, anchor, exceptions, onPickDate, onP
 	}
 
 	const viewOrder: CalendarView[] = ['day', 'week', 'month']
+	const lastZoomRef = useRef(0)
 
 	useEffect(() => {
 		const el = containerRef.current
 		if (!el) return
 		const onWheel = (e: WheelEvent) => {
-			if (e.ctrlKey || e.metaKey) return
-			if (Math.abs(e.deltaY) < 15) return
+			// Pinch-to-zoom only (trackpads emit wheel with ctrl/meta):
+			// a plain wheel scrolls the page and must never hijack it.
+			if (!e.ctrlKey && !e.metaKey) return
 			e.preventDefault()
+			const now = Date.now()
+			if (now - lastZoomRef.current < 250) return
+			lastZoomRef.current = now
 			const dir = e.deltaY > 0 ? 1 : -1
 			const idx = viewOrder.indexOf(view)
 			const next = viewOrder[Math.min(viewOrder.length - 1, Math.max(0, idx + dir))]
@@ -78,21 +83,13 @@ export default function CalendarGrid({ view, anchor, exceptions, onPickDate, onP
 		setDir(-1)
 		if (view === 'day') onNavigate(addDays(anchor, -1))
 		else if (view === 'week') onNavigate(addDays(anchor, -7))
-		else {
-			const d = fromISO(anchor)
-			d.setMonth(d.getMonth() - 1)
-			onNavigate(toISO(d))
-		}
+		else onNavigate(addMonths(anchor, -1))
 	}
 	const goNext = () => {
 		setDir(1)
 		if (view === 'day') onNavigate(addDays(anchor, 1))
 		else if (view === 'week') onNavigate(addDays(anchor, 7))
-		else {
-			const d = fromISO(anchor)
-			d.setMonth(d.getMonth() + 1)
-			onNavigate(toISO(d))
-		}
+		else onNavigate(addMonths(anchor, 1))
 	}
 	const goToday = () => {
 		setDir(0)

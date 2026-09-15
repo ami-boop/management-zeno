@@ -9,13 +9,13 @@ export default async function getTripStudents(tripId: string): Promise<TripStude
 	const token = await getSessionToken()
 	if (!token) return null
 
-	const res = await fetch(`${API_URL}/dashboard/trips/${tripId}/students`, {
-		headers: { Authorization: `Bearer ${token}` },
-		cache: 'no-store',
-	})
-	if (!res.ok) return null
-
 	try {
+		const res = await fetch(`${API_URL}/dashboard/trips/${tripId}/students`, {
+			headers: { Authorization: `Bearer ${token}` },
+			cache: 'no-store',
+		})
+		if (!res.ok) return null
+
 		return parseTripStudents(await res.json())
 	} catch {
 		return null

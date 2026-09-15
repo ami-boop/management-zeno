@@ -41,7 +41,7 @@ export default function ScopeEditor({
 	return (
 		<div className='grid gap-3'>
 			<div className='grid gap-2'>
-				<span className='text-xs font-medium text-gray-500'>{t('fields.scope')} *</span>
+				<span className='text-xs font-medium text-zeno-ink-soft'>{t('fields.scope')} *</span>
 				{scope.length > 0 && (
 					<div className='flex flex-wrap gap-1.5'>
 						{[...scope]
@@ -54,7 +54,7 @@ export default function ScopeEditor({
 								<button
 									key={classId}
 									type='button'
-									className='inline-flex items-center gap-1 rounded-full bg-blue-50 px-2.5 py-0.5 text-xs font-medium text-blue-700 hover:bg-blue-100'
+									className='inline-flex items-center gap-1 rounded-full bg-zeno-sage-soft px-2.5 py-0.5 text-xs font-medium text-zeno-sage border border-zeno-line hover:border-zeno-sage focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-zeno-amber'
 									title={t('actions.removeRow')}
 									onClick={() => onRemove(classId)}
 								>
@@ -77,7 +77,7 @@ export default function ScopeEditor({
 						))}
 					</select>
 					<button
-						className='rounded-lg px-2 py-1.5 text-xs font-medium text-blue-600 hover:bg-blue-50'
+						className='rounded-lg px-2 py-1.5 text-xs font-medium text-zeno-sage hover:bg-zeno-sage-soft focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-zeno-amber'
 						onClick={onSelectAllGrade}
 					>
 						{t('fields.selectAll')}
@@ -111,10 +111,10 @@ export default function ScopeEditor({
 								key={option.id}
 								type='button'
 								aria-pressed={checked}
-								className={`inline-flex h-8 min-w-8 items-center justify-center rounded-lg border px-2 text-sm font-medium ${
+								className={`inline-flex h-8 min-w-8 items-center justify-center rounded-lg border px-2 text-sm font-medium tabular-nums focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-zeno-amber ${
 									checked
-										? 'border-blue-500 bg-blue-50 text-blue-700'
-										: 'border-gray-200 text-gray-600 hover:bg-gray-50'
+										? 'border-zeno-night bg-zeno-night text-white'
+										: 'border-zeno-line text-zeno-ink-soft hover:bg-zeno-paper-soft'
 								}`}
 								onClick={() => onToggle(option.id)}
 							>
@@ -125,7 +125,7 @@ export default function ScopeEditor({
 				</div>
 			</div>
 			<label className='grid gap-1'>
-				<span className='text-xs font-medium text-gray-500'>
+				<span className='text-xs font-medium text-zeno-ink-soft'>
 					{t('fields.departureTime')} *
 				</span>
 				<input

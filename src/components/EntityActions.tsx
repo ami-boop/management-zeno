@@ -23,10 +23,10 @@ export default function EntityActions({
 	activateLabel,
 }: EntityActionsProps) {
 	return (
-		<div className='flex items-center gap-1 border-t border-gray-100 pt-2'>
+		<div className='flex items-center gap-1 border-t border-zeno-line pt-2'>
 			<button
 				type='button'
-				className='inline-flex items-center gap-1.5 rounded-lg px-2 py-1.5 text-xs font-medium text-gray-600 hover:bg-blue-50 hover:text-blue-700'
+				className='inline-flex items-center gap-1.5 rounded-lg px-2 py-1.5 text-xs font-medium text-zeno-ink-soft hover:bg-zeno-sage-soft hover:text-zeno-sage focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-zeno-amber'
 				onClick={onEdit}
 			>
 				<Pencil className='h-3.5 w-3.5' />
@@ -34,7 +34,7 @@ export default function EntityActions({
 			</button>
 			<button
 				type='button'
-				className='inline-flex items-center gap-1.5 rounded-lg px-2 py-1.5 text-xs font-medium text-gray-600 hover:bg-amber-50 hover:text-amber-700 disabled:opacity-40'
+				className='inline-flex items-center gap-1.5 rounded-lg px-2 py-1.5 text-xs font-medium text-zeno-ink-soft hover:bg-zeno-cream-surface hover:text-zeno-amber-ink focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-zeno-amber disabled:opacity-40'
 				disabled={busy}
 				onClick={onToggle}
 			>

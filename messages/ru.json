@@ -607,6 +607,8 @@
     },
     "noExceptions": "Исключений пока нет",
     "today": "Сегодня",
+    "navPrev": "Назад",
+    "navNext": "Вперёд",
     "wheelHint": "Колесо — зум • Перетаскивание — диапазон",
     "noException": "—",
     "displayMode": {

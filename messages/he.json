@@ -620,6 +620,8 @@
     },
     "noExceptions": "אין עדיין חריגות",
     "today": "היום",
+    "navPrev": "הקודם",
+    "navNext": "הבא",
     "wheelHint": "גלילה לזום • גרירה לבחירת טווח",
     "noException": "—",
     "displayMode": {

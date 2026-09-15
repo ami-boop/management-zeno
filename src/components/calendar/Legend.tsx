@@ -17,7 +17,8 @@ export default function Legend({ active, onToggle }: { active?: Set<string>; onT
 						key={type}
 						type='button'
 						onClick={() => onToggle?.(type)}
-						className={`inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-medium transition ${isActive ? 'opacity-100' : 'opacity-40 grayscale'} ${cfg.badge}`}
+						aria-pressed={isActive}
+						className={`inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-medium transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-zeno-amber ${isActive ? 'opacity-100' : 'opacity-40 grayscale'} ${cfg.badge}`}
 						title={t(`types.${type}`)}
 					>
 						<span className={`h-2 w-2 rounded-full ${cfg.dot}`} />

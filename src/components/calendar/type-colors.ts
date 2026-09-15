@@ -1,7 +1,7 @@
 export const TYPE_COLORS: Record<string, { badge: string; dot: string; bg: string; border: string }> = {
-	holiday: { badge: 'bg-emerald-50 text-emerald-700 border border-emerald-200', dot: 'bg-emerald-500', bg: 'bg-emerald-500', border: 'border-emerald-500' },
-	exam_day: { badge: 'bg-violet-50 text-violet-700 border border-violet-200', dot: 'bg-violet-500', bg: 'bg-violet-500', border: 'border-violet-500' },
-	half_day: { badge: 'bg-amber-50 text-amber-800 border border-amber-200', dot: 'bg-amber-500', bg: 'bg-amber-500', border: 'border-amber-500' },
-	no_transport: { badge: 'bg-red-50 text-red-700 border border-red-200', dot: 'bg-red-500', bg: 'bg-red-500', border: 'border-red-500' },
-	special_schedule: { badge: 'bg-blue-50 text-blue-700 border border-blue-200', dot: 'bg-blue-500', bg: 'bg-blue-500', border: 'border-blue-500' },
+	holiday: { badge: 'bg-zeno-sage-soft text-zeno-sage border border-zeno-line', dot: 'bg-zeno-sage', bg: 'bg-zeno-sage', border: 'border-zeno-sage' },
+	exam_day: { badge: 'bg-zeno-paper-soft text-zeno-ink-soft border border-zeno-line-strong', dot: 'bg-zeno-ink-soft', bg: 'bg-zeno-ink-soft', border: 'border-zeno-ink-soft' },
+	half_day: { badge: 'bg-zeno-cream text-zeno-amber-ink border border-zeno-line-strong', dot: 'bg-zeno-amber', bg: 'bg-zeno-amber', border: 'border-zeno-amber' },
+	no_transport: { badge: 'bg-zeno-danger-soft text-zeno-danger border border-zeno-line', dot: 'bg-zeno-danger', bg: 'bg-zeno-danger', border: 'border-zeno-danger' },
+	special_schedule: { badge: 'bg-zeno-night text-white border border-zeno-night', dot: 'bg-zeno-night', bg: 'bg-zeno-night', border: 'border-zeno-night' },
 }

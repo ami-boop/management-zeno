@@ -15,7 +15,7 @@ import CalendarGrid from './CalendarGrid'
 import Legend from './Legend'
 import { TYPE_COLORS } from './type-colors'
 import { todayInIsrael } from '@/lib/schedule-times'
-import { addDays, type CalendarView, type DisplayMode } from './calendar-utils'
+import { addDays, hebrewFullLabel, type CalendarView, type DisplayMode } from './calendar-utils'
 
 interface CalendarClientProps {
 	initialExceptions: CalendarExceptionDetail[] | null
@@ -169,7 +169,7 @@ export default function Client({
 
 	function ExceptionDetail({ exception }: { exception: CalendarExceptionDetail }) {
 		const chip = (id: string) => (
-			<span key={id} className='inline-flex items-center rounded-md bg-blue-50 px-1.5 py-0.5 text-xs font-medium text-blue-700 border border-blue-100'>
+			<span key={id} className='inline-flex items-center rounded-md bg-zeno-sage-soft px-1.5 py-0.5 text-xs font-medium text-zeno-sage border border-zeno-line'>
 				{labelOf(id)}
 			</span>
 		)
@@ -186,7 +186,7 @@ export default function Client({
 				<div className='mb-3 grid gap-1'>
 					{times.map(time => (
 						<div key={time} className='flex flex-wrap items-center gap-1.5'>
-							<span className='text-xs font-semibold text-gray-500 tabular-nums'>{time}</span>
+							<span className='text-xs font-semibold text-zeno-ink-soft tabular-nums'>{time}</span>
 							{byTime.get(time)!.sort((a, b) => classRank(a) - classRank(b)).map(chip)}
 						</div>
 					))}
@@ -197,7 +197,7 @@ export default function Client({
 			const scope = [...(exception.specialSchedule.scope ?? [])].sort((a, b) => classRank(a) - classRank(b))
 			return (
 				<div className='mb-3 flex flex-wrap items-center gap-1.5'>
-					<span className='text-xs font-semibold text-gray-500'>{t('fields.departureTime')} {exception.specialSchedule.departureTime}</span>
+					<span className='text-xs font-semibold text-zeno-ink-soft tabular-nums'>{t('fields.departureTime')} {exception.specialSchedule.departureTime}</span>
 					{scope.map(chip)}
 				</div>
 			)
@@ -211,22 +211,22 @@ export default function Client({
 		<div className='mx-auto max-w-6xl px-4 py-6'>
 			<div className='mb-6 flex flex-wrap items-center justify-between gap-3'>
 				<div>
-					<h1 className='text-2xl font-bold tracking-tight text-gray-900'>{t('title')}</h1>
-					<p className='text-sm text-gray-500'>{t('stats.active', { active: activeCount, total: exceptions?.length ?? 0 })}</p>
+					<h1 className='text-3xl font-bold tracking-tight text-zeno-ink'>{t('title')}</h1>
+					<p className='zeno-kicker mt-1 tabular-nums'>{t('stats.active', { active: activeCount, total: exceptions?.length ?? 0 })}</p>
 				</div>
 				<div className='flex items-center gap-2'>
-					<div className='hidden sm:inline-flex rounded-full border border-gray-200 bg-white p-1'>
-						<button type='button' onClick={() => setDisplayMode('calendar')} className={`rounded-full px-3 py-1 text-xs font-semibold ${displayMode === 'calendar' ? 'bg-blue-600 text-white' : 'text-gray-600 hover:bg-gray-50'}`}>{t('displayMode.calendar')}</button>
-						<button type='button' onClick={() => setDisplayMode('list')} className={`rounded-full px-3 py-1 text-xs font-semibold ${displayMode === 'list' ? 'bg-blue-600 text-white' : 'text-gray-600 hover:bg-gray-50'}`}>{t('displayMode.list')}</button>
+					<div className='hidden sm:inline-flex rounded-full border border-zeno-line bg-zeno-surface p-1'>
+						<button type='button' onClick={() => setDisplayMode('calendar')} aria-pressed={displayMode === 'calendar'} className={`rounded-full px-3 py-1.5 text-xs font-semibold focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-zeno-amber ${displayMode === 'calendar' ? 'bg-zeno-amber text-zeno-amber-fg' : 'text-zeno-ink-soft hover:bg-zeno-paper-soft'}`}>{t('displayMode.calendar')}</button>
+						<button type='button' onClick={() => setDisplayMode('list')} aria-pressed={displayMode === 'list'} className={`rounded-full px-3 py-1.5 text-xs font-semibold focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-zeno-amber ${displayMode === 'list' ? 'bg-zeno-amber text-zeno-amber-fg' : 'text-zeno-ink-soft hover:bg-zeno-paper-soft'}`}>{t('displayMode.list')}</button>
 					</div>
 					{displayMode === 'calendar' && (
-						<div className='inline-flex rounded-full border border-gray-200 bg-white p-1'>
+						<div className='inline-flex rounded-full border border-zeno-line bg-zeno-surface p-1'>
 							{(['day', 'week', 'month'] as const).map(v => (
-								<button key={v} type='button' onClick={() => setView(v)} className={`rounded-full px-3 py-1 text-xs font-semibold ${view === v ? 'bg-violet-600 text-white' : 'text-gray-600 hover:bg-gray-50'}`}>{t(`view.${v}`)}</button>
+								<button key={v} type='button' onClick={() => setView(v)} aria-pressed={view === v} className={`rounded-full px-3 py-1.5 text-xs font-semibold focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-zeno-amber ${view === v ? 'bg-zeno-amber text-zeno-amber-fg' : 'text-zeno-ink-soft hover:bg-zeno-paper-soft'}`}>{t(`view.${v}`)}</button>
 							))}
 						</div>
 					)}
-					<button className='inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-blue-600 to-violet-600 px-4 py-2 text-sm font-semibold text-white shadow hover:from-blue-700 hover:to-violet-700' onClick={() => { setEditing(null); setInitialDates(undefined); setDialogOpen(true) }}>
+					<button className='zeno-primary inline-flex items-center gap-2 rounded-full px-4 py-2 text-sm font-semibold shadow focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-zeno-amber' onClick={() => { setEditing(null); setInitialDates(undefined); setDialogOpen(true) }}>
 						<CalendarPlus className='h-4 w-4' />
 						{t('actions.add')}
 					</button>
@@ -243,22 +243,22 @@ export default function Client({
 					})
 				}} />
 				<div className='flex items-center gap-2'>
-					<select value={filterActive} onChange={e => setFilterActive(e.target.value as never)} className='rounded-full border border-gray-200 bg-white px-3 py-1.5 text-xs font-medium'>
+					<select value={filterActive} onChange={e => setFilterActive(e.target.value as never)} className='rounded-xl border border-zeno-line bg-zeno-surface px-3 py-1.5 text-xs font-medium text-zeno-ink-soft focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-zeno-amber'>
 						<option value='all'>{t('filters.activeAll')}</option>
 						<option value='active'>{t('filters.activeOnly')}</option>
 						<option value='inactive'>{t('filters.inactiveOnly')}</option>
 					</select>
 					{(filterTypes.size > 0 || filterActive !== 'all') && (
-						<button type='button' onClick={() => { setFilterTypes(new Set()); setFilterActive('all') }} className='text-xs text-gray-500 underline'>Reset</button>
+						<button type='button' onClick={() => { setFilterTypes(new Set()); setFilterActive('all') }} className='text-xs text-zeno-muted underline hover:text-zeno-ink-soft'>Reset</button>
 					)}
 				</div>
 			</div>
 
 			{actionError && <ErrorBanner message={t('errors.actionFailed')} />}
 			{undo && (
-				<div className='mb-3 flex items-center justify-between rounded-xl border border-amber-200 bg-amber-50 px-4 py-2 text-sm'>
-					<span className='text-amber-800'>{t('undoRestored')} {undo.date}</span>
-					<button onClick={() => void handleUndo()} className='inline-flex items-center gap-1 rounded-full bg-white px-3 py-1 text-xs font-semibold border border-amber-200 hover:bg-amber-100'>
+				<div className='mb-3 flex items-center justify-between rounded-xl border border-zeno-line-strong bg-zeno-cream px-4 py-2 text-sm'>
+					<span className='text-zeno-amber-ink tabular-nums'>{t('undoRestored')} {undo.date}</span>
+					<button onClick={() => void handleUndo()} className='inline-flex items-center gap-1 rounded-full bg-zeno-surface px-3 py-1 text-xs font-semibold text-zeno-ink border border-zeno-line-strong hover:bg-zeno-cream-surface focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-zeno-amber'>
 						<RotateCcw className='h-3 w-3' />{t('undo')}
 					</button>
 				</div>
@@ -277,19 +277,19 @@ export default function Client({
 							{filtered.map(exception => {
 								const colors = TYPE_COLORS[exception.type] ?? TYPE_COLORS.holiday
 								return (
-									<div key={exception.id} className={`rounded-2xl border bg-white p-4 shadow-sm ${exception.isActive ? 'border-gray-200' : 'border-gray-100 bg-gray-50'}`}>
+									<div key={exception.id} className={`zeno-card p-4 ${exception.isActive ? '' : 'bg-zeno-paper-soft'}`}>
 										<div className='mb-2 flex flex-wrap items-start justify-between gap-2'>
 											<div className='flex items-center gap-2'>
 												<span className={`h-2.5 w-2.5 rounded-full ${colors.bg}`} />
 												<div>
-													<div className='text-sm font-bold text-gray-900'>{formatDate(exception.id)}</div>
+													<div className='text-sm font-bold text-zeno-ink tabular-nums'>{formatDate(exception.id)} <span className='font-medium text-zeno-muted'>{hebrewFullLabel(exception.id)}</span></div>
 													<div className={`inline-flex rounded-full px-2 py-0.5 text-xs font-semibold border ${colors.badge}`}>{t(`types.${exception.type}`)}</div>
 												</div>
 											</div>
 											<ActiveBadge active={exception.isActive} activeLabel={t('status.active')} inactiveLabel={t('status.inactive')} />
 										</div>
 										<ExceptionDetail exception={exception} />
-										{exception.note && <div className='mb-3 rounded-lg bg-gray-50 px-2 py-1 text-xs text-gray-600 border border-gray-100'>{exception.note}</div>}
+										{exception.note && <div className='mb-3 rounded-zeno-sm bg-zeno-paper-soft px-2 py-1 text-xs text-zeno-ink-soft border border-zeno-line'>{exception.note}</div>}
 										<EntityActions onEdit={() => { setEditing(exception); setInitialDates(undefined); setDialogOpen(true) }} onToggle={() => void toggleActive(exception)} active={exception.isActive} busy={busyId === exception.id} editLabel={t('actions.edit')} deactivateLabel={t('actions.deactivate')} activateLabel={t('actions.activate')} />
 									</div>
 								)

@@ -190,18 +190,18 @@ export default function ExceptionDialog({
 
 	return (
 		<Dialog open={open} onOpenChange={v => !v && onClose()}>
-			<DialogContent className='max-h-[90vh] overflow-y-auto rounded-2xl border-0 p-0 shadow-2xl'>
-				<div className='bg-gradient-to-br from-blue-600 via-violet-600 to-emerald-500 p-6 text-white'>
+			<DialogContent className='max-h-[90vh] overflow-y-auto rounded-zeno border border-zeno-line shadow-zeno-board p-0'>
+				<div className='rounded-t-zeno bg-zeno-night p-6 text-white'>
 					<DialogHeader className='space-y-1'>
 						<DialogTitle className='text-white text-xl'>{exception ? t('dialog.editTitle') : isBatch ? t('selectedRange', { count: dates.length }) : t('dialog.createTitle')}</DialogTitle>
-						<DialogDescription className='text-white/80'>{isBatch ? `${dates[0]} → ${dates[dates.length-1]}` : t('dialog.description')}</DialogDescription>
+						<DialogDescription className='text-zeno-line-strong tabular-nums'>{isBatch ? `${dates[0]} → ${dates[dates.length-1]}` : t('dialog.description')}</DialogDescription>
 					</DialogHeader>
 				</div>
 
 				<div className='grid gap-4 p-6'>
 					{!exception && (
-						<div className='rounded-xl bg-gradient-to-r from-amber-50 to-blue-50 p-3 border border-amber-100'>
-							<div className='text-xs font-semibold text-gray-700 mb-2'>{t('presets.title')}</div>
+						<div className='rounded-xl border border-zeno-line bg-zeno-paper-soft p-3'>
+							<div className='text-xs font-semibold text-zeno-ink mb-2'>{t('presets.title')}</div>
 							<div className='flex flex-wrap gap-1.5'>
 								{PRESETS.map(p => (
 									<button
@@ -216,7 +216,7 @@ export default function ExceptionDialog({
 												setDepartureTime(p.specialSchedule?.departureTime ?? '13:30')
 											}
 										}}
-										className='rounded-full bg-white px-3 py-1 text-xs font-medium shadow-sm border border-gray-200 hover:border-violet-300 hover:bg-violet-50'
+										className='rounded-full bg-zeno-surface px-3 py-1 text-xs font-medium text-zeno-ink-soft shadow-sm border border-zeno-line hover:border-zeno-line-strong hover:bg-zeno-cream-surface focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-zeno-amber'
 									>
 										{t(p.labelKey)}
 									</button>
@@ -227,18 +227,18 @@ export default function ExceptionDialog({
 
 					{exception ? (
 						<FormField label={t('fields.date')} required>
-							<input className={`${inputClass} bg-gray-50`} type='date' value={singleDate} disabled />
+							<input className={inputClass} type='date' value={singleDate} disabled />
 						</FormField>
 					) : isBatch ? (
-						<div className='rounded-xl border border-blue-200 bg-blue-50 p-3'>
+						<div className='rounded-xl border border-zeno-line-strong bg-zeno-paper-soft p-3'>
 							{(() => {
 								const sorted = [...dates].sort()
 								return (
 									<>
-										<div className='text-xs font-semibold text-blue-900'>{t('rangeLabel', { start: sorted[0], end: sorted[sorted.length-1], count: sorted.length })}</div>
+										<div className='text-xs font-semibold text-zeno-ink tabular-nums'>{t('rangeLabel', { start: sorted[0], end: sorted[sorted.length-1], count: sorted.length })}</div>
 										<div className='mt-1 flex flex-wrap gap-1 max-h-20 overflow-y-auto'>
 											{sorted.map(d => (
-												<span key={d} className='rounded-full bg-white px-2 py-0.5 text-xs border border-blue-200'>{d}</span>
+												<span key={d} className='rounded-full bg-zeno-surface px-2 py-0.5 text-xs text-zeno-ink-soft border border-zeno-line tabular-nums'>{d}</span>
 											))}
 										</div>
 									</>
@@ -297,20 +297,20 @@ export default function ExceptionDialog({
 					</FormField>
 
 					{conflicts && (
-						<div className='rounded-xl border border-amber-200 bg-amber-50 p-3 text-sm'>
-							<div className='font-semibold text-amber-900'>{t('batch.conflict')}</div>
-							<div className='mt-1 text-amber-800'>{t('batch.conflictHint')}</div>
+						<div className='rounded-xl border border-zeno-amber bg-zeno-cream p-3 text-sm'>
+							<div className='font-semibold text-zeno-amber-ink'>{t('batch.conflict')}</div>
+							<div className='mt-1 text-zeno-amber-ink'>{t('batch.conflictHint')}</div>
 							<div className='mt-2 flex flex-wrap gap-1'>
-								{conflicts.map(d=> <span key={d} className='rounded-full bg-white px-2 py-0.5 text-xs border border-amber-200'>{d}</span>)}
+								{conflicts.map(d=> <span key={d} className='rounded-full bg-zeno-surface px-2 py-0.5 text-xs text-zeno-ink-soft border border-zeno-line-strong tabular-nums'>{d}</span>)}
 							</div>
-							<div className='mt-2 text-xs text-amber-700'>{t('batch.editSuggestion')}</div>
+							<div className='mt-2 text-xs text-zeno-amber-ink'>{t('batch.editSuggestion')}</div>
 						</div>
 					)}
 
-					{error && !conflicts && <p className='text-sm text-red-600'>{error}</p>}
+					{error && !conflicts && <p className='text-sm text-zeno-danger'>{error}</p>}
 				</div>
 
-				<div className='border-t border-gray-100 p-4 bg-gray-50/60 rounded-b-2xl'>
+				<div className='border-t border-zeno-line p-4 bg-zeno-paper-soft rounded-b-zeno'>
 					<DialogSaveFooter onCancel={onClose} onSave={() => void handleSave()} saving={saving} cancelLabel={t('actions.cancel')} saveLabel={t('actions.save')} />
 				</div>
 			</DialogContent>

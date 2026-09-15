@@ -38,7 +38,7 @@ export default function HalfDayEditor({
 
 	return (
 		<div className='grid gap-2'>
-			<span className='text-xs font-medium text-gray-500'>
+			<span className='text-xs font-medium text-zeno-ink-soft'>
 				{t('fields.overrideEndTimes')} *
 			</span>
 			{rows.map((row, index) => {
@@ -110,8 +110,9 @@ export default function HalfDayEditor({
 							onChange={event => onUpdateRow(index, { time: event.target.value })}
 						/>
 						<button
-							className='rounded-lg p-2 text-gray-400 hover:bg-red-50 hover:text-red-600'
+							className='rounded-lg p-2 text-zeno-muted hover:bg-zeno-danger-soft hover:text-zeno-danger focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-zeno-amber'
 							title={t('actions.removeRow')}
+							aria-label={t('actions.removeRow')}
 							onClick={() => onRemoveRow(index)}
 						>
 							<Trash2 className='h-4 w-4' />
@@ -121,7 +122,7 @@ export default function HalfDayEditor({
 			})}
 			<div className='flex flex-wrap gap-2'>
 				<button
-					className='inline-flex w-fit items-center gap-1.5 rounded-lg border border-dashed border-gray-300 px-3 py-1.5 text-xs font-medium text-gray-600 hover:bg-gray-50'
+					className='inline-flex w-fit items-center gap-1.5 rounded-lg border border-dashed border-zeno-line-strong px-3 py-1.5 text-xs font-medium text-zeno-ink-soft hover:bg-zeno-paper-soft focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-zeno-amber'
 					onClick={onAddRow}
 				>
 					<Plus className='h-3.5 w-3.5' />
@@ -129,7 +130,7 @@ export default function HalfDayEditor({
 				</button>
 				{megamas.length > 0 && (
 					<button
-						className='inline-flex w-fit items-center gap-1.5 rounded-lg border border-dashed border-gray-300 px-3 py-1.5 text-xs font-medium text-gray-600 hover:bg-gray-50'
+						className='inline-flex w-fit items-center gap-1.5 rounded-lg border border-dashed border-zeno-line-strong px-3 py-1.5 text-xs font-medium text-zeno-ink-soft hover:bg-zeno-paper-soft focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-zeno-amber'
 						onClick={onAddMegama}
 					>
 						<Plus className='h-3.5 w-3.5' />

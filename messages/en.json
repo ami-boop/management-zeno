@@ -607,6 +607,8 @@
     },
     "noExceptions": "No calendar exceptions yet",
     "today": "Today",
+    "navPrev": "Previous",
+    "navNext": "Next",
     "wheelHint": "Scroll to zoom • Drag to select range",
     "noException": "—",
     "displayMode": {

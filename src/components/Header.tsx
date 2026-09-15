@@ -96,6 +96,7 @@ export default function Header() {
       {navLink('/friend-trips', t('menu.friendTrips'))}
       {navLink('/report', t('menu.report'))}
       {navLink('/statistics', t('menu.statistics'))}
+      {navLink('/rules', t('menu.rules'))}
       {dir === 'col' && (
         <>
           <Link className='text-sm font-medium text-[#111518]' href='/profile'>

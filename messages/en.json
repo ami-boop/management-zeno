@@ -92,7 +92,8 @@
       "report": "Report",
       "friendTrips": "Friend trips",
       "calendar": "Calendar",
-      "statistics": "Statistics"
+      "statistics": "Statistics",
+      "rules": "Rules"
     },
     "theme": "Theme",
     "themeSystem": "System",
@@ -730,6 +731,39 @@
     },
     "errors": {
       "loadFailed": "Failed to load statistics"
+    }
+  },
+  "Rules": {
+    "title": "Rules",
+    "subtitle": "Business settings",
+    "save": "Save",
+    "saved": "Saved",
+    "deadline": {
+      "title": "Report deadline",
+      "hint": "How many minutes before departure the student report closes. Applies to new reports and trip creation.",
+      "label": "Minutes before departure"
+    },
+    "times": {
+      "title": "Report times",
+      "hint": "Times students can pick in the report. Sorted automatically.",
+      "empty": "No times yet — add the first one below.",
+      "add": "Add",
+      "addPlaceholder": "New time (HH:MM)",
+      "remove": "Remove time"
+    },
+    "capacities": {
+      "title": "Vehicle capacities",
+      "hint": "Used by the formula that calculates how many buses and minibuses each trip needs.",
+      "bus": "Bus seats",
+      "minibus": "Minibus seats"
+    },
+    "errors": {
+      "loadFailed": "Failed to load rules",
+      "saveFailed": "Failed to save rules",
+      "deadlineRange": "Deadline must be between 5 and 180 minutes",
+      "timesRequired": "Add at least one time",
+      "capacitiesRange": "Capacities must be positive integers",
+      "timeFormat": "Time must be HH:MM"
     }
   }
 }

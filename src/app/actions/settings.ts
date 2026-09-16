@@ -21,6 +21,9 @@ export interface SettingsPatch {
 	reportTimes?: string[]
 	vehicleCapacities?: { bus: number; minibus: number }
 	minibusesEnabled?: boolean
+	autoCompleteRadiusM?: number
+	liveFreshnessMinutes?: number
+	autoCompleteFallbackMinutes?: number
 }
 
 export async function updateSettingsData(

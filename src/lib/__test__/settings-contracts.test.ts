@@ -12,12 +12,18 @@ describe('parseSettings', () => {
 			reportTimes: ['16:20', '15:35'],
 			vehicleCapacities: { bus: 50, minibus: 18 },
 			minibusesEnabled: true,
+			autoCompleteRadiusM: 400,
+			liveFreshnessMinutes: 3,
+			autoCompleteFallbackMinutes: 30,
 		})
 		expect(parsed).toEqual({
 			reportDeadlineMinutes: 60,
 			reportTimes: ['15:35', '16:20'],
 			vehicleCapacities: { bus: 50, minibus: 18 },
 			minibusesEnabled: true,
+			autoCompleteRadiusM: 400,
+			liveFreshnessMinutes: 3,
+			autoCompleteFallbackMinutes: 30,
 		})
 	})
 
@@ -27,6 +33,9 @@ describe('parseSettings', () => {
 			reportTimes: [],
 			vehicleCapacities: { bus: 55, minibus: 20 },
 			minibusesEnabled: false,
+			autoCompleteRadiusM: 250,
+			liveFreshnessMinutes: 5,
+			autoCompleteFallbackMinutes: 20,
 		})
 	})
 })

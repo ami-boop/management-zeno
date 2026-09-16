@@ -5,6 +5,9 @@ export interface SettingsData {
 	reportTimes: string[]
 	vehicleCapacities: { bus: number; minibus: number }
 	minibusesEnabled: boolean
+	autoCompleteRadiusM: number
+	liveFreshnessMinutes: number
+	autoCompleteFallbackMinutes: number
 }
 
 function num(value: unknown, fallback: number): number {
@@ -23,5 +26,8 @@ export function parseSettings(value: unknown): SettingsData | null {
 			minibus: num(capacities.minibus, 20),
 		},
 		minibusesEnabled: value.minibusesEnabled === true,
+		autoCompleteRadiusM: num(value.autoCompleteRadiusM, 250),
+		liveFreshnessMinutes: num(value.liveFreshnessMinutes, 5),
+		autoCompleteFallbackMinutes: num(value.autoCompleteFallbackMinutes, 20),
 	}
 }

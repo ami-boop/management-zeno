@@ -764,11 +764,21 @@
       "deadlineRange": "Deadline must be between 5 and 180 minutes",
       "timesRequired": "Add at least one time",
       "capacitiesRange": "Capacities must be positive integers",
-      "timeFormat": "Time must be HH:MM"
+      "timeFormat": "Time must be HH:MM",
+      "autoRadiusRange": "Geo radius must be between 100 and 500",
+      "liveFreshRange": "Live freshness must be between 1 and 15 minutes",
+      "autoFallbackRange": "Time fallback must be between 5 and 60 minutes"
     },
     "minibuses": {
       "title": "Minibuses",
       "hint": "When off, the fleet is buses-only: remainders go to an extra bus. Off by default."
+    },
+    "autoComplete": {
+      "title": "Auto-complete of trips",
+      "hint": "A trip closes automatically when the bus reaches the last stop or by time fallback after the estimated arrival.",
+      "radius": "Geo radius, m (100–500)",
+      "freshness": "Live freshness, min (1–15)",
+      "fallback": "Time fallback, min (5–60)"
     }
   }
 }

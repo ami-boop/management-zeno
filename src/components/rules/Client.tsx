@@ -57,6 +57,9 @@ export default function Client({ initial }: { initial: SettingsData | null }) {
 	const [bus, setBus] = useState(initial?.vehicleCapacities.bus ?? 55)
 	const [minibus, setMinibus] = useState(initial?.vehicleCapacities.minibus ?? 20)
 	const [minibusesEnabled, setMinibusesEnabled] = useState(initial?.minibusesEnabled ?? false)
+	const [autoRadius, setAutoRadius] = useState(initial?.autoCompleteRadiusM ?? 250)
+	const [liveFresh, setLiveFresh] = useState(initial?.liveFreshnessMinutes ?? 5)
+	const [autoFallback, setAutoFallback] = useState(initial?.autoCompleteFallbackMinutes ?? 20)
 	const [saving, setSaving] = useState<string | null>(null)
 	const [saved, setSaved] = useState<string | null>(null)
 	const [error, setError] = useState<string | null>(null)
@@ -91,6 +94,9 @@ export default function Client({ initial }: { initial: SettingsData | null }) {
 		setBus(result.data.vehicleCapacities.bus)
 		setMinibus(result.data.vehicleCapacities.minibus)
 		setMinibusesEnabled(result.data.minibusesEnabled)
+		setAutoRadius(result.data.autoCompleteRadiusM)
+		setLiveFresh(result.data.liveFreshnessMinutes)
+		setAutoFallback(result.data.autoCompleteFallbackMinutes)
 		setSaved(section)
 		if (savedTimer.current) clearTimeout(savedTimer.current)
 		savedTimer.current = setTimeout(() => setSaved(current => (current === section ? null : current)), 3000)
@@ -118,6 +124,26 @@ export default function Client({ initial }: { initial: SettingsData | null }) {
 			return
 		}
 		void save('capacities', { vehicleCapacities: { bus, minibus }, minibusesEnabled })
+	}
+
+	function saveAutoComplete() {
+		if (!Number.isInteger(autoRadius) || autoRadius < 100 || autoRadius > 500) {
+			setError(t('errors.autoRadiusRange'))
+			return
+		}
+		if (!Number.isInteger(liveFresh) || liveFresh < 1 || liveFresh > 15) {
+			setError(t('errors.liveFreshRange'))
+			return
+		}
+		if (!Number.isInteger(autoFallback) || autoFallback < 5 || autoFallback > 60) {
+			setError(t('errors.autoFallbackRange'))
+			return
+		}
+		void save('autoComplete', {
+			autoCompleteRadiusM: autoRadius,
+			liveFreshnessMinutes: liveFresh,
+			autoCompleteFallbackMinutes: autoFallback,
+		})
 	}
 
 	function addTime() {
@@ -234,6 +260,42 @@ export default function Client({ initial }: { initial: SettingsData | null }) {
 						</FormField>
 					</div>
 					<SaveRow saving={saving === 'capacities'} saved={saved === 'capacities'} saveLabel={t('save')} onSave={saveCapacities} />
+				</Section>
+
+				<Section title={t('autoComplete.title')} hint={t('autoComplete.hint')}>
+					<div className='grid max-w-md gap-3 sm:grid-cols-3'>
+						<FormField label={t('autoComplete.radius')}>
+							<input
+								className={`${fieldInputClassName} tabular-nums`}
+								type='number'
+								min={100}
+								max={500}
+								value={autoRadius}
+								onChange={e => setAutoRadius(Number(e.target.value))}
+							/>
+						</FormField>
+						<FormField label={t('autoComplete.freshness')}>
+							<input
+								className={`${fieldInputClassName} tabular-nums`}
+								type='number'
+								min={1}
+								max={15}
+								value={liveFresh}
+								onChange={e => setLiveFresh(Number(e.target.value))}
+							/>
+						</FormField>
+						<FormField label={t('autoComplete.fallback')}>
+							<input
+								className={`${fieldInputClassName} tabular-nums`}
+								type='number'
+								min={5}
+								max={60}
+								value={autoFallback}
+								onChange={e => setAutoFallback(Number(e.target.value))}
+							/>
+						</FormField>
+					</div>
+					<SaveRow saving={saving === 'autoComplete'} saved={saved === 'autoComplete'} saveLabel={t('save')} onSave={saveAutoComplete} />
 				</Section>
 			</div>
 		</div>

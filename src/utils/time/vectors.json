@@ -1,0 +1,28 @@
+{
+  "_meta": {
+    "description": "Canonical Israel-time test vectors. MASTER COPY — others must be byte-identical (compare checksum on review). New time cases go here first, code second.",
+    "timezone": "Asia/Jerusalem",
+    "law": "UTC+3 from 02:00 IST on the Friday before the last Sunday of March; UTC+2 from 02:00 IDT on the last Sunday of October (stable since 2013)",
+    "dayIndex": "0=Sunday … 6=Saturday",
+    "frozen": "2026-09-29",
+    "count": 16
+  },
+  "vectors": [
+    { "utc": "2026-01-15T12:00:00Z", "date": "2026-01-15", "hhmm": "14:00", "offsetHours": 2, "dayIndex": 4, "label": "winter noon" },
+    { "utc": "2026-07-15T12:00:00Z", "date": "2026-07-15", "hhmm": "15:00", "offsetHours": 3, "dayIndex": 3, "label": "summer noon" },
+    { "utc": "2026-01-14T22:00:00Z", "date": "2026-01-15", "hhmm": "00:00", "offsetHours": 2, "dayIndex": 4, "label": "winter midnight boundary" },
+    { "utc": "2026-07-14T21:00:00Z", "date": "2026-07-15", "hhmm": "00:00", "offsetHours": 3, "dayIndex": 3, "label": "summer midnight boundary" },
+    { "utc": "2025-03-27T23:59:00Z", "date": "2025-03-28", "hhmm": "01:59", "offsetHours": 2, "dayIndex": 5, "label": "spring fwd 2025, 1 min before" },
+    { "utc": "2025-03-28T00:00:00Z", "date": "2025-03-28", "hhmm": "03:00", "offsetHours": 3, "dayIndex": 5, "label": "spring fwd 2025, jump moment" },
+    { "utc": "2025-03-28T01:00:00Z", "date": "2025-03-28", "hhmm": "04:00", "offsetHours": 3, "dayIndex": 5, "label": "spring fwd 2025, after" },
+    { "utc": "2025-10-25T22:59:00Z", "date": "2025-10-26", "hhmm": "01:59", "offsetHours": 3, "dayIndex": 0, "label": "fall back 2025, 1 min before" },
+    { "utc": "2025-10-25T23:00:00Z", "date": "2025-10-26", "hhmm": "01:00", "offsetHours": 2, "dayIndex": 0, "label": "fall back 2025, fold (2nd 01:00)" },
+    { "utc": "2025-10-26T00:00:00Z", "date": "2025-10-26", "hhmm": "02:00", "offsetHours": 2, "dayIndex": 0, "label": "fall back 2025, after" },
+    { "utc": "2026-03-26T23:59:00Z", "date": "2026-03-27", "hhmm": "01:59", "offsetHours": 2, "dayIndex": 5, "label": "spring fwd 2026, 1 min before" },
+    { "utc": "2026-03-27T00:00:00Z", "date": "2026-03-27", "hhmm": "03:00", "offsetHours": 3, "dayIndex": 5, "label": "spring fwd 2026, jump moment" },
+    { "utc": "2026-03-27T01:00:00Z", "date": "2026-03-27", "hhmm": "04:00", "offsetHours": 3, "dayIndex": 5, "label": "spring fwd 2026, after" },
+    { "utc": "2026-10-24T22:59:00Z", "date": "2026-10-25", "hhmm": "01:59", "offsetHours": 3, "dayIndex": 0, "label": "fall back 2026, 1 min before" },
+    { "utc": "2026-10-24T23:00:00Z", "date": "2026-10-25", "hhmm": "01:00", "offsetHours": 2, "dayIndex": 0, "label": "fall back 2026, fold (2nd 01:00)" },
+    { "utc": "2026-10-25T00:00:00Z", "date": "2026-10-25", "hhmm": "02:00", "offsetHours": 2, "dayIndex": 0, "label": "fall back 2026, after" }
+  ]
+}

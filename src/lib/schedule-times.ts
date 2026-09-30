@@ -1,5 +1,5 @@
 import type { CalendarException, LessonsSchedule, StopEntry } from '@/lib/api-contracts'
-import { parseHHMM, minutesToHHMM } from '@/utils/date'
+import { parseHHMM, minutesToHHMM } from '@/utils/time'
 
 export { parseHHMM, minutesToHHMM }
 
@@ -123,4 +123,4 @@ export function buildMorningTimeline(stops: StopEntry[]): { stopId: string; orde
 	})
 }
 
-export { todayInIsrael } from '@/utils/date'
+export { todayInIsrael } from '@/utils/time'

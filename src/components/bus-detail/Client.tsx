@@ -15,7 +15,7 @@ import {
 	User,
 } from 'lucide-react'
 import type { BusLiveTrip, FleetBus } from '@/lib/api-contracts'
-import { formatClockHHMM } from '@/utils/date'
+import { formatClockHHMM } from '@/utils/time'
 import BusMap from './BusMap'
 
 const POLL_INTERVAL_MS = 15_000

@@ -24,6 +24,30 @@ const eslintConfig = [
       'react/display-name': 'off',
     },
   },
+  {
+    files: ['src/**/*.{ts,tsx}'],
+    ignores: ['src/utils/time/**'],
+    rules: {
+      'no-restricted-imports': [
+        'error',
+        {
+          paths: [
+            {
+              name: 'dayjs/plugin/timezone',
+              message: 'Use @/utils/time instead — single time module (time-unification plan).',
+            },
+          ],
+        },
+      ],
+      'no-restricted-syntax': [
+        'error',
+        {
+          selector: "CallExpression[callee.property.name='toLocaleTimeString']",
+          message: 'Use formatClockHHMM from @/utils/time (always Asia/Jerusalem).',
+        },
+      ],
+    },
+  },
 ]
 
 export default eslintConfig

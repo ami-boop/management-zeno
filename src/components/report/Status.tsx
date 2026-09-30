@@ -1,14 +1,9 @@
 import { useTranslations } from 'next-intl'
-import dayjs from 'dayjs'
-import timezone from 'dayjs/plugin/timezone'
-import utc from 'dayjs/plugin/utc'
-
-dayjs.extend(utc)
-dayjs.extend(timezone)
+import { getIsraelTime } from '@/utils/time'
 
 export default function Status() {
   const t = useTranslations('managementReport')
-  const currentTime = dayjs().tz('Asia/Jerusalem').format('HH:mm')
+  const currentTime = getIsraelTime()
   const reportingAs = 'Administrator'
   return (
     <div className='bg-gray-50 rounded-lg p-4 mb-6 space-y-3'>

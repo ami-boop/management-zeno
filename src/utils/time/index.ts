@@ -8,4 +8,4 @@ export {
 } from './israel'
 export { getTodayDate, getTodayDayOfWeek, todayInIsrael } from './today'
 export { parseIsraelTime, parseHHMM, minutesToHHMM } from './parse'
-export { formatClockHHMM } from './format'
+export { formatClockHHMM, getIsraelTime } from './format'

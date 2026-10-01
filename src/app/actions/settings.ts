@@ -24,6 +24,11 @@ export interface SettingsPatch {
 	autoCompleteRadiusM?: number
 	liveFreshnessMinutes?: number
 	autoCompleteFallbackMinutes?: number
+	atStopRadiusM?: number
+	lateDepartureGraceMin?: number
+	onTimeMin?: number
+	onTimeMax?: number
+	delaysCollectingMin?: number
 }
 
 export async function updateSettingsData(

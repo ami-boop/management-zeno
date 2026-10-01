@@ -783,7 +783,12 @@
       "timeFormat": "Time must be HH:MM",
       "autoRadiusRange": "Geo radius must be between 100 and 500",
       "liveFreshRange": "Live freshness must be between 1 and 15 minutes",
-      "autoFallbackRange": "Time fallback must be between 5 and 60 minutes"
+      "autoFallbackRange": "Time fallback must be between 5 and 60 minutes",
+      "stopRadiusRange": "Departure point radius: integer 50–1000",
+      "departGraceRange": "Departure grace: integer 0–10",
+      "onTimeMinRange": "“On time” from: integer −10–0",
+      "onTimeMaxRange": "“On time” to: integer 0–10",
+      "collectMinRange": "Min trips: integer 1–30"
     },
     "minibuses": {
       "title": "Minibuses",
@@ -795,6 +800,15 @@
       "radius": "Geo radius, m (100–500)",
       "freshness": "Live freshness, min (1–15)",
       "fallback": "Time fallback, min (5–60)"
+    },
+    "accuracy": {
+      "title": "Accuracy & lateness",
+      "hint": "The “on-time” band applies to the live pill and statistics. Radius and grace drive departure-lateness detection.",
+      "stopRadius": "Departure point radius, m (50–1000)",
+      "departGrace": "Departure grace, min (0–10)",
+      "collectMin": "Min trips for statistics (1–30)",
+      "onTimeMin": "“On time” from, min (−10–0)",
+      "onTimeMax": "“On time” to, min (0–10)"
     }
   }
 }

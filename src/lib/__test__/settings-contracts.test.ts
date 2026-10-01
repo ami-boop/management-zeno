@@ -15,6 +15,11 @@ describe('parseSettings', () => {
 			autoCompleteRadiusM: 400,
 			liveFreshnessMinutes: 3,
 			autoCompleteFallbackMinutes: 30,
+			atStopRadiusM: 500,
+			lateDepartureGraceMin: 5,
+			onTimeMin: -5,
+			onTimeMax: 5,
+			delaysCollectingMin: 10,
 		})
 		expect(parsed).toEqual({
 			reportDeadlineMinutes: 60,
@@ -24,6 +29,11 @@ describe('parseSettings', () => {
 			autoCompleteRadiusM: 400,
 			liveFreshnessMinutes: 3,
 			autoCompleteFallbackMinutes: 30,
+			atStopRadiusM: 500,
+			lateDepartureGraceMin: 5,
+			onTimeMin: -5,
+			onTimeMax: 5,
+			delaysCollectingMin: 10,
 		})
 	})
 
@@ -36,6 +46,28 @@ describe('parseSettings', () => {
 			autoCompleteRadiusM: 250,
 			liveFreshnessMinutes: 5,
 			autoCompleteFallbackMinutes: 20,
+			atStopRadiusM: 300,
+			lateDepartureGraceMin: 2,
+			onTimeMin: -2,
+			onTimeMax: 3,
+			delaysCollectingMin: 7,
+		})
+	})
+
+	it('falls back on garbage accuracy values', () => {
+		const parsed = parseSettings({
+			atStopRadiusM: 'far',
+			lateDepartureGraceMin: -1,
+			onTimeMin: 1.5,
+			onTimeMax: null,
+			delaysCollectingMin: NaN,
+		})
+		expect(parsed).toMatchObject({
+			atStopRadiusM: 300,
+			lateDepartureGraceMin: 2,
+			onTimeMin: -2,
+			onTimeMax: 3,
+			delaysCollectingMin: 7,
 		})
 	})
 })

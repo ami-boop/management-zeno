@@ -60,6 +60,11 @@ export default function Client({ initial }: { initial: SettingsData | null }) {
 	const [autoRadius, setAutoRadius] = useState(initial?.autoCompleteRadiusM ?? 250)
 	const [liveFresh, setLiveFresh] = useState(initial?.liveFreshnessMinutes ?? 5)
 	const [autoFallback, setAutoFallback] = useState(initial?.autoCompleteFallbackMinutes ?? 20)
+	const [stopRadius, setStopRadius] = useState(initial?.atStopRadiusM ?? 300)
+	const [departGrace, setDepartGrace] = useState(initial?.lateDepartureGraceMin ?? 2)
+	const [onMin, setOnMin] = useState(initial?.onTimeMin ?? -2)
+	const [onMax, setOnMax] = useState(initial?.onTimeMax ?? 3)
+	const [collectMin, setCollectMin] = useState(initial?.delaysCollectingMin ?? 7)
 	const [saving, setSaving] = useState<string | null>(null)
 	const [saved, setSaved] = useState<string | null>(null)
 	const [error, setError] = useState<string | null>(null)
@@ -97,6 +102,11 @@ export default function Client({ initial }: { initial: SettingsData | null }) {
 		setAutoRadius(result.data.autoCompleteRadiusM)
 		setLiveFresh(result.data.liveFreshnessMinutes)
 		setAutoFallback(result.data.autoCompleteFallbackMinutes)
+		setStopRadius(result.data.atStopRadiusM)
+		setDepartGrace(result.data.lateDepartureGraceMin)
+		setOnMin(result.data.onTimeMin)
+		setOnMax(result.data.onTimeMax)
+		setCollectMin(result.data.delaysCollectingMin)
 		setSaved(section)
 		if (savedTimer.current) clearTimeout(savedTimer.current)
 		savedTimer.current = setTimeout(() => setSaved(current => (current === section ? null : current)), 3000)
@@ -143,6 +153,36 @@ export default function Client({ initial }: { initial: SettingsData | null }) {
 			autoCompleteRadiusM: autoRadius,
 			liveFreshnessMinutes: liveFresh,
 			autoCompleteFallbackMinutes: autoFallback,
+		})
+	}
+
+	function saveAccuracy() {
+		if (!Number.isInteger(stopRadius) || stopRadius < 50 || stopRadius > 1000) {
+			setError(t('errors.stopRadiusRange'))
+			return
+		}
+		if (!Number.isInteger(departGrace) || departGrace < 0 || departGrace > 10) {
+			setError(t('errors.departGraceRange'))
+			return
+		}
+		if (!Number.isInteger(onMin) || onMin < -10 || onMin > 0) {
+			setError(t('errors.onTimeMinRange'))
+			return
+		}
+		if (!Number.isInteger(onMax) || onMax < 0 || onMax > 10) {
+			setError(t('errors.onTimeMaxRange'))
+			return
+		}
+		if (!Number.isInteger(collectMin) || collectMin < 1 || collectMin > 30) {
+			setError(t('errors.collectMinRange'))
+			return
+		}
+		void save('accuracy', {
+			atStopRadiusM: stopRadius,
+			lateDepartureGraceMin: departGrace,
+			onTimeMin: onMin,
+			onTimeMax: onMax,
+			delaysCollectingMin: collectMin,
 		})
 	}
 
@@ -296,6 +336,62 @@ export default function Client({ initial }: { initial: SettingsData | null }) {
 						</FormField>
 					</div>
 					<SaveRow saving={saving === 'autoComplete'} saved={saved === 'autoComplete'} saveLabel={t('save')} onSave={saveAutoComplete} />
+				</Section>
+
+				<Section title={t('accuracy.title')} hint={t('accuracy.hint')}>
+					<div className='grid max-w-md gap-3 sm:grid-cols-3'>
+						<FormField label={t('accuracy.stopRadius')}>
+							<input
+								className={`${fieldInputClassName} tabular-nums`}
+								type='number'
+								min={50}
+								max={1000}
+								value={stopRadius}
+								onChange={e => setStopRadius(Number(e.target.value))}
+							/>
+						</FormField>
+						<FormField label={t('accuracy.departGrace')}>
+							<input
+								className={`${fieldInputClassName} tabular-nums`}
+								type='number'
+								min={0}
+								max={10}
+								value={departGrace}
+								onChange={e => setDepartGrace(Number(e.target.value))}
+							/>
+						</FormField>
+						<FormField label={t('accuracy.collectMin')}>
+							<input
+								className={`${fieldInputClassName} tabular-nums`}
+								type='number'
+								min={1}
+								max={30}
+								value={collectMin}
+								onChange={e => setCollectMin(Number(e.target.value))}
+							/>
+						</FormField>
+						<FormField label={t('accuracy.onTimeMin')}>
+							<input
+								className={`${fieldInputClassName} tabular-nums`}
+								type='number'
+								min={-10}
+								max={0}
+								value={onMin}
+								onChange={e => setOnMin(Number(e.target.value))}
+							/>
+						</FormField>
+						<FormField label={t('accuracy.onTimeMax')}>
+							<input
+								className={`${fieldInputClassName} tabular-nums`}
+								type='number'
+								min={0}
+								max={10}
+								value={onMax}
+								onChange={e => setOnMax(Number(e.target.value))}
+							/>
+						</FormField>
+					</div>
+					<SaveRow saving={saving === 'accuracy'} saved={saved === 'accuracy'} saveLabel={t('save')} onSave={saveAccuracy} />
 				</Section>
 			</div>
 		</div>

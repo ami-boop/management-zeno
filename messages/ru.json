@@ -77,7 +77,9 @@
     "approve": "Одобрить",
     "reject": "Отклонить",
     "friendSleepover": "С ночёвкой",
-    "actionFailed": "Не удалось выполнить действие, попробуйте ещё раз"
+    "actionFailed": "Не удалось выполнить действие, попробуйте ещё раз",
+    "lateDeparture": "Опоздание {minutes} мин",
+    "lateFirst": "Сначала опоздавшие"
   },
   "Header": {
     "menu": {

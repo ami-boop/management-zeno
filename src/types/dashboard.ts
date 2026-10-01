@@ -10,4 +10,5 @@ export interface DashboardRoute {
   lastUpdate: Record<string, number>
   estimatedTime: string
   pendingFriendCount?: number
+  lateDepartureMinutes?: number | null
 }

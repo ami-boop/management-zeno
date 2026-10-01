@@ -32,6 +32,7 @@ export interface DashboardTrip {
 	assignedMinibuses: number | null
 	pendingFriendCount: number
 	capacityAvailable: number
+	lateDepartureMinutes?: number | null
 }
 
 export interface DashboardResponse {
@@ -84,6 +85,7 @@ function parseDashboardTrip(value: unknown): DashboardTrip | null {
 		assignedMinibuses: isNullableNumber(value.assignedMinibuses) ? value.assignedMinibuses : null,
 		pendingFriendCount: isNonNegativeNumber(value.pendingFriendCount) ? value.pendingFriendCount : 0,
 		capacityAvailable: isNonNegativeNumber(value.capacityAvailable) ? value.capacityAvailable : 0,
+		lateDepartureMinutes: isNonNegativeNumber(value.lateDepartureMinutes) ? value.lateDepartureMinutes : null,
 	}
 }
 

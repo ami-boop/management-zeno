@@ -16,6 +16,8 @@ interface DashboardRouteFiltersProps {
   setSelectedRoute: (key: string) => void
   searchQuery: string
   setSearchQuery: (q: string) => void
+  lateFirst: boolean
+  setLateFirst: (v: boolean) => void
 }
 
 const RouteFilters = ({
@@ -27,6 +29,8 @@ const RouteFilters = ({
   setSelectedRoute,
   searchQuery,
   setSearchQuery,
+  lateFirst,
+  setLateFirst,
 }: DashboardRouteFiltersProps) => {
   const t = useTranslations('Dashboard')
   return (
@@ -76,6 +80,18 @@ const RouteFilters = ({
         </div>
       </div>
       {/* Route Filters */}
+      <div className='mb-4'>
+        <label className='inline-flex items-center gap-2 text-sm font-medium text-gray-700 cursor-pointer'>
+          <input
+            type='checkbox'
+            checked={lateFirst}
+            onChange={e => setLateFirst(e.target.checked)}
+            data-testid='late-first-toggle'
+            className='h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500'
+          />
+          {t('lateFirst')}
+        </label>
+      </div>
       <div className='mb-4'>
         <div className='flex items-center mb-2'>
           <span className='text-sm font-medium text-gray-700 me-3'>

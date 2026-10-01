@@ -3,6 +3,7 @@ import { Bus, Car, CheckCircle, AlertCircle, Clock } from 'lucide-react'
 import { useTranslations } from 'next-intl'
 import { ProgressBar } from '@/components/ui/progress-bar'
 import FriendIndicator from './FriendIndicator'
+import LateDepartureBadge from './LateDepartureBadge'
 
 interface DashboardRouteTableProps {
   routes: DashboardRoute[]
@@ -203,6 +204,11 @@ const RouteTable = ({
                     {getStatusIcon(route.status)}
                     {getStatusText(route.status)}
                   </div>
+                  {route.lateDepartureMinutes != null && (
+                    <div className="mt-1">
+                      <LateDepartureBadge minutes={route.lateDepartureMinutes} />
+                    </div>
+                  )}
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap">
                   <FriendIndicator

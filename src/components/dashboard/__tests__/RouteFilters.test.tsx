@@ -18,6 +18,7 @@ const mockRouteFilterButtons = [
 const mockSetSelectedFilter = jest.fn();
 const mockSetSelectedRoute = jest.fn();
 const mockSetSearchQuery = jest.fn();
+const mockSetLateFirst = jest.fn();
 
 describe('RouteFilters', () => {
   it('renders correctly', () => {
@@ -31,6 +32,8 @@ describe('RouteFilters', () => {
         setSelectedRoute={mockSetSelectedRoute}
         searchQuery=""
         setSearchQuery={mockSetSearchQuery}
+        lateFirst={false}
+        setLateFirst={mockSetLateFirst}
       />
     )
 
@@ -53,6 +56,8 @@ describe('RouteFilters', () => {
         setSelectedRoute={mockSetSelectedRoute}
         searchQuery=""
         setSearchQuery={mockSetSearchQuery}
+        lateFirst={false}
+        setLateFirst={mockSetLateFirst}
       />
     )
 
@@ -74,9 +79,32 @@ describe('RouteFilters', () => {
       setSelectedRoute={mockSetSelectedRoute}
       searchQuery=""
       setSearchQuery={mockSetSearchQuery}
+      lateFirst={false}
+      setLateFirst={mockSetLateFirst}
     />)
 
     expect(filterButton).toHaveClass('bg-blue-100 text-blue-800 border border-blue-200')
     expect(routeFilterButton).toHaveClass('bg-emerald-100 text-emerald-800 border border-emerald-200')
+  })
+
+  it('toggles late-first sorting', async () => {
+    const user = userEvent.setup()
+    render(
+      <RouteFilters
+        filterButtons={mockFilterButtons}
+        selectedFilter="all"
+        setSelectedFilter={mockSetSelectedFilter}
+        routeFilterButtons={mockRouteFilterButtons}
+        selectedRoute="all"
+        setSelectedRoute={mockSetSelectedRoute}
+        searchQuery=""
+        setSearchQuery={mockSetSearchQuery}
+        lateFirst={false}
+        setLateFirst={mockSetLateFirst}
+      />
+    )
+
+    await user.click(screen.getByTestId('late-first-toggle'))
+    expect(mockSetLateFirst).toHaveBeenCalledWith(true)
   })
 })

@@ -48,6 +48,7 @@ const adaptTrip = (
     lastUpdate: { _seconds: ts, _nanoseconds: 0 },
     estimatedTime: trip.scheduledTime,
     pendingFriendCount: trip.pendingFriendCount,
+    lateDepartureMinutes: trip.lateDepartureMinutes,
   }
 }
 
@@ -65,6 +66,7 @@ const Client = ({
   const [selectedFilter, setSelectedFilter] = useState<string>('all')
   const [selectedRoute, setSelectedRoute] = useState<string>('all')
   const [searchQuery, setSearchQuery] = useState<string>('')
+  const [lateFirst, setLateFirst] = useState<boolean>(false)
   const [localRoutes, setRoutes] = useState<DashboardRoute[]>(() =>
     (data?.trips ?? []).map((trip) => adaptTrip(trip, routeNameMap))
   )
@@ -101,7 +103,7 @@ const Client = ({
   }, [localRoutes, globalNotMarked])
 
   const filteredRoutes = useMemo(() => {
-    return localRoutes.filter((route: DashboardRoute) => {
+    const filtered = localRoutes.filter((route: DashboardRoute) => {
       const matchesStatusFilter =
         selectedFilter === 'all' || route.status === selectedFilter
       const matchesRouteFilter =
@@ -112,7 +114,13 @@ const Client = ({
         route.name.toLowerCase().includes(searchQuery.toLowerCase())
       return matchesStatusFilter && matchesRouteFilter && matchesSearch
     })
-  }, [localRoutes, selectedFilter, selectedRoute, searchQuery])
+    if (!lateFirst) return filtered
+    return [...filtered].sort((a, b) => {
+      const aLate = a.lateDepartureMinutes ?? -1
+      const bLate = b.lateDepartureMinutes ?? -1
+      return bLate - aLate
+    })
+  }, [localRoutes, selectedFilter, selectedRoute, searchQuery, lateFirst])
 
   const filterButtons = useMemo(
     () => [
@@ -266,6 +274,8 @@ const Client = ({
               setSelectedRoute={setSelectedRoute}
               searchQuery={searchQuery}
               setSearchQuery={setSearchQuery}
+              lateFirst={lateFirst}
+              setLateFirst={setLateFirst}
             />
           </div>
           <div className='hidden lg:block'>

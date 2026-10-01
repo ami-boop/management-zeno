@@ -3,6 +3,7 @@ import { useTranslations } from 'next-intl'
 import { DashboardRoute } from '@/types/dashboard'
 import { ProgressBar } from '@/components/ui/progress-bar'
 import FriendIndicator from './FriendIndicator'
+import LateDepartureBadge from './LateDepartureBadge'
 import dayjs from 'dayjs'
 
 interface DashboardRouteMobileCardsProps {
@@ -74,6 +75,11 @@ const RouteMobileCards = ({
                   count={route.pendingFriendCount ?? 0}
                   routeNameMap={routeNameMap ?? {}}
                 />
+                {route.lateDepartureMinutes != null && (
+                  <div className="mt-1">
+                    <LateDepartureBadge minutes={route.lateDepartureMinutes} />
+                  </div>
+                )}
               </div>
               <div
                 className={`inline-flex items-center gap-1 px-2 py-1 rounded-full text-xs font-medium border shrink-0 ${getStatusColor(

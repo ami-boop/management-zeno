@@ -73,11 +73,85 @@ export interface StatisticsData {
 	chronicNoShow: ChronicEntry[]
 	tripHighlights: { fullest: TripStat[]; emptiest: TripStat[] }
 	friend: { total: number; pending: number; approved: number; rejected: number; pendingItems: FriendPendingItem[] }
-	delays: null
+	delays: DelaysBlock | null
+}
+
+export interface DelayRouteStat {
+	routeId: string
+	tripsWithFacts: number
+	avgDelayMin: number | null
+	onTimePct: number | null
+	lateDepartureAvgMin: number | null
+	lateDeparturePct: number | null
+}
+
+export interface DelayTrendDay {
+	date: string
+	avgDelayMin: number | null
+	onTimePct: number | null
+	tripCount: number
+}
+
+export interface DelaysBlock {
+	status: 'ready' | 'collecting'
+	factsCollected: number
+	factsNeeded: number
+	totals: { avgDelayMin: number | null; onTimePct: number | null; tripsWithFacts: number }
+	routes: DelayRouteStat[]
+	trend: DelayTrendDay[]
 }
 
 function num(value: unknown): number {
 	return isNonNegativeNumber(value) ? value : 0
+}
+
+function parseDelayRoute(value: unknown): DelayRouteStat | null {
+	if (!isRecord(value)) return null
+	if (!isString(value.routeId)) return null
+	return {
+		routeId: value.routeId,
+		tripsWithFacts: num(value.tripsWithFacts),
+		avgDelayMin: nullableRate(value.avgDelayMin),
+		onTimePct: nullableRate(value.onTimePct),
+		lateDepartureAvgMin: nullableRate(value.lateDepartureAvgMin),
+		lateDeparturePct: nullableRate(value.lateDeparturePct),
+	}
+}
+
+function parseDelayTrendDay(value: unknown): DelayTrendDay | null {
+	if (!isRecord(value)) return null
+	if (!isString(value.date)) return null
+	return {
+		date: value.date,
+		avgDelayMin: nullableRate(value.avgDelayMin),
+		onTimePct: nullableRate(value.onTimePct),
+		tripCount: num(value.tripCount),
+	}
+}
+
+function parseDelays(value: unknown): DelaysBlock | null {
+	if (!isRecord(value)) return null
+	const status = value.status === 'ready' ? 'ready' : value.status === 'collecting' ? 'collecting' : null
+	if (!status) return null
+	const totals = isRecord(value.totals) ? value.totals : {}
+	const routes: DelayRouteStat[] = Array.isArray(value.routes)
+		? value.routes.map(parseDelayRoute).filter((r): r is DelayRouteStat => r !== null)
+		: []
+	const trend: DelayTrendDay[] = Array.isArray(value.trend)
+		? value.trend.map(parseDelayTrendDay).filter((d): d is DelayTrendDay => d !== null)
+		: []
+	return {
+		status,
+		factsCollected: num(value.factsCollected),
+		factsNeeded: num(value.factsNeeded),
+		totals: {
+			avgDelayMin: nullableRate(totals.avgDelayMin),
+			onTimePct: nullableRate(totals.onTimePct),
+			tripsWithFacts: num(totals.tripsWithFacts),
+		},
+		routes,
+		trend,
+	}
 }
 
 function nullableRate(value: unknown): number | null {
@@ -208,6 +282,6 @@ export function parseStatistics(value: unknown): StatisticsData | null {
 			rejected: num(friend.rejected),
 			pendingItems,
 		},
-		delays: null,
+		delays: parseDelays(value.delays),
 	}
 }

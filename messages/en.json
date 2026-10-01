@@ -688,7 +688,8 @@
       "load": "Load",
       "attendance": "Attendance",
       "routes": "Routes",
-      "friend": "Friend trips"
+      "friend": "Friend trips",
+      "accuracy": "Accuracy"
     },
     "alerts": {
       "overfull": "{count} overfilled trips",
@@ -734,6 +735,19 @@
     },
     "errors": {
       "loadFailed": "Failed to load statistics"
+    },
+    "accuracy": {
+      "title": "Arrival & departure accuracy",
+      "hint": "Fact vs schedule. On time: −2…+3 min.",
+      "noFacts": "No facts yet — data will appear after the first completed trips.",
+      "collecting": "Little data: {collected} of {needed} trips. Numbers are partial.",
+      "avgDelay": "Avg delay",
+      "onTime": "% on time",
+      "trips": "Trips with facts",
+      "byRoute": "By route",
+      "trend": "On-time trend",
+      "lateDeparture": "Departure, avg",
+      "minutes": "{count} min"
     }
   },
   "Rules": {

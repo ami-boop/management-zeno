@@ -9,10 +9,10 @@ import EmptyState from '@/components/EmptyState'
 import { getStatistics } from '@/app/actions/statistics'
 import type { StatisticsData, TripStat } from '@/lib/api-contracts'
 import { todayInIsrael } from '@/lib/schedule-times'
-import { AttendanceTrend, LoadBars, RouteBars, TripFillBars } from './charts'
+import { AttendanceTrend, DelayTrend, LoadBars, RouteBars, TripFillBars } from './charts'
 import { downloadCsv, statisticsCsv } from './csv'
 
-type Tab = 'load' | 'attendance' | 'routes' | 'friend'
+type Tab = 'load' | 'attendance' | 'routes' | 'friend' | 'accuracy'
 
 interface StatisticsClientProps {
 	initial: StatisticsData | null
@@ -154,7 +154,7 @@ export default function Client({ initial, initialDate, initialRange }: Statistic
 					)}
 
 					<div className='mb-4 inline-flex rounded-full border border-zeno-line bg-zeno-surface p-1'>
-						{(['load', 'attendance', 'routes', 'friend'] as const).map(v => (
+						{(['load', 'attendance', 'routes', 'friend', 'accuracy'] as const).map(v => (
 							<button key={v} type='button' onClick={() => setTab(v)} aria-pressed={tab === v} className={`rounded-full px-3 py-1.5 text-xs font-semibold focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-zeno-amber ${tab === v ? 'bg-zeno-amber text-zeno-amber-fg' : 'text-zeno-ink-soft hover:bg-zeno-paper-soft'}`}>{t(`tabs.${v}`)}</button>
 						))}
 					</div>
@@ -318,6 +318,57 @@ export default function Client({ initial, initialDate, initialRange }: Statistic
 									</div>
 								)}
 							</section>
+						</div>
+					)}
+					{tab === 'accuracy' && (
+						<div className='grid gap-4'>
+							{data.delays === null || data.delays.totals.tripsWithFacts === 0 ? (
+								<section className='zeno-card p-4 sm:p-6'>
+									<EmptyState message={t('accuracy.noFacts')} />
+								</section>
+							) : (
+								<>
+									{data.delays.status === 'collecting' && (
+										<div role='status' data-testid='delays-collecting' className='rounded-xl border border-zeno-amber/40 bg-zeno-paper-soft px-4 py-2.5 text-sm text-zeno-ink-soft tabular-nums'>
+											{t('accuracy.collecting', { collected: data.delays.factsCollected, needed: data.delays.factsNeeded })}
+										</div>
+									)}
+									<div className='grid grid-cols-2 gap-3 lg:grid-cols-4'>
+										<StatCard label={t('accuracy.avgDelay')} value={data.delays.totals.avgDelayMin ?? '—'} tone='ink' icon={<Users className='h-5 w-5' />} />
+										<StatCard label={t('accuracy.onTime')} value={data.delays.totals.onTimePct === null ? '—' : `${data.delays.totals.onTimePct}%`} tone='sage' icon={<Users className='h-5 w-5' />} />
+										<StatCard label={t('accuracy.trips')} value={data.delays.totals.tripsWithFacts} tone='ink' icon={<Users className='h-5 w-5' />} />
+									</div>
+									<section className='zeno-card p-4 sm:p-6'>
+										<h3 className='mb-3 text-base font-bold text-zeno-ink'>{t('accuracy.byRoute')}</h3>
+										<div className='overflow-x-auto'>
+											<table className='w-full text-sm'>
+												<thead>
+													<tr className='text-start text-xs text-zeno-muted'>
+														<th className='px-2 py-1.5 font-semibold'>{t('load.route')}</th>
+														<th className='px-2 py-1.5 font-semibold tabular-nums'>{t('accuracy.avgDelay')}</th>
+														<th className='px-2 py-1.5 font-semibold tabular-nums'>{t('accuracy.onTime')}</th>
+														<th className='px-2 py-1.5 font-semibold tabular-nums'>{t('accuracy.lateDeparture')}</th>
+													</tr>
+												</thead>
+												<tbody>
+													{data.delays.routes.map(r => (
+														<tr key={r.routeId} className='border-t border-zeno-line text-zeno-ink'>
+															<td className='px-2 py-1.5 font-medium'>{r.routeId || '—'}</td>
+															<td className='px-2 py-1.5 tabular-nums'>{r.avgDelayMin === null ? '—' : t('accuracy.minutes', { count: r.avgDelayMin })}</td>
+															<td className='px-2 py-1.5 tabular-nums'>{r.onTimePct === null ? '—' : `${r.onTimePct}%`}</td>
+															<td className='px-2 py-1.5 tabular-nums'>{r.lateDepartureAvgMin === null ? '—' : t('accuracy.minutes', { count: r.lateDepartureAvgMin })}</td>
+														</tr>
+													))}
+												</tbody>
+											</table>
+										</div>
+									</section>
+									<section className='zeno-card p-4 sm:p-6'>
+										<h3 className='mb-3 text-base font-bold text-zeno-ink'>{t('accuracy.trend')}</h3>
+										<DelayTrend trend={data.delays.trend} onTimeLabel={t('accuracy.onTime')} isRTL={isRTL} />
+									</section>
+								</>
+							)}
 						</div>
 					)}
 				</>

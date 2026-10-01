@@ -12,7 +12,7 @@ import {
 	XAxis,
 	YAxis,
 } from 'recharts'
-import type { RouteStat, StatsDay, TripStat } from '@/lib/api-contracts'
+import type { RouteStat, StatsDay, TripStat, DelayTrendDay } from '@/lib/api-contracts'
 
 const SAGE = 'var(--zeno-sage)'
 const AMBER = 'var(--zeno-amber)'
@@ -71,6 +71,21 @@ export function AttendanceTrend({ days, rateLabel, isRTL }: { days: StatsDay[]; 
 				<YAxis tick={axisTick} tickLine={false} axisLine={false} domain={[0, 100]} tickFormatter={v => `${v}%`} />
 				<Tooltip content={<ChartTip />} cursor={{ stroke: LINE }} />
 				<Area type='monotone' dataKey={rateLabel} stroke={SAGE} strokeWidth={2.5} fill={SAGE} fillOpacity={0.15} connectNulls />
+			</AreaChart>
+		</ResponsiveContainer>
+	)
+}
+
+export function DelayTrend({ trend, onTimeLabel, isRTL }: { trend: DelayTrendDay[]; onTimeLabel: string; isRTL: boolean }) {
+	const data = trend.map(d => ({ date: shortDate(d.date), [onTimeLabel]: d.onTimePct }))
+	return (
+		<ResponsiveContainer width='100%' height={260}>
+			<AreaChart data={data} margin={{ top: 8, right: 8, bottom: 0, left: -8 }}>
+				<CartesianGrid stroke={LINE} vertical={false} />
+				<XAxis dataKey='date' tick={axisTick} tickLine={false} axisLine={{ stroke: LINE }} reversed={isRTL} interval={Math.max(0, Math.ceil(data.length / 10) - 1)} />
+				<YAxis tick={axisTick} tickLine={false} axisLine={false} domain={[0, 100]} tickFormatter={v => `${v}%`} />
+				<Tooltip content={<ChartTip />} cursor={{ stroke: LINE }} />
+				<Area type='monotone' dataKey={onTimeLabel} stroke={SAGE} strokeWidth={2.5} fill={SAGE} fillOpacity={0.15} connectNulls />
 			</AreaChart>
 		</ResponsiveContainer>
 	)
